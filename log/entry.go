@@ -81,20 +81,19 @@ func (entry *Entry) Error(args ...interface{}) {
 	}
 }
 
+func (entry *Entry) Painc(args ...interface{}) {
+	if entry.Logger.Level >= PanicLevel {
+		entry.log(PanicLevel, fmt.Sprint(args...))
+	}
+	panic(fmt.Sprint(args...))
+}
+
 func (entry *Entry) Fatal(args ...interface{}) {
 	if entry.Logger.Level >= FatalLevel {
 		entry.log(PanicLevel, fmt.Sprint(args...))
 	}
 	// TODO: allow register handlers like logrus
 	os.Exit(1)
-}
-
-// TODO: maybe Painc should comes after fatal
-func (entry *Entry) Painc(args ...interface{}) {
-	if entry.Logger.Level >= PanicLevel {
-		entry.log(PanicLevel, fmt.Sprint(args...))
-	}
-	panic(fmt.Sprint(args...))
 }
 
 // Printf functions
@@ -130,18 +129,17 @@ func (entry *Entry) Errorf(format string, args ...interface{}) {
 	}
 }
 
+func (entry *Entry) Paincf(format string, args ...interface{}) {
+	if entry.Logger.Level >= PanicLevel {
+		entry.log(PanicLevel, fmt.Sprintf(format, args...))
+	}
+	panic(fmt.Sprint(args...))
+}
+
 func (entry *Entry) Fatalf(format string, args ...interface{}) {
 	if entry.Logger.Level >= FatalLevel {
 		entry.log(PanicLevel, fmt.Sprintf(format, args...))
 	}
 	// TODO: allow register handlers like logrus
 	os.Exit(1)
-}
-
-// TODO: maybe Painc should comes after fatal
-func (entry *Entry) Paincf(format string, args ...interface{}) {
-	if entry.Logger.Level >= PanicLevel {
-		entry.log(PanicLevel, fmt.Sprintf(format, args...))
-	}
-	panic(fmt.Sprint(args...))
 }

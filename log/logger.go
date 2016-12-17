@@ -10,10 +10,10 @@ import (
 type Level uint8
 
 const (
-	// PanicLevel log error and call painc
-	PanicLevel Level = iota
 	// FatalLevel log error and call `os.Exit(1)`
-	FatalLevel
+	FatalLevel Level = iota
+	// PanicLevel log error and call painc
+	PanicLevel
 	// ErrorLevel log error
 	ErrorLevel
 	// WarnLevel log warning
@@ -28,10 +28,10 @@ const (
 
 func (level Level) String() string {
 	switch level {
-	case PanicLevel:
-		return "painc"
 	case FatalLevel:
 		return "fatal"
+	case PanicLevel:
+		return "painc"
 	case ErrorLevel:
 		return "error"
 	case WarnLevel:
@@ -48,8 +48,8 @@ func (level Level) String() string {
 }
 
 var AllLevels = []Level{
-	PanicLevel,
 	FatalLevel,
+	PanicLevel,
 	ErrorLevel,
 	WarnLevel,
 	InfoLevel,
