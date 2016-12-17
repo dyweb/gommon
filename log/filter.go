@@ -5,6 +5,7 @@ type Set map[string]bool
 // Filter determines if the entry should be logged
 type Filter interface {
 	Filter(entry *Entry) bool
+	Name() string
 }
 
 // PkgFilter only allows entry without `pkg` field or `pkg` value in the allow set to pass
@@ -20,6 +21,10 @@ func (filter *PkgFilter) Filter(entry *Entry) bool {
 	}
 	_, ok = filter.allow[pkg]
 	return ok
+}
+
+func (filter *PkgFilter) Name() string {
+	return "PkgFilter"
 }
 
 func NewPkgFilter(allow Set) *PkgFilter {

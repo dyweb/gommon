@@ -7,6 +7,12 @@ import (
 )
 
 func TestFilterInterface(t *testing.T) {
+	t.Parallel()
+	var _ Filter = (*PkgFilter)(nil)
+}
+
+func TestPkgFilter(t *testing.T) {
+	t.Parallel()
 	assert := assert.New(t)
 
 	allow := make(map[string]bool)
