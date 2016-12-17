@@ -50,3 +50,98 @@ func (entry Entry) log(level Level, msg string) bool {
 	}
 	return true
 }
+
+func (entry *Entry) Trace(args ...interface{}) {
+	if entry.Logger.Level >= TraceLevel {
+		entry.log(TraceLevel, fmt.Sprint(args...))
+	}
+}
+
+func (entry *Entry) Debug(args ...interface{}) {
+	if entry.Logger.Level >= DebugLevel {
+		entry.log(DebugLevel, fmt.Sprint(args...))
+	}
+}
+
+func (entry *Entry) Info(args ...interface{}) {
+	if entry.Logger.Level >= InfoLevel {
+		entry.log(InfoLevel, fmt.Sprint(args...))
+	}
+}
+
+func (entry *Entry) Warn(args ...interface{}) {
+	if entry.Logger.Level >= WarnLevel {
+		entry.log(WarnLevel, fmt.Sprint(args...))
+	}
+}
+
+func (entry *Entry) Error(args ...interface{}) {
+	if entry.Logger.Level >= ErrorLevel {
+		entry.log(ErrorLevel, fmt.Sprint(args...))
+	}
+}
+
+func (entry *Entry) Fatal(args ...interface{}) {
+	if entry.Logger.Level >= FatalLevel {
+		entry.log(PanicLevel, fmt.Sprint(args...))
+	}
+	// TODO: allow register handlers like logrus
+	os.Exit(1)
+}
+
+// TODO: maybe Painc should comes after fatal
+func (entry *Entry) Painc(args ...interface{}) {
+	if entry.Logger.Level >= PanicLevel {
+		entry.log(PanicLevel, fmt.Sprint(args...))
+	}
+	panic(fmt.Sprint(args...))
+}
+
+// Printf functions
+// NOTE: the *f functions does NOT call * functions like logrus does, it just copy and paste
+
+func (entry *Entry) Tracef(format string, args ...interface{}) {
+	if entry.Logger.Level >= TraceLevel {
+		entry.log(TraceLevel, fmt.Sprintf(format, args...))
+	}
+}
+
+func (entry *Entry) Debugf(format string, args ...interface{}) {
+	if entry.Logger.Level >= DebugLevel {
+		entry.log(DebugLevel, fmt.Sprintf(format, args...))
+	}
+}
+
+func (entry *Entry) Infof(format string, args ...interface{}) {
+	if entry.Logger.Level >= InfoLevel {
+		entry.log(InfoLevel, fmt.Sprintf(format, args...))
+	}
+}
+
+func (entry *Entry) Warnf(format string, args ...interface{}) {
+	if entry.Logger.Level >= WarnLevel {
+		entry.log(WarnLevel, fmt.Sprintf(format, args...))
+	}
+}
+
+func (entry *Entry) Errorf(format string, args ...interface{}) {
+	if entry.Logger.Level >= ErrorLevel {
+		entry.log(ErrorLevel, fmt.Sprintf(format, args...))
+	}
+}
+
+func (entry *Entry) Fatalf(format string, args ...interface{}) {
+	if entry.Logger.Level >= FatalLevel {
+		entry.log(PanicLevel, fmt.Sprintf(format, args...))
+	}
+	// TODO: allow register handlers like logrus
+	os.Exit(1)
+}
+
+// TODO: maybe Painc should comes after fatal
+func (entry *Entry) Paincf(format string, args ...interface{}) {
+	if entry.Logger.Level >= PanicLevel {
+		entry.log(PanicLevel, fmt.Sprintf(format, args...))
+	}
+	panic(fmt.Sprint(args...))
+}

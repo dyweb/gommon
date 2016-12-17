@@ -34,6 +34,8 @@ func (level Level) String() string {
 		return "fatal"
 	case ErrorLevel:
 		return "error"
+	case WarnLevel:
+		return "warn"
 	case InfoLevel:
 		return "info"
 	case DebugLevel:
@@ -52,6 +54,7 @@ var AllLevels = []Level{
 	WarnLevel,
 	InfoLevel,
 	DebugLevel,
+	TraceLevel,
 }
 
 // Fields is key-value string pair to annotate the log and can be used by filter
@@ -88,5 +91,6 @@ func (log *Logger) NewEntry() *Entry {
 	// TODO: may use pool
 	return &Entry{
 		Logger: log,
+		Fields: make(map[string]string, 1),
 	}
 }

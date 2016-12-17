@@ -17,7 +17,13 @@ func (f *TextFormatter) Format(entry *Entry) ([]byte, error) {
 	// TODO: may use a pool
 	b = &bytes.Buffer{}
 	// TODO: print time
-	// TODO: print fields
-	fmt.Fprintf(b, "[%s]%s\n", entry.Level.String(), entry.Message)
+	fmt.Fprintf(b, "[%s]%s ", entry.Level.String(), entry.Message)
+	for k, v := range entry.Fields {
+		b.WriteString(k)
+		b.WriteByte('=')
+		b.WriteString(v)
+		b.WriteByte(' ')
+	}
+	b.WriteByte('\n')
 	return b.Bytes(), nil
 }
