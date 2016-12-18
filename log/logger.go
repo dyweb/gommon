@@ -26,6 +26,28 @@ const (
 	TraceLevel
 )
 
+// ShortUpperString returns the first 4 characters of a level in upper case
+func (level Level) ShortUpperString() string {
+	switch level {
+	case FatalLevel:
+		return "FATA"
+	case PanicLevel:
+		return "PAIN"
+	case ErrorLevel:
+		return "ERRO"
+	case WarnLevel:
+		return "WARN"
+	case InfoLevel:
+		return "INFO"
+	case DebugLevel:
+		return "DEBU"
+	case TraceLevel:
+		return "TRAC"
+	default:
+		return "UNKN"
+	}
+}
+
 func (level Level) String() string {
 	switch level {
 	case FatalLevel:
@@ -76,7 +98,7 @@ func NewLogger() *Logger {
 	}
 	l := &Logger{
 		Out:       os.Stdout,
-		Formatter: &TextFormatter{},
+		Formatter: NewTextFormatter(),
 		Level:     InfoLevel,
 		Filters:   f,
 	}
