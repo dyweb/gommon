@@ -69,6 +69,7 @@ func (level Level) String() string {
 	}
 }
 
+// AllLevels includes all the logging level
 var AllLevels = []Level{
 	FatalLevel,
 	PanicLevel,
@@ -82,6 +83,7 @@ var AllLevels = []Level{
 // Fields is key-value string pair to annotate the log and can be used by filter
 type Fields map[string]string
 
+// Logger is used to set output, formatter and filters, the real log is using Entry
 type Logger struct {
 	Out       io.Writer
 	Formatter Formatter
@@ -105,14 +107,26 @@ func NewLogger() *Logger {
 	return l
 }
 
+// AddFilter add a filter to logger, the filter should be simple string check on fields, i.e. PkgFilter check pkg field
 func (log *Logger) AddFilter(filter Filter, level Level) {
 	log.Filters[level][filter.Name()] = filter
 }
 
+// NewEntry returns an Entry with empty Fields
 func (log *Logger) NewEntry() *Entry {
 	// TODO: may use pool
 	return &Entry{
 		Logger: log,
 		Fields: make(map[string]string, 1),
+	}
+}
+
+// NewEntryWithPkg returns an Entry with pkg Field set to pkgName, should be used with PkgFilter
+func (log *Logger) NewEntryWithPkg(pkgName string) *Entry {
+	fields := make(map[string]string, 1)
+	fields["pkg"] = pkgName
+	return &Entry{
+		Logger: log,
+		Fields: fields,
 	}
 }

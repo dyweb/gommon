@@ -2,7 +2,7 @@ package log
 
 import "testing"
 
-func TestEntrylog(t *testing.T) {
+func TestEntry_log(t *testing.T) {
 	logger := NewLogger()
 	entry := logger.NewEntry()
 	entry.AddField("pkg", "dummy.d")
@@ -11,7 +11,7 @@ func TestEntrylog(t *testing.T) {
 
 }
 
-func TestEntryLevelLog(t *testing.T){
+func TestEntry_LeveledLog(t *testing.T){
 	logger := NewLogger()
 	f := NewTextFormatter()
 	f.EnableColor = true

@@ -11,7 +11,7 @@ func TestFilterInterface(t *testing.T) {
 	var _ Filter = (*PkgFilter)(nil)
 }
 
-func TestPkgFilter(t *testing.T) {
+func TestPkgFilter_Filter(t *testing.T) {
 	t.Parallel()
 	assert := assert.New(t)
 

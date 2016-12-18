@@ -19,6 +19,7 @@ func (filter *PkgFilter) Filter(entry *Entry) bool {
 	if !ok {
 		return true
 	}
+	// TODO: may store bool to enable disallow using just one map.
 	_, ok = filter.allow[pkg]
 	return ok
 }

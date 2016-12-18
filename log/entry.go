@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// Entry is the real logger
 type Entry struct {
 	Logger  *Logger
 	Fields  Fields
@@ -14,10 +15,12 @@ type Entry struct {
 	Message string
 }
 
+// AddField adds tag to entry
 func (entry *Entry) AddField(key string, value string) {
 	entry.Fields[key] = value
 }
 
+// AddFields adds multiple tags to entry
 func (entry *Entry) AddFields(fields Fields) {
 	for k, v := range fields {
 		entry.Fields[k] = v
