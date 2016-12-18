@@ -81,7 +81,7 @@ func (entry *Entry) Error(args ...interface{}) {
 	}
 }
 
-func (entry *Entry) Painc(args ...interface{}) {
+func (entry *Entry) Panic(args ...interface{}) {
 	if entry.Logger.Level >= PanicLevel {
 		entry.log(PanicLevel, fmt.Sprint(args...))
 	}
@@ -129,7 +129,7 @@ func (entry *Entry) Errorf(format string, args ...interface{}) {
 	}
 }
 
-func (entry *Entry) Paincf(format string, args ...interface{}) {
+func (entry *Entry) Panicf(format string, args ...interface{}) {
 	if entry.Logger.Level >= PanicLevel {
 		entry.log(PanicLevel, fmt.Sprintf(format, args...))
 	}

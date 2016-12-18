@@ -12,7 +12,7 @@ type Level uint8
 const (
 	// FatalLevel log error and call `os.Exit(1)`
 	FatalLevel Level = iota
-	// PanicLevel log error and call painc
+	// PanicLevel log error and call panic
 	PanicLevel
 	// ErrorLevel log error
 	ErrorLevel
@@ -32,7 +32,7 @@ func (level Level) ShortUpperString() string {
 	case FatalLevel:
 		return "FATA"
 	case PanicLevel:
-		return "PAIN"
+		return "PANI"
 	case ErrorLevel:
 		return "ERRO"
 	case WarnLevel:
