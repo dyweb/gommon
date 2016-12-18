@@ -20,4 +20,5 @@ func TestLogger_NewEntryWithPkg(t *testing.T) {
 	logger := NewLogger()
 	entry := logger.NewEntryWithPkg("x.dummy")
 	assert.Equal(1, len(entry.Fields))
+	entry.Info("show me the pkg")
 }
