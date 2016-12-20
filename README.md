@@ -10,9 +10,13 @@ Common utils that could be used outside Ayi
 
 ## Log
 
+see [log](log)
+
 - filter log by fields
 
 ## Command runner
+
+see [runner](runner)
 
 - dry run
 - run in background (like foreman)
@@ -20,7 +24,7 @@ Common utils that could be used outside Ayi
 
 ## Web server
 
-- static file server (`Ayi web static`)
+- static file server (`Ayi web static`) like python's `SimpleHTTPServer`
 
 ## Http client
 
