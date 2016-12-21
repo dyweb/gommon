@@ -7,11 +7,11 @@ import (
 )
 
 // https://github.com/dyweb/Ayi/issues/58
+// NOTE: it's not extra quote, it's os/exec can't expand * like shell does
+// when run `rm *.aux` in shell, shell expands `*.aux` to real file names
 func TestNewCommand_ExtraQuote(t *testing.T) {
 	assert := assert.New(t)
 	cmd, _ := NewCmd("rm *.aux")
 	assert.Equal(2, len(cmd.Args))
-	// assert.Equal("/bin/rm", cmd.Path)
 	assert.Equal("*.aux", cmd.Args[1])
-	// TODO: it seems shell quote is right
 }
