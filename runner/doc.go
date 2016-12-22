@@ -1,4 +1,4 @@
 /*
-Package runner run commands
+Package runner run commands with some convention
 */
 package runner

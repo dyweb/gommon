@@ -15,3 +15,11 @@ func TestNewCommand_ExtraQuote(t *testing.T) {
 	assert.Equal(2, len(cmd.Args))
 	assert.Equal("*.aux", cmd.Args[1])
 }
+
+func TestNewCmdWithAutoShell(t *testing.T) {
+	assert := assert.New(t)
+	cmd, _ := NewCmdWithAutoShell("rm *.aux")
+	assert.Equal(3, len(cmd.Args))
+	// TODO: why this is not /bin/sh
+	assert.Equal("sh", cmd.Args[0])
+}
