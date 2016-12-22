@@ -22,4 +22,5 @@ func TestNewCmdWithAutoShell(t *testing.T) {
 	assert.Equal(3, len(cmd.Args))
 	// TODO: why this is not /bin/sh
 	assert.Equal("sh", cmd.Args[0])
+	assert.Equal("-c", cmd.Args[1])
 }

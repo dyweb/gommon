@@ -2,17 +2,24 @@
 
 Common utils that could be used outside Ayi
 
-- log
-- command runner
+- [data structure](structure) 
+- [log](log)
+- [command runner](runner)
 - web server
 - http client 
 - resource binding (replace go.rice) 
+
+## Data structure
+
+see [data structure](structure)
+
+- Set
 
 ## Log
 
 see [log](log)
 
-- filter log by fields
+- filter log by fields, built in support for pkg using `PkgFilter`
 
 ## Command runner
 

@@ -1,6 +1,8 @@
 package log
 
-type Set map[string]bool
+import (
+	st "github.com/dyweb/Ayi/common/structure"
+)
 
 // Filter determines if the entry should be logged
 type Filter interface {
@@ -10,7 +12,7 @@ type Filter interface {
 
 // PkgFilter only allows entry without `pkg` field or `pkg` value in the allow set to pass
 type PkgFilter struct {
-	allow Set
+	allow st.Set
 }
 
 func (filter *PkgFilter) Filter(entry *Entry) bool {
@@ -19,16 +21,14 @@ func (filter *PkgFilter) Filter(entry *Entry) bool {
 	if !ok {
 		return true
 	}
-	// TODO: may store bool to enable disallow using just one map.
-	_, ok = filter.allow[pkg]
-	return ok
+	return filter.allow.Contains(pkg)
 }
 
 func (filter *PkgFilter) Name() string {
 	return "PkgFilter"
 }
 
-func NewPkgFilter(allow Set) *PkgFilter {
+func NewPkgFilter(allow st.Set) *PkgFilter {
 	return &PkgFilter{
 		allow: allow,
 	}
