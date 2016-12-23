@@ -1,0 +1,47 @@
+# an example of the new runner package config
+
+# global config for the runner 
+scripts-config:
+    # disable autoshell, no longer check for command like rm, mv and switch to sh -c for them
+    autoshell: false
+
+# definition of scripts
+scripts:
+    # call gofmt using os/exec 
+    fmt: gofmt .
+    # will be translated to sh -c "rm *.obj" if autoshell is enabled in global config
+    clean: rm *.obj
+    # a command with detail context
+    clean-plus:
+        cmd: rm *.obj
+        # force using sh -c regardless of global autoshell config
+        shell: true
+        # allow this command to have error and continue other commands, rm will exit when no file is found
+        fallible: true
+    test:
+        # use array to execute a list of commands one by one
+        - go install
+        # you can also use sh -c for force using shell, no extra sh -c will be added around it
+        - sh -c "go test -v -cover $(glide novendor)"
+    build:
+        # call the test command we previously defined
+        - test
+        - go install
+        - gox -output="build/Ayi_{{.OS}}_{{.Arch}}"
+        # you can mix object into the array and use the attributes you use for a top command
+        - cmd: rm *.obj
+          shell: true
+          fallible: true
+    serve:
+        - cmd: Ayi web static
+          desc: serve static web content
+          # run in background, all the background commands are run in parrallel, since they won't end in a short time
+          background: true
+          # restart if the running process exit
+          restart: true
+          # TODO: maybe we should not support the number, need to have counter for cmd syntax
+          number: 1
+        - cmd: Ayi web notify
+          desc: serve notification and display in browser page
+          background: true
+          restart: true
