@@ -11,7 +11,7 @@ import (
 
 // commands that should be called using shell,
 // because mostly they would be expecting shell expansion on parameters
-var shellCommands = st.NewSet("rm", "cp", "mv", "mkdir", "tar")
+var shellCommands = st.NewSet("echo", "rm", "cp", "mv", "mkdir", "tar")
 
 // NewCmd can properly split the executable with its arguments
 // TODO: may need to add a context to handle things like using shell or not
