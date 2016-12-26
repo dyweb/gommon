@@ -19,3 +19,7 @@ func (set *Set) Contains(key string) bool {
 	_, ok := (*set)[key]
 	return ok
 }
+
+func (set *Set) Add(key string) {
+	(*set)[key] = true
+}
