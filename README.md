@@ -1,4 +1,6 @@
-# Gommon - Golang common util libries
+# Gommon - Golang common util libraries
+
+[![Build Status](https://travis-ci.org/dyweb/gommon.svg?branch=master)](https://travis-ci.org/dyweb/gommon)
 
 <!-- TODO: a better short intro -->
 Common utils that are originally from [Ayi](https://github.com/dyweb/Ayi)
