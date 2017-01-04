@@ -1,0 +1,13 @@
+language: go
+sudo: false
+
+go:
+  - 1.6
+  - 1.7
+  - tip
+
+install:
+  - ./scripts/travis_install.sh
+
+script:
+  - ./scripts/travis_test.sh

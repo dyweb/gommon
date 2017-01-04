@@ -1,7 +1,7 @@
 package log
 
 import (
-	st "github.com/dyweb/Ayi/common/structure"
+	st "github.com/dyweb/gommon/structure"
 )
 
 // Filter determines if the entry should be logged
