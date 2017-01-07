@@ -7,18 +7,18 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type Config struct {
+type YAMLConfig struct {
 	data map[string]interface{}
 	mu   sync.Mutex // TODO: may use RWMutex
 }
 
-func New() *Config {
-	c := new(Config)
+func NewYAMLConfig() *YAMLConfig {
+	c := new(YAMLConfig)
 	c.data = make(map[string]interface{})
 	return c
 }
 
-func (c *Config) Parse(data []byte) error {
+func (c *YAMLConfig) Parse(data []byte) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	err := yaml.Unmarshal(data, &c.data)
@@ -28,6 +28,6 @@ func (c *Config) Parse(data []byte) error {
 	return nil
 }
 
-// func (c *Config) ParseFile(path string) error {
+// func (c *YAMLConfig) ParseFile(path string) error {
 
 // }
