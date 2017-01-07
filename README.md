@@ -1,41 +1,29 @@
 # Gommon - Golang common util libraries
 
 [![Build Status](https://travis-ci.org/dyweb/gommon.svg?branch=master)](https://travis-ci.org/dyweb/gommon)
+[![GoDoc](https://godoc.org/github.com/dyweb/gommon?status.svg)](https://godoc.org/github.com/dyweb/gommon)
 
-<!-- TODO: a better short intro -->
-Common utils that are originally from [Ayi](https://github.com/dyweb/Ayi)
+Gommon is a collection of common util libraries that was originally designed for [Ayi](https://github.com/dyweb/Ayi),
+and aims to provide a consistent and up to date API for building cli tools and server applications.
+It has the following components:
 
-- [data structure](structure)
-- [log](log)
-- [command runner](runner)
-- web server
-- http client
-- resource binding (replace go.rice)
+- [Command runner](runner) A processes manager for both short and long running processes.
+- [Data structure](structure) Bring Set etc. to Golang.
+- [Log](log) A log4j style logger, support filtering by package, custom filters etc.
+- [Requests](requests) A pythonic wrapper for `net/http`, HTTP for Gopher.
+<!--- web server
+- resource binding (replace go.rice)-->
 
-## Data structure
+## Development
 
-see [data structure](structure)
+- install go
+- install [Ayi](https://github.com/dyweb/Ayi)
+- install [glide](https://github.com/Masterminds/glide)
+- run `Ayi dep-install` or `glide install` to install dependencies.
+- run `Ayi test` for test.
+- run `godoc -http=":6060"` to view godoc locally.
 
-- Set
+### Roadmap
 
-## Log
-
-see [log](log)
-
-- filter log by fields, built in support for pkg using `PkgFilter`
-
-## Command runner
-
-see [runner](runner)
-
-- dry run
-- run in background (like foreman)
-- error handling
-
-## Web server
-
-- static file server (`Ayi web static`) like python's `SimpleHTTPServer`
-
-## Http client
-
-- like python's requests `client.Get('http://api.github.com/').JSON()`
+- [ ] finish issues transformed from Ayi
+- [ ] release 0.0.1
