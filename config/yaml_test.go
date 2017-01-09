@@ -1,9 +1,9 @@
 package config
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
 	"log"
+	"testing"
 )
 
 func TestYAMLConfig_Parse(t *testing.T) {

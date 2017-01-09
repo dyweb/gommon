@@ -2,3 +2,7 @@ dep-install:
     - glide install
 test:
     - sh -c "go test -v -cover $(glide novendor)"
+scripts:
+  fmt:
+    - gofmt -d -l -w ./config ./log ./requests ./runner ./structure
+    - git status

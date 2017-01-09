@@ -7,6 +7,9 @@ import:
 - package: github.com/kballard/go-shellquote
   vcs: git
   version: d8ec1a69a250a17bb0e419c386eac1f3711dc142
+- package: github.com/flosch/pongo2
+  vcs: git
+  version: 22499f94d3d56c7238591344a6902715d0b8fbbf
 testImport:
 - package: github.com/stretchr/testify
   vcs: git

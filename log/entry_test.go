@@ -11,7 +11,7 @@ func TestEntry_log(t *testing.T) {
 
 }
 
-func TestEntry_LeveledLog(t *testing.T){
+func TestEntry_LeveledLog(t *testing.T) {
 	logger := NewLogger()
 	f := NewTextFormatter()
 	f.EnableColor = true

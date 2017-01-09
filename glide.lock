@@ -1,6 +1,9 @@
-hash: 81cf32392334f945409ee097e195c625be6a972b39093ff19022fb62cd20ef25
-updated: 2017-01-09T10:14:36.385603068-08:00
+hash: 4718ad41d9d69b57dee8cbf94ed6fababb74e38ca40baf87e96d64565cb23bb0
+updated: 2017-01-09T14:51:34.311050109-08:00
 imports:
+- name: github.com/flosch/pongo2
+  version: 22499f94d3d56c7238591344a6902715d0b8fbbf
+  vcs: git
 - name: github.com/kballard/go-shellquote
   version: d8ec1a69a250a17bb0e419c386eac1f3711dc142
   vcs: git
