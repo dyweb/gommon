@@ -31,3 +31,35 @@ b:
 	err = c.Parse([]byte(invalidDat))
 	assert.NotNil(err)
 }
+
+func TestSplitMultiDocument(t *testing.T) {
+	assert := assert.New(t)
+	var multi = `---
+time: 20:03:20
+player: Sammy Sosa
+action: strike (miss)
+---
+time: 20:03:47
+player: Sammy Sosa
+action: grand slam
+`
+	documents := SplitMultiDocument([]byte(multi))
+	//for _, d := range  documents {
+	//	t.Log(string(d[:]))
+	//}
+	assert.Equal(2, len(documents))
+	documents = SplitMultiDocument([]byte("---"))
+	assert.Equal(1, len(documents))
+	// without the starting `---`
+	var multi2 = `
+time: 20:03:20
+player: Sammy Sosa
+action: strike (miss)
+---
+time: 20:03:47
+player: Sammy Sosa
+action: grand slam
+`
+	documents = SplitMultiDocument([]byte(multi2))
+	assert.Equal(2, len(documents))
+}
