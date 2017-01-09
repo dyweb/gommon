@@ -1,10 +1,6 @@
 hash: 81cf32392334f945409ee097e195c625be6a972b39093ff19022fb62cd20ef25
-updated: 2017-01-03T23:12:16.75311019-08:00
+updated: 2017-01-09T10:14:36.385603068-08:00
 imports:
-- name: github.com/dyweb/Ayi
-  version: b4a6686e94132edd85833a30ba25c27658175e00
-  subpackages:
-  - common/structure
 - name: github.com/kballard/go-shellquote
   version: d8ec1a69a250a17bb0e419c386eac1f3711dc142
   vcs: git

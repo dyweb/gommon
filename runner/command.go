@@ -4,7 +4,7 @@ import (
 	"os"
 	"os/exec"
 
-	st "github.com/dyweb/Ayi/common/structure"
+	st "github.com/dyweb/gommon/structure"
 	"github.com/kballard/go-shellquote"
 	"github.com/pkg/errors"
 )
