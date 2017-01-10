@@ -16,14 +16,14 @@ func init() {
 
 }
 
-func RenderDocument(str string) (string, error) {
+func RenderDocument(tplStr string, context pongo2.Context) (string, error) {
 	//pongo2.Context{} is just map[string]interface{}
 	//FIXME: pongo2.FromString is not longer in the new API, must first create a set
-	tpl, err := defaultSet.FromString(str)
+	tpl, err := defaultSet.FromString(tplStr)
 	if err != nil {
 		return "", errors.Wrap(err, "can't parse template")
 	}
-	out, err := tpl.Execute(pongo2.Context{"foo1": "bar", "foo2": 1})
+	out, err := tpl.Execute(context)
 	if err != nil {
 		return "", errors.Wrap(err, "can'r render template")
 	}
