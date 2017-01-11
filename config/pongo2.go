@@ -6,8 +6,8 @@ import (
 )
 
 var (
-	// TODO: need to implement the template loader to have better controlled template
-	// include and import logic
+	// TODO: may need to implement the template loader to have better controlled
+	// over template include and import logic
 	defaultLoader = pongo2.MustNewLocalFileSystemLoader("")
 	defaultSet    = pongo2.NewSet("gommon", defaultLoader)
 )
@@ -16,7 +16,7 @@ func init() {
 
 }
 
-func RenderDocument(tplStr string, context pongo2.Context) (string, error) {
+func RenderDocumentString(tplStr string, context pongo2.Context) (string, error) {
 	//pongo2.Context{} is just map[string]interface{}
 	//FIXME: pongo2.FromString is not longer in the new API, must first create a set
 	tpl, err := defaultSet.FromString(tplStr)
@@ -26,6 +26,19 @@ func RenderDocument(tplStr string, context pongo2.Context) (string, error) {
 	out, err := tpl.Execute(context)
 	if err != nil {
 		return "", errors.Wrap(err, "can'r render template")
+	}
+	return out, nil
+}
+
+func RenderDocumentBytes(tplBytes []byte, context pongo2.Context) ([]byte, error) {
+	tpl, err := defaultSet.FromBytes(tplBytes)
+	var out []byte
+	if err != nil {
+		return out, errors.Wrap(err, "can't parse template")
+	}
+	out, err = tpl.ExecuteBytes(context)
+	if err != nil {
+		return out, errors.Wrap(err, "can'r render template")
 	}
 	return out, nil
 }
