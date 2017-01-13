@@ -1,13 +1,13 @@
 package config
 
 import (
-	"github.com/stretchr/testify/assert"
+	asst "github.com/stretchr/testify/assert"
 	"log"
 	"testing"
 )
 
 func TestYAMLConfig_Parse(t *testing.T) {
-	assert := assert.New(t)
+	assert := asst.New(t)
 	var dat = `
 a: Easy!
 b:
@@ -33,7 +33,7 @@ b:
 }
 
 func TestSplitMultiDocument(t *testing.T) {
-	assert := assert.New(t)
+	assert := asst.New(t)
 	var multi = `---
 time: 20:03:20
 player: Sammy Sosa
@@ -62,4 +62,27 @@ action: grand slam
 `
 	documents = SplitMultiDocument([]byte(multi2))
 	assert.Equal(2, len(documents))
+}
+
+func TestYAMLConfig_ParseMultiDocumentBytes(t *testing.T) {
+	assert := asst.New(t)
+// NOTE: use space instead of tab, YAML does not support tab
+// Add this in parser check
+	var multi = `
+vars:
+    influxdb_port: 8081
+    databases:
+        - influxdb
+        - kairosdb
+---
+vars:
+    kairosdb_port: 8080
+{% for db in vars.databases %}
+    {{ db }}:
+        name: {{ db }}
+{% endfor %}
+`
+	c := NewYAMLConfig()
+	err := c.ParseMultiDocumentBytes([]byte(multi))
+	assert.Nil(err)
 }
