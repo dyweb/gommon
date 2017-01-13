@@ -4,18 +4,20 @@ import (
 	"bytes"
 	"sync"
 
+	"fmt"
+	"reflect"
+
 	"github.com/flosch/pongo2"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
-	"fmt"
 )
 
 type YAMLConfig struct {
-	context map[string]interface{}
-	data    map[string]interface{}
-	mu      sync.Mutex // TODO: may use RWMutex
-	loader  pongo2.TemplateLoader
-	set     *pongo2.TemplateSet
+	vars   map[string]interface{}
+	data   map[string]interface{}
+	mu     sync.Mutex // TODO: may use RWMutex
+	loader pongo2.TemplateLoader
+	set    *pongo2.TemplateSet
 }
 
 // SplitMultiDocument split a yaml file that contains multiple documents and
@@ -31,8 +33,7 @@ func SplitMultiDocument(data []byte) [][]byte {
 
 func NewYAMLConfig() *YAMLConfig {
 	c := new(YAMLConfig)
-	c.context = make(map[string]interface{})
-	c.context["vars"] = make(map[string]interface{})
+	c.vars = make(map[string]interface{})
 	c.data = make(map[string]interface{})
 	c.loader = pongo2.MustNewLocalFileSystemLoader("")
 	c.set = pongo2.NewSet("gommon-yaml", c.loader)
@@ -60,7 +61,7 @@ func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 	docs := SplitMultiDocument(data)
 	for i, doc := range docs {
 		fmt.Println(i)
-		rendered, err := c.RenderDocumentBytes(doc, c.context)
+		rendered, err := c.RenderDocumentBytes(doc, pongo2.Context{"vars": c.vars})
 		if err != nil {
 			return errors.Wrap(err, "can't render template to yaml")
 		}
@@ -79,17 +80,27 @@ func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 		// TODO: cast into map[string]
 		if varsRaw, ok := tmpData["vars"]; ok {
 			// TODO: cast should have an ok?
-			vars, ok := varsRaw.(map[string]interface{})
+			//vars, ok := varsRaw.(map[string]interface{})
+			vars, ok := varsRaw.(map[interface{}]interface{})
 			if !ok {
 				// TODO: may add detail data?
+				t := reflect.TypeOf(varsRaw)
+				fmt.Println(t)
 				fmt.Println(varsRaw)
+				fmt.Println(vars)
 				return errors.New("unable to cast vars to map[string]interface{}")
 			}
-			//for k, v := range vars {
-			//	c.context["vars"][k] = v
-			//}
+			fmt.Println(vars)
+			for k, v := range vars {
+				//fmt.Println(k)
+				//t := reflect.TypeOf(k)
+				//fmt.Println(t)
+				//fmt.Println(v)
+				k := k.(string)
+				c.vars[k] = v
+			}
 			// FIXME: this would overwrite previous vars
-			c.context["vars"] = vars
+			//c.context["vars"] = vars
 		}
 		// TODO: render again using vars in current document
 		// TODO: put the data into c.data
