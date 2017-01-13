@@ -59,14 +59,13 @@ func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 	defer c.mu.Unlock()
 	// split the doc, parse by order, and add result to context so the following parser can use it
 	docs := SplitMultiDocument(data)
-	for i, doc := range docs {
-		fmt.Println(i)
+	for _, doc := range docs {
+		// TODO: pass environment variables
 		rendered, err := c.RenderDocumentBytes(doc, pongo2.Context{"vars": c.vars})
 		if err != nil {
 			return errors.Wrap(err, "can't render template to yaml")
 		}
 		// TODO: preserve the vars
-		// TODO: use vars in previous documents
 		// TODO: user vars in current documents
 		tmpData := make(map[string]interface{})
 		fmt.Printf("%s", doc)
@@ -76,31 +75,22 @@ func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 			return errors.Wrap(err, "can't parse rendered template yaml to map[string]interface{}")
 		}
 		// preserve the vars
-		// WORKING
-		// TODO: cast into map[string]
 		if varsRaw, ok := tmpData["vars"]; ok {
-			// TODO: cast should have an ok?
-			//vars, ok := varsRaw.(map[string]interface{})
+			// NOTE: it's map[interface{}]interface{} instead of map[string]interface{}
 			vars, ok := varsRaw.(map[interface{}]interface{})
 			if !ok {
-				// TODO: may add detail data?
-				t := reflect.TypeOf(varsRaw)
-				fmt.Println(t)
-				fmt.Println(varsRaw)
-				fmt.Println(vars)
-				return errors.New("unable to cast vars to map[string]interface{}")
+				// TODO: test this
+				return errors.Errorf("unable to cast %s to map[string]interface{}", reflect.TypeOf(varsRaw))
 			}
-			fmt.Println(vars)
 			for k, v := range vars {
-				//fmt.Println(k)
-				//t := reflect.TypeOf(k)
-				//fmt.Println(t)
-				//fmt.Println(v)
-				k := k.(string)
+				// TODO: does YAML support non-string as key? if not, this assert is use less
+				k, ok := k.(string)
+				if !ok {
+					// TODO: test this
+					return errors.Errorf("unable to cast %s to string", reflect.TypeOf(k))
+				}
 				c.vars[k] = v
 			}
-			// FIXME: this would overwrite previous vars
-			//c.context["vars"] = vars
 		}
 		// TODO: render again using vars in current document
 		// TODO: put the data into c.data
