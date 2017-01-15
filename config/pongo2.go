@@ -12,10 +12,6 @@ var (
 	defaultSet    = pongo2.NewSet("gommon", defaultLoader)
 )
 
-func init() {
-
-}
-
 func RenderDocumentString(tplStr string, context pongo2.Context) (string, error) {
 	//pongo2.Context{} is just map[string]interface{}
 	//FIXME: pongo2.FromString is not longer in the new API, must first create a set

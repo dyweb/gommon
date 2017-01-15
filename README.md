@@ -11,8 +11,8 @@ It has the following components:
 - [Data structure](structure) Bring Set etc. to Golang.
 - [Log](log) A log4j style logger, support filtering by package, custom filters etc.
 - [Requests](requests) A pythonic wrapper for `net/http`, HTTP for Gopher.
-<!--- web server
-- resource binding (replace go.rice)-->
+
+<!--- web server - resource binding (replace go.rice)-->
 
 ## Development
 

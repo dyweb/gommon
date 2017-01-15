@@ -40,6 +40,12 @@ func NewYAMLConfig() *YAMLConfig {
 	return c
 }
 
+// clear is used by test in order not to create multiple config
+func (c *YAMLConfig) clear() {
+	c.vars = make(map[string]interface{})
+	c.data = make(map[string]interface{})
+}
+
 func (c *YAMLConfig) Parse(data []byte) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -65,16 +71,16 @@ func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 		if err != nil {
 			return errors.Wrap(err, "can't render template to yaml")
 		}
-		// TODO: preserve the vars
 		// TODO: user vars in current documents
 		tmpData := make(map[string]interface{})
-		fmt.Printf("%s", doc)
-		fmt.Printf("%s", rendered)
+		fmt.Printf("01-before\n%s", doc)
+		fmt.Printf("01-after\n%s", rendered)
 		err = yaml.Unmarshal(rendered, &tmpData)
 		if err != nil {
 			return errors.Wrap(err, "can't parse rendered template yaml to map[string]interface{}")
 		}
 		// preserve the vars
+		// TODO: rename to varsInCurrentDocument, hasVarsInCurrentDocument
 		if varsRaw, ok := tmpData["vars"]; ok {
 			// NOTE: it's map[interface{}]interface{} instead of map[string]interface{}
 			vars, ok := varsRaw.(map[interface{}]interface{})
@@ -92,8 +98,25 @@ func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 				c.vars[k] = v
 			}
 		}
-		// TODO: render again using vars in current document
-		// TODO: put the data into c.data
+		// render again using vars in current document
+		// TODO: if this document has no vars, then this render is not needed
+		// TODO: use doc or previous render result
+		rendered, err = c.RenderDocumentBytes(doc, pongo2.Context{"vars": c.vars})
+		if err != nil {
+			return errors.Wrap(err, "can't render template with vars in current document")
+		}
+		tmpData = make(map[string]interface{})
+		fmt.Printf("02-before\n%s", doc)
+		fmt.Printf("02-after\n%s", rendered)
+		err = yaml.Unmarshal(rendered, &tmpData)
+		if err != nil {
+			// TODO: different message with previous error
+			return errors.Wrap(err, "can't parse rendered template yaml to map[string]interface{}")
+		}
+		// put the data into c.data
+		for k, v := range tmpData {
+			c.data[k] = v
+		}
 	}
 	return nil
 }

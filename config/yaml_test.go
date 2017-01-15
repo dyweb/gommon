@@ -66,9 +66,12 @@ action: grand slam
 
 func TestYAMLConfig_ParseMultiDocumentBytes(t *testing.T) {
 	assert := asst.New(t)
-// NOTE: use space instead of tab, YAML does not support tab
-// Add this in parser check
-	var multi = `
+	c := NewYAMLConfig()
+
+	// NOTE: use space instead of tab, YAML does not support tab
+	// TODO: Add tab check in parser check, and tab inside quote should be allowed
+
+	var sampleUsePreviousVars = `
 vars:
     influxdb_port: 8081
     databases:
@@ -82,7 +85,18 @@ vars:
         name: {{ db }}
 {% endfor %}
 `
-	c := NewYAMLConfig()
-	err := c.ParseMultiDocumentBytes([]byte(multi))
+	err := c.ParseMultiDocumentBytes([]byte(sampleUsePreviousVars))
 	assert.Nil(err)
+
+	c.clear()
+
+	var sampleUseCurrentVars = `
+vars:
+    foo: 1
+bar:
+    foo: {{ vars.foo }}
+`
+	err = c.ParseMultiDocumentBytes([]byte(sampleUseCurrentVars))
+	assert.Nil(err)
+
 }
