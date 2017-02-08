@@ -12,6 +12,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// YAMLConfig is a thread safe strcut for parse YAML file and get value
 type YAMLConfig struct {
 	vars   map[string]interface{}
 	data   map[string]interface{}
@@ -20,7 +21,7 @@ type YAMLConfig struct {
 	set    *pongo2.TemplateSet
 }
 
-// SplitMultiDocument split a yaml file that contains multiple documents and
+// SplitMultiDocument splits a yaml file that contains multiple documents and
 // (only) trim the first one if it is empty
 func SplitMultiDocument(data []byte) [][]byte {
 	docs := bytes.Split(data, []byte("---"))
@@ -31,6 +32,7 @@ func SplitMultiDocument(data []byte) [][]byte {
 	return docs[1:]
 }
 
+// NewYAMLConfig returns a config with internal map structure intialized
 func NewYAMLConfig() *YAMLConfig {
 	c := new(YAMLConfig)
 	c.vars = make(map[string]interface{})
@@ -40,12 +42,14 @@ func NewYAMLConfig() *YAMLConfig {
 	return c
 }
 
-// clear is used by test in order not to create multiple config
+// clear is used by test for using one config object for several tets
 func (c *YAMLConfig) clear() {
 	c.vars = make(map[string]interface{})
 	c.data = make(map[string]interface{})
 }
 
+// Parse is a thread safe wrapper for yaml.Unmarshal and only support single document
+// TODO: this should be legacy method and itself and its test should be removed
 func (c *YAMLConfig) Parse(data []byte) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -56,31 +60,29 @@ func (c *YAMLConfig) Parse(data []byte) error {
 	return nil
 }
 
-// func (c *YAMLConfig) ParseFile(path string) error {
-
-// }
-
 func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	// split the doc, parse by order, and add result to context so the following parser can use it
+
+	// split the doc, parse by order, add result to context so the following parser can use it
 	docs := SplitMultiDocument(data)
 	for _, doc := range docs {
 		// TODO: pass environment variables
+		// TODO: explain the render twice logical for using vars in current document
 		rendered, err := c.RenderDocumentBytes(doc, pongo2.Context{"vars": c.vars})
 		if err != nil {
 			return errors.Wrap(err, "can't render template to yaml")
 		}
-		// TODO: user vars in current documents
-		tmpData := make(map[string]interface{})
 		fmt.Printf("01-before\n%s", doc)
 		fmt.Printf("01-after\n%s", rendered)
+		tmpData := make(map[string]interface{})
 		err = yaml.Unmarshal(rendered, &tmpData)
 		if err != nil {
 			return errors.Wrap(err, "can't parse rendered template yaml to map[string]interface{}")
 		}
 		// preserve the vars
 		// TODO: rename to varsInCurrentDocument, hasVarsInCurrentDocument
+		// TODO: move it to other function
 		if varsRaw, ok := tmpData["vars"]; ok {
 			// NOTE: it's map[interface{}]interface{} instead of map[string]interface{}
 			vars, ok := varsRaw.(map[interface{}]interface{})
