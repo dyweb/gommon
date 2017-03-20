@@ -141,7 +141,7 @@ func (entry *Entry) Panicf(format string, args ...interface{}) {
 
 func (entry *Entry) Fatalf(format string, args ...interface{}) {
 	if entry.Logger.Level >= FatalLevel {
-		entry.log(PanicLevel, fmt.Sprintf(format, args...))
+		entry.log(FatalLevel, fmt.Sprintf(format, args...))
 	}
 	// TODO: allow register handlers like logrus
 	os.Exit(1)
