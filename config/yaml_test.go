@@ -2,7 +2,6 @@ package config
 
 import (
 	asst "github.com/stretchr/testify/assert"
-	"log"
 	"testing"
 )
 
@@ -27,9 +26,10 @@ b:
 	  d: [3, 4]
 	`
 	// the print should show you the string has indent you may not be expecting
-	log.Print(invalidDat)
+	//log.Print(invalidDat)
 	err = c.ParseMultiDocumentBytes([]byte(invalidDat))
 	assert.NotNil(err)
+	//log.Print(err.Error())
 }
 
 func TestSplitMultiDocument(t *testing.T) {

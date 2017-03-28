@@ -9,6 +9,7 @@ import (
 
 	"strings"
 
+	"github.com/dyweb/gommon/cast"
 	"github.com/dyweb/gommon/util"
 	"github.com/flosch/pongo2"
 	"github.com/pkg/errors"
@@ -54,79 +55,76 @@ func (c *YAMLConfig) clear() {
 }
 
 func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
 	// split the doc, parse by order, add result to context so the following parser can use it
 	docs := SplitMultiDocument(data)
 	for _, doc := range docs {
-		pongoContext := pongo2.Context{
-			"vars": c.vars,
-			"envs": util.EnvAsMap(),
-		}
-		// we render the template twice, first time we use vars from previous documents and environment variables
-		// second time, we use vars declared in this document, if any.
-		// this is the first render
-		rendered, err := c.RenderDocumentBytes(doc, pongoContext)
+		err := c.ParseSingleDocumentBytes(doc)
 		if err != nil {
-			return errors.Wrap(err, "can't render template with previous documents' vars")
+			return errors.Wrap(err, "error when parsing one of the documents")
+		}
+	}
+	return nil
+}
+
+func (c *YAMLConfig) ParseSingleDocumentBytes(doc []byte) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	pongoContext := pongo2.Context{
+		"vars": c.vars,
+		"envs": util.EnvAsMap(),
+	}
+	// we render the template twice, first time we use vars from previous documents and environment variables
+	// second time, we use vars declared in this document, if any.
+	// this is the first render
+	rendered, err := c.RenderDocumentBytes(doc, pongoContext)
+	if err != nil {
+		return errors.Wrap(err, "can't render template with previous documents' vars")
+	}
+
+	// TODO: need special flag/tag for this logging
+	fmt.Printf("01-before\n%s", doc)
+	fmt.Printf("01-after\n%s", rendered)
+
+	tmpData := make(map[string]interface{})
+	err = yaml.Unmarshal(rendered, &tmpData)
+	if err != nil {
+		return errors.Wrap(err, "can't parse rendered template yaml to map[string]interface{} after first render")
+	}
+
+	// preserve the vars
+	if varsInCurrentDocument, hasVars := tmpData["vars"]; hasVars {
+		// NOTE: it's map[interface{}]interface{} instead of map[string]interface{}
+		// because how go-yaml handle the decoding
+		varsI, ok := varsInCurrentDocument.(map[interface{}]interface{})
+		if !ok {
+			// TODO: test this, it seems if ok == false, then go-yaml should return already, which means ok should always be true?
+			return errors.Errorf("unable to cast %s to map[interface{}]interface{}", reflect.TypeOf(varsInCurrentDocument))
+		}
+		vars := cast.ToStringMap(varsI)
+		util.MergeStringMap(c.vars, vars)
+
+		// render again using vars in current document
+		// NOTE: we don't need to assign c.vars to pongoContext again because it stores the reference to the map, not the copy of the map
+		rendered, err = c.RenderDocumentBytes(doc, pongoContext)
+		if err != nil {
+			return errors.Wrap(err, "can't render template with vars in current document")
 		}
 
-		// TODO: need special flag/tag for this logging
-		fmt.Printf("01-before\n%s", doc)
-		fmt.Printf("01-after\n%s", rendered)
+		fmt.Printf("02-before\n%s", doc)
+		fmt.Printf("02-after\n%s", rendered)
 
-		tmpData := make(map[string]interface{})
+		tmpData = make(map[string]interface{})
 		err = yaml.Unmarshal(rendered, &tmpData)
 		if err != nil {
-			return errors.Wrap(err, "can't parse rendered template yaml to map[string]interface{} after first render")
-		}
-		// preserve the vars
-		// TODO: move it to other function
-		if varsInCurrentDocument, hasVars := tmpData["vars"]; hasVars {
-			// NOTE: it's map[interface{}]interface{} instead of map[string]interface{}
-			// because how go-yaml handle the decoding
-			// TODO: use the cast package
-			vars, ok := varsInCurrentDocument.(map[interface{}]interface{})
-			if !ok {
-				// TODO: test this, it seems if ok == false, then go-yaml should return already
-				return errors.Errorf("unable to cast %s to map[interface{}]interface{}", reflect.TypeOf(varsInCurrentDocument))
-			}
-			for k, v := range vars {
-				// TODO: does YAML support non-string as key? if not, this assert is use less
-				k, ok := k.(string)
-				if !ok {
-					// TODO: test this, it seems if ok == false, then go-yaml should return already
-					return errors.Errorf("unable to cast %s to string", reflect.TypeOf(k))
-				}
-				c.vars[k] = v
-			}
-
-			// render again using vars in current document
-			// NOTE: we don't need to assign c.vars to pongoContext again because it stores the reference to the map, not the copy of the map
-			// this is the second render
-			rendered, err = c.RenderDocumentBytes(doc, pongoContext)
-			if err != nil {
-				return errors.Wrap(err, "can't render template with vars in current document")
-			}
-
-			fmt.Printf("02-before\n%s", doc)
-			fmt.Printf("02-after\n%s", rendered)
-
-			tmpData = make(map[string]interface{})
-			err = yaml.Unmarshal(rendered, &tmpData)
-			if err != nil {
-				// TODO: different message with previous error
-				return errors.Wrap(err, "can't parse rendered template yaml to map[string]interface{} after second render")
-			}
-		}
-
-		// put the data into c.data
-		for k, v := range tmpData {
-			c.data[k] = v
+			return errors.Wrap(err, "can't parse rendered template yaml to map[string]interface{} after second render")
 		}
 	}
 
+	// put the data into c.data
+	for k, v := range tmpData {
+		c.data[k] = v
+	}
 	return nil
 }
 
