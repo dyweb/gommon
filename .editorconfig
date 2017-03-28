@@ -9,6 +9,7 @@ end_of_line = lf
 # Set default charset
 [*.{sh,go}]
 charset = utf-8
+indent_style = space
 
 [{.travis.yml}]
 indent_style = space

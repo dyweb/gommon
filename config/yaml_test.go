@@ -70,7 +70,7 @@ func TestYAMLConfig_ParseMultiDocumentBytes(t *testing.T) {
 
 	// NOTE: use space instead of tab, YAML does not support tab
 	// TODO: Add tab check in parser check, and tab inside quote should be allowed
-
+	// WONTFIX: pongo2 render false to False, but Yaml spec support a lot of values http://yaml.org/type/bool.html
 	var sampleUsePreviousVars = `
 vars:
     influxdb_port: 8081
@@ -80,14 +80,17 @@ vars:
 ---
 vars:
     kairosdb_port: 8080
+    ssl: false
 {% for db in vars.databases %}
     {{ db }}:
         name: {{ db }}
+        ssl: {{ vars.ssl }}
 {% endfor %}
 `
 	err := c.ParseMultiDocumentBytes([]byte(sampleUsePreviousVars))
 	assert.Nil(err)
-
+	// TODO: assert the value, need to use the dot syntax like Viper
+	//assert.Equal(c.data)
 	c.clear()
 
 	var sampleUseCurrentVars = `
@@ -97,6 +100,14 @@ bar:
     foo: {{ vars.foo }}
 `
 	err = c.ParseMultiDocumentBytes([]byte(sampleUseCurrentVars))
+	assert.Nil(err)
+
+    // NOTE: I think HOME is set on most machines, at least travis?
+	var sampleUseEnvironmentVars = `
+vars:
+    user: {{ envs.HOME }}
+`
+	err = c.ParseMultiDocumentBytes([]byte(sampleUseEnvironmentVars))
 	assert.Nil(err)
 
 }
