@@ -1,2 +1,3 @@
 package config
 
+var defaultKeyDelimiter = "."

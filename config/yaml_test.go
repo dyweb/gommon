@@ -102,7 +102,7 @@ bar:
 	err = c.ParseMultiDocumentBytes([]byte(sampleUseCurrentVars))
 	assert.Nil(err)
 
-    // NOTE: I think HOME is set on most machines, at least travis?
+	// NOTE: I think HOME is set on most machines, at least travis?
 	var sampleUseEnvironmentVars = `
 vars:
     user: {{ envs.HOME }}

@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"reflect"
 
+	"strings"
+
 	"github.com/dyweb/gommon/util"
 	"github.com/flosch/pongo2"
 	"github.com/pkg/errors"
@@ -15,11 +17,12 @@ import (
 
 // YAMLConfig is a thread safe struct for parse YAML file and get value
 type YAMLConfig struct {
-	vars   map[string]interface{}
-	data   map[string]interface{}
-	mu     sync.RWMutex // TODO: may use RWMutex
-	loader pongo2.TemplateLoader
-	set    *pongo2.TemplateSet
+	vars         map[string]interface{}
+	data         map[string]interface{}
+	keyDelimiter string
+	mu           sync.RWMutex // TODO: may use RWMutex
+	loader       pongo2.TemplateLoader
+	set          *pongo2.TemplateSet
 }
 
 // SplitMultiDocument splits a yaml file that contains multiple documents and
@@ -36,14 +39,15 @@ func SplitMultiDocument(data []byte) [][]byte {
 // NewYAMLConfig returns a config with internal map structure initialized
 func NewYAMLConfig() *YAMLConfig {
 	c := new(YAMLConfig)
-	c.vars = make(map[string]interface{})
-	c.data = make(map[string]interface{})
+	c.clear()
+	c.keyDelimiter = defaultKeyDelimiter
 	c.loader = pongo2.MustNewLocalFileSystemLoader("")
 	c.set = pongo2.NewSet("gommon-yaml", c.loader)
 	return c
 }
 
 // clear is used by test for using one config object for several tests
+// and is also used by constructor
 func (c *YAMLConfig) clear() {
 	c.vars = make(map[string]interface{})
 	c.data = make(map[string]interface{})
@@ -58,7 +62,7 @@ func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 	for _, doc := range docs {
 		pongoContext := pongo2.Context{
 			"vars": c.vars,
-			"envs":  util.EnvAsMap(),
+			"envs": util.EnvAsMap(),
 		}
 		// we render the template twice, first time we use vars from previous documents and environment variables
 		// second time, we use vars declared in this document, if any.
@@ -67,9 +71,11 @@ func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 		if err != nil {
 			return errors.Wrap(err, "can't render template with previous documents' vars")
 		}
+
 		// TODO: need special flag/tag for this logging
 		fmt.Printf("01-before\n%s", doc)
 		fmt.Printf("01-after\n%s", rendered)
+
 		tmpData := make(map[string]interface{})
 		err = yaml.Unmarshal(rendered, &tmpData)
 		if err != nil {
@@ -80,6 +86,7 @@ func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 		if varsInCurrentDocument, hasVars := tmpData["vars"]; hasVars {
 			// NOTE: it's map[interface{}]interface{} instead of map[string]interface{}
 			// because how go-yaml handle the decoding
+			// TODO: use the cast package
 			vars, ok := varsInCurrentDocument.(map[interface{}]interface{})
 			if !ok {
 				// TODO: test this, it seems if ok == false, then go-yaml should return already
@@ -102,9 +109,11 @@ func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 			if err != nil {
 				return errors.Wrap(err, "can't render template with vars in current document")
 			}
-			tmpData = make(map[string]interface{})
+
 			fmt.Printf("02-before\n%s", doc)
 			fmt.Printf("02-after\n%s", rendered)
+
+			tmpData = make(map[string]interface{})
 			err = yaml.Unmarshal(rendered, &tmpData)
 			if err != nil {
 				// TODO: different message with previous error
@@ -117,6 +126,23 @@ func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 			c.data[k] = v
 		}
 	}
+
+	return nil
+}
+
+func (c *YAMLConfig) Get(key string) interface{} {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	path := strings.Split(key, c.keyDelimiter)
+	searchMap(c.data, path[0])
+	// look up by each segments, need to do the cast I think, don't know if I should
+	// use spf13 cast or write my own cast function
+	return nil
+}
+
+func searchMap(src map[string]interface{}, key string) interface{} {
+	// TODO: map[string]?
 	return nil
 }
 
