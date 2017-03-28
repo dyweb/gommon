@@ -7,16 +7,17 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/dyweb/gommon/util"
 	"github.com/flosch/pongo2"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 )
 
-// YAMLConfig is a thread safe strcut for parse YAML file and get value
+// YAMLConfig is a thread safe struct for parse YAML file and get value
 type YAMLConfig struct {
 	vars   map[string]interface{}
 	data   map[string]interface{}
-	mu     sync.Mutex // TODO: may use RWMutex
+	mu     sync.RWMutex // TODO: may use RWMutex
 	loader pongo2.TemplateLoader
 	set    *pongo2.TemplateSet
 }
@@ -48,18 +49,6 @@ func (c *YAMLConfig) clear() {
 	c.data = make(map[string]interface{})
 }
 
-// Parse is a thread safe wrapper for yaml.Unmarshal and only support single document
-// TODO: this should be legacy method and itself and its test should be removed
-func (c *YAMLConfig) Parse(data []byte) error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	err := yaml.Unmarshal(data, &c.data)
-	if err != nil {
-		return errors.Wrap(err, "can't parse yaml to map[string]interface{}")
-	}
-	return nil
-}
-
 func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -68,11 +57,16 @@ func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 	docs := SplitMultiDocument(data)
 	for _, doc := range docs {
 		// TODO: pass environment variables
+		pongoContext := pongo2.Context{
+			"vars": c.vars,
+			"env":  util.EnvAsMap(),
+		}
 		// TODO: explain the render twice logical for using vars in current document
-		rendered, err := c.RenderDocumentBytes(doc, pongo2.Context{"vars": c.vars})
+		rendered, err := c.RenderDocumentBytes(doc, pongoContext)
 		if err != nil {
 			return errors.Wrap(err, "can't render template to yaml")
 		}
+		// TODO: need special flag/tag for this logging
 		fmt.Printf("01-before\n%s", doc)
 		fmt.Printf("01-after\n%s", rendered)
 		tmpData := make(map[string]interface{})
@@ -81,14 +75,14 @@ func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 			return errors.Wrap(err, "can't parse rendered template yaml to map[string]interface{}")
 		}
 		// preserve the vars
-		// TODO: rename to varsInCurrentDocument, hasVarsInCurrentDocument
 		// TODO: move it to other function
-		if varsRaw, ok := tmpData["vars"]; ok {
+		if varsInCurrentDocument, hasVars := tmpData["vars"]; hasVars {
 			// NOTE: it's map[interface{}]interface{} instead of map[string]interface{}
-			vars, ok := varsRaw.(map[interface{}]interface{})
+			vars, ok := varsInCurrentDocument.(map[interface{}]interface{})
 			if !ok {
 				// TODO: test this
-				return errors.Errorf("unable to cast %s to map[string]interface{}", reflect.TypeOf(varsRaw))
+				// FIXME: why the log is map[string]interface{} while the cast is map[interface{}]interface{}
+				return errors.Errorf("unable to cast %s to map[string]interface{}", reflect.TypeOf(varsInCurrentDocument))
 			}
 			for k, v := range vars {
 				// TODO: does YAML support non-string as key? if not, this assert is use less
@@ -103,7 +97,9 @@ func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 		// render again using vars in current document
 		// TODO: if this document has no vars, then this render is not needed
 		// TODO: use doc or previous render result
-		rendered, err = c.RenderDocumentBytes(doc, pongo2.Context{"vars": c.vars})
+		// NOTE: we don't need to assign c.vars to pongoContext again because it stores the reference to the map, not
+		// the copy of the map
+		rendered, err = c.RenderDocumentBytes(doc, pongoContext)
 		if err != nil {
 			return errors.Wrap(err, "can't render template with vars in current document")
 		}

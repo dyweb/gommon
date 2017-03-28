@@ -15,7 +15,7 @@ b:
   d: [3, 4]
 `
 	c := NewYAMLConfig()
-	err := c.Parse([]byte(dat))
+	err := c.ParseMultiDocumentBytes([]byte(dat))
 	assert.Nil(err)
 
 	// NOTE： this is invalid yaml because when you use ` syntax to declare long string in Golang,
@@ -28,7 +28,7 @@ b:
 	`
 	// the print should show you the string has indent you may not be expecting
 	log.Print(invalidDat)
-	err = c.Parse([]byte(invalidDat))
+	err = c.ParseMultiDocumentBytes([]byte(invalidDat))
 	assert.NotNil(err)
 }
 
