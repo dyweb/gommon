@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/dyweb/gommon/util"
 	asst "github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -110,4 +111,46 @@ vars:
 	err = c.ParseMultiDocumentBytes([]byte(sampleUseEnvironmentVars))
 	assert.Nil(err)
 
+}
+
+func TestYAMLConfig_Get(t *testing.T) {
+	assert := asst.New(t)
+	var sampleUsePreviousVars = `
+vars:
+    influxdb_port: 8081
+    databases:
+        - influxdb
+        - kairosdb
+---
+vars:
+    kairosdb_port: 8080
+    ssl: false
+{% for db in vars.databases %}
+    {{ db }}:
+        name: {{ db }}
+        ssl: {{ vars.ssl }}
+{% endfor %}
+`
+	c := NewYAMLConfig()
+	err := c.ParseMultiDocumentBytes([]byte(sampleUsePreviousVars))
+	assert.Nil(err)
+	util.UseVerboseLog()
+	// FIXME: the data and vars should be merged into one object
+	log.Debug(c.data)
+	log.Debug(c.vars)
+	//assert.Equal(8081, c.Get("vars.influxdb_port"))
+}
+
+func TestSearchMap(t *testing.T) {
+	assert := asst.New(t)
+	var m = make(map[string]interface{})
+	var m2 = make(map[string]interface{})
+	m["xephonk"] = m2
+	m2["name"] = "xephonk"
+	m2["port"] = 8080
+	val, err := searchMap(m, []string{"xephonk", "name"})
+	assert.Nil(err)
+	assert.Equal("xephonk", val)
+	_, err = searchMap(m, []string{"xephonk", "bar"})
+	assert.NotNil(err)
 }

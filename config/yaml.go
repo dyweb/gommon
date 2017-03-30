@@ -133,15 +133,53 @@ func (c *YAMLConfig) Get(key string) interface{} {
 	defer c.mu.RUnlock()
 
 	path := strings.Split(key, c.keyDelimiter)
-	searchMap(c.data, path[0])
-	// look up by each segments, need to do the cast I think, don't know if I should
-	// use spf13 cast or write my own cast function
-	return nil
+	val, err := searchMap(c.data, path)
+	if err != nil {
+		log.Debugf("can't get key %s due to %s", key, err.Error())
+		return nil
+	}
+
+	return val
 }
 
-func searchMap(src map[string]interface{}, key string) interface{} {
-	// TODO: map[string]?
-	return nil
+func searchMap(src map[string]interface{}, path []string) (interface{}, error) {
+	var result interface{}
+	if len(path) == 0 {
+		return result, errors.New("path is empty, at least provide one segment")
+	}
+	result = src
+	for i := 0; i < len(path); i++ {
+		key := path[i]
+		log.Debug(key)
+		log.Debug(result)
+		//m, ok := result.(map[string]interface{})
+		//m, ok := result.(map[interface{}]interface{})
+		//if !ok {
+		//	m, ok = result.(map[string]interface{})
+		//}
+		//if !ok {
+		//	// TODO: point out where did we go wrong
+		//	return result, errors.Errorf("%v is not a map but %v", result, reflect.TypeOf(result))
+		//}
+
+		if reflect.TypeOf(result).Kind() != reflect.Map {
+			return nil, errors.Errorf("%v is not a map but %v", result, reflect.TypeOf(result))
+		}
+		m, ok := result.(map[string]interface{})
+		if !ok {
+			m = cast.ToStringMap(result.(map[interface{}]interface{}))
+		}
+		// FIXED: this is a tricky problem, if you use `:` here, you create a new local variable instead update the one
+		// outside the loop
+		//result, ok := m[key]
+		result, ok = m[key]
+		if !ok {
+			return result, errors.Errorf("key: %s does not exists in %v", key, m)
+		}
+		log.Debug(result)
+
+	}
+	return result, nil
 }
 
 // TODO: this is quite duplicate with code in pongo2.go, but I think struct methods

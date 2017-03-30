@@ -2,7 +2,7 @@ package runner
 
 // Context describes how the command should be run
 // i.e. use shell instead of using os/exec,
-// use self defined logic instead of lookup an exectuable
+// use self defined logic instead of lookup an executable
 // run in background
 type Context struct {
 	AutoShell  bool
