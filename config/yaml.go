@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"sync"
 
-	"fmt"
 	"reflect"
 
 	"strings"
@@ -82,9 +81,8 @@ func (c *YAMLConfig) ParseSingleDocumentBytes(doc []byte) error {
 		return errors.Wrap(err, "can't render template with previous documents' vars")
 	}
 
-	// TODO: need special flag/tag for this logging
-	fmt.Printf("01-before\n%s", doc)
-	fmt.Printf("01-after\n%s", rendered)
+	log.Debugf("01-before\n%s", doc)
+	log.Debugf("01-after\n%s", rendered)
 
 	tmpData := make(map[string]interface{})
 	err = yaml.Unmarshal(rendered, &tmpData)
@@ -111,8 +109,8 @@ func (c *YAMLConfig) ParseSingleDocumentBytes(doc []byte) error {
 			return errors.Wrap(err, "can't render template with vars in current document")
 		}
 
-		fmt.Printf("02-before\n%s", doc)
-		fmt.Printf("02-after\n%s", rendered)
+		log.Debugf("02-before\n%s", doc)
+		log.Debugf("02-after\n%s", rendered)
 
 		tmpData = make(map[string]interface{})
 		err = yaml.Unmarshal(rendered, &tmpData)
@@ -125,6 +123,8 @@ func (c *YAMLConfig) ParseSingleDocumentBytes(doc []byte) error {
 	for k, v := range tmpData {
 		c.data[k] = v
 	}
+	// NOTE: vars are merged instead of overwritten like other top level keys
+	c.data["vars"] = c.vars
 	return nil
 }
 
@@ -148,36 +148,27 @@ func searchMap(src map[string]interface{}, path []string) (interface{}, error) {
 		return result, errors.New("path is empty, at least provide one segment")
 	}
 	result = src
+	previousPath := ""
 	for i := 0; i < len(path); i++ {
 		key := path[i]
-		log.Debug(key)
-		log.Debug(result)
-		//m, ok := result.(map[string]interface{})
-		//m, ok := result.(map[interface{}]interface{})
-		//if !ok {
-		//	m, ok = result.(map[string]interface{})
-		//}
-		//if !ok {
-		//	// TODO: point out where did we go wrong
-		//	return result, errors.Errorf("%v is not a map but %v", result, reflect.TypeOf(result))
-		//}
-
+		//log.Debug(key)
+		//log.Debug(result)
 		if reflect.TypeOf(result).Kind() != reflect.Map {
-			return nil, errors.Errorf("%v is not a map but %v", result, reflect.TypeOf(result))
+			return nil, errors.Errorf("%s is not a map but %s, %v", previousPath, reflect.TypeOf(result), result)
 		}
 		m, ok := result.(map[string]interface{})
 		if !ok {
 			m = cast.ToStringMap(result.(map[interface{}]interface{}))
 		}
 		// FIXED: this is a tricky problem, if you use `:` here, you create a new local variable instead update the one
-		// outside the loop
+		// outside the loop, that's all the Debug(result) for
 		//result, ok := m[key]
 		result, ok = m[key]
 		if !ok {
-			return result, errors.Errorf("key: %s does not exists in %v", key, m)
+			return result, errors.Errorf("key: %s does not exists in path: %s, val: %v", key, previousPath, m)
 		}
-		log.Debug(result)
-
+		//log.Debug(result)
+		previousPath += key
 	}
 	return result, nil
 }

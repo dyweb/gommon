@@ -115,12 +115,14 @@ vars:
 
 func TestYAMLConfig_Get(t *testing.T) {
 	assert := asst.New(t)
+	// TODO: reuse the samples instead of copy and paste
 	var sampleUsePreviousVars = `
 vars:
     influxdb_port: 8081
     databases:
         - influxdb
         - kairosdb
+foo: 1
 ---
 vars:
     kairosdb_port: 8080
@@ -130,15 +132,17 @@ vars:
         name: {{ db }}
         ssl: {{ vars.ssl }}
 {% endfor %}
+foo: 2
 `
 	c := NewYAMLConfig()
 	err := c.ParseMultiDocumentBytes([]byte(sampleUsePreviousVars))
 	assert.Nil(err)
 	util.UseVerboseLog()
-	// FIXME: the data and vars should be merged into one object
-	log.Debug(c.data)
-	log.Debug(c.vars)
-	//assert.Equal(8081, c.Get("vars.influxdb_port"))
+	assert.Equal(8081, c.Get("vars.influxdb_port"))
+	assert.Equal(nil, c.Get("vars.that_does_not_exists"))
+	// NOTE: top level keys other than vars are overwritten instead of merged
+	assert.Equal(2, c.Get("foo"))
+	util.DisableVerboseLog()
 }
 
 func TestSearchMap(t *testing.T) {

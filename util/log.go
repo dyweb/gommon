@@ -22,3 +22,9 @@ func UseVerboseLog() {
 	Logger.Level = dlog.DebugLevel
 	log.Debug("enable debug logging")
 }
+
+
+func DisableVerboseLog() {
+	Logger.Level = dlog.InfoLevel
+	log.Info("disable debug logging")
+}
