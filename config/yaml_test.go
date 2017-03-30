@@ -6,6 +6,25 @@ import (
 	"testing"
 )
 
+var sampleMultiDoc = `
+vars:
+    influxdb_port: 8081
+    databases:
+        - influxdb
+        - kairosdb
+foo: 1
+---
+vars:
+    kairosdb_port: 8080
+    ssl: false
+{% for db in vars.databases %}
+    {{ db }}:
+        name: {{ db }}
+        ssl: {{ vars.ssl }}
+{% endfor %}
+foo: 2
+`
+
 func TestYAMLConfig_Parse(t *testing.T) {
 	assert := asst.New(t)
 	var dat = `
@@ -102,6 +121,7 @@ bar:
 `
 	err = c.ParseMultiDocumentBytes([]byte(sampleUseCurrentVars))
 	assert.Nil(err)
+	c.clear()
 
 	// NOTE: I think HOME is set on most machines, at least travis?
 	var sampleUseEnvironmentVars = `
@@ -115,27 +135,8 @@ vars:
 
 func TestYAMLConfig_Get(t *testing.T) {
 	assert := asst.New(t)
-	// TODO: reuse the samples instead of copy and paste
-	var sampleUsePreviousVars = `
-vars:
-    influxdb_port: 8081
-    databases:
-        - influxdb
-        - kairosdb
-foo: 1
----
-vars:
-    kairosdb_port: 8080
-    ssl: false
-{% for db in vars.databases %}
-    {{ db }}:
-        name: {{ db }}
-        ssl: {{ vars.ssl }}
-{% endfor %}
-foo: 2
-`
 	c := NewYAMLConfig()
-	err := c.ParseMultiDocumentBytes([]byte(sampleUsePreviousVars))
+	err := c.ParseMultiDocumentBytes([]byte(sampleMultiDoc))
 	assert.Nil(err)
 	util.UseVerboseLog()
 	assert.Equal(8081, c.Get("vars.influxdb_port"))
@@ -143,6 +144,23 @@ foo: 2
 	// NOTE: top level keys other than vars are overwritten instead of merged
 	assert.Equal(2, c.Get("foo"))
 	util.DisableVerboseLog()
+}
+
+func TestYAMLConfig_GetOrFail(t *testing.T) {
+	assert := asst.New(t)
+	c := NewYAMLConfig()
+	err := c.ParseMultiDocumentBytes([]byte(sampleMultiDoc))
+	assert.Nil(err)
+	_, err = c.GetOrFail("vars.oh_lala")
+	assert.NotNil(err)
+}
+
+func TestYAMLConfig_GetOrDefault(t *testing.T) {
+	assert := asst.New(t)
+	c := NewYAMLConfig()
+	err := c.ParseMultiDocumentBytes([]byte(sampleMultiDoc))
+	assert.Nil(err)
+	assert.Equal("lalala", c.GetOrDefault("vars.oh_lala", "lalala"))
 }
 
 func TestSearchMap(t *testing.T) {

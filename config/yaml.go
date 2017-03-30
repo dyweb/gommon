@@ -129,17 +129,32 @@ func (c *YAMLConfig) ParseSingleDocumentBytes(doc []byte) error {
 }
 
 func (c *YAMLConfig) Get(key string) interface{} {
+	val, err := c.GetOrFail(key)
+	if err != nil {
+		log.Debugf("can't get key %s due to %s", key, err.Error())
+	}
+	return val
+}
+
+func (c *YAMLConfig) GetOrDefault(key string, defaultVal interface{}) interface{} {
+	val, err := c.GetOrFail(key)
+	if err != nil {
+		log.Debugf("use default %v for key %s due to %s", defaultVal, key, err.Error())
+		return defaultVal
+	}
+	return val
+}
+
+func (c *YAMLConfig) GetOrFail(key string) (interface{}, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
 	path := strings.Split(key, c.keyDelimiter)
 	val, err := searchMap(c.data, path)
 	if err != nil {
-		log.Debugf("can't get key %s due to %s", key, err.Error())
-		return nil
+		return nil, err
 	}
-
-	return val
+	return val, nil
 }
 
 func searchMap(src map[string]interface{}, path []string) (interface{}, error) {
