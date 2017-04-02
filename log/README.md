@@ -2,6 +2,14 @@
 
 This a simple re-implementation of [logrus](https://github.com/sirupsen/logrus)
 
+## Development
+
+Generated code 
+
+- https://github.com/benbjohnson/tmpl saw it from InfluxDB, plan to put this in Ayi, or use pongo
+  - `go get github.com/benbjohnson/tmpl`
+  - `tmpl -data '["Trace", "Debug", "Info", "Warn", "Error"]' entry_generated.go.tmpl`
+
 ## Added
 
 - `Filter` and `PkgFilter`

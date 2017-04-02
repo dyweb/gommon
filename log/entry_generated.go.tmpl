@@ -1,0 +1,19 @@
+package log
+
+import (
+    "fmt"
+)
+
+{{ range .}}
+func (entry *Entry) {{.}}(args ...interface{}) {
+	if entry.Logger.Level >= {{.}}Level {
+		entry.log({{.}}Level, fmt.Sprint(args...))
+	}
+}
+
+func (entry *Entry) {{.}}f(format string, args ...interface{}) {
+	if entry.Logger.Level >= {{.}}Level {
+		entry.log({{.}}Level, fmt.Sprintf(format, args...))
+	}
+}
+{{ end }}
