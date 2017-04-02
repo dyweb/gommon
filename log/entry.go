@@ -3,6 +3,8 @@ package log
 import (
 	"fmt"
 	"os"
+	"runtime"
+	"strings"
 	"time"
 )
 
@@ -41,6 +43,20 @@ func (entry Entry) log(level Level, msg string) bool {
 			return false
 		}
 	}
+	// add source code line if required
+	if entry.Logger.showSourceLine {
+		// TODO: what if the user also have tag called source
+		_, file, line, ok := runtime.Caller(2)
+		if !ok {
+			file = "<?>"
+			line = 1
+		} else {
+			lastSlash := strings.LastIndex(file, "/")
+			file = file[lastSlash+1:]
+		}
+		entry.AddField("source", fmt.Sprintf("%s:%d", file, line))
+	}
+
 	serialized, err := entry.Logger.Formatter.Format(&entry)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to serialize, %v\n", err)

@@ -11,6 +11,7 @@ func TestEntry_log(t *testing.T) {
 
 }
 
+// TODO: split this test
 func TestEntry_LeveledLog(t *testing.T) {
 	logger := NewLogger()
 	f := NewTextFormatter()
@@ -40,4 +41,10 @@ func TestEntry_LeveledLog(t *testing.T) {
 	entry3 := logger3.NewEntry()
 	entry3.Info("I should have no timestamp")
 	entry3.Debug("You should see me!")
+
+	// source code line
+	logger4 := NewLogger()
+	logger4.EnableSourceLine()
+	entry4 := logger4.NewEntry()
+	entry4.Info("show me source")
 }

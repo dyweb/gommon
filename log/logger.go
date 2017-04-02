@@ -85,11 +85,12 @@ type Fields map[string]string
 
 // Logger is used to set output, formatter and filters, the real log is using Entry
 type Logger struct {
-	Out       io.Writer
-	Formatter Formatter
-	Level     Level
-	mu        sync.Mutex
-	Filters   map[Level]map[string]Filter
+	Out            io.Writer
+	Formatter      Formatter
+	Level          Level
+	mu             sync.Mutex // FIXME: this mutex is never used, I guess I was following logrus when I wrote this
+	showSourceLine bool
+	Filters        map[Level]map[string]Filter
 }
 
 // NewLogger returns a new logger using StdOut and InfoLevel
@@ -99,12 +100,21 @@ func NewLogger() *Logger {
 		f[level] = make(map[string]Filter, 1)
 	}
 	l := &Logger{
-		Out:       os.Stdout,
-		Formatter: NewTextFormatter(),
-		Level:     InfoLevel,
-		Filters:   f,
+		Out:            os.Stdout,
+		Formatter:      NewTextFormatter(),
+		Level:          InfoLevel,
+		Filters:        f,
+		showSourceLine: false,
 	}
 	return l
+}
+
+func (log *Logger) EnableSourceLine() {
+	log.showSourceLine = true
+}
+
+func (log *Logger) DisableSourceLine() {
+	log.showSourceLine = false
 }
 
 // AddFilter add a filter to logger, the filter should be simple string check on fields, i.e. PkgFilter check pkg field
