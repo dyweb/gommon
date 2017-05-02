@@ -6,3 +6,7 @@ scripts:
   fmt:
     - gofmt -d -l -w ./config ./log ./requests ./runner ./structure
     - git status
+  doc:
+    - xdg-open http://localhost:6060/pkg/github.com/dyweb/gommon
+    # NOTE: should start godoc first and then run xdg-open, but currently Ayi can't run command in parallel or background
+    - godoc -http=":6060"

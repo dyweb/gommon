@@ -10,6 +10,7 @@ and aims to provide a consistent and up to date API for building cli tools and s
 It has the following components:
 
 - [Command runner](runner) A processes manager for both short and long running processes.
+- [Cast](cast) Convert Golang types
 - [Data structure](structure) Bring Set etc. to Golang.
 - [Log](log) A log4j style logger, support filtering by package, custom filters etc.
 - [Requests](requests) A pythonic wrapper for `net/http`, HTTP for Gopher.
@@ -23,7 +24,7 @@ It has the following components:
 - install [glide](https://github.com/Masterminds/glide)
 - run `Ayi dep-install` or `glide install` to install dependencies.
 - run `Ayi test` for test.
-- run `godoc -http=":6060"` to view godoc locally.
+- run `Ayi run doc` to view godoc locally, you need to refresh browser and this only works on Linux with `xdg-open`
 
 ### Roadmap
 
@@ -43,4 +44,5 @@ Gommon is inspired and in some sense a simplified and unified version of the fol
 - [Viper](https://github.com/spf13/viper/)
 - [Requests](http://docs.python-requests.org/en/master/)
 
-The name Gommon is suggested by [@arrowrowe](https://github.com/arrowrowe)
+The name Gommon is suggested by [@arrowrowe](https://github.com/arrowrowe). The original blog post can be found [here](http://blog.dongyueweb.com/ayi.html)
+Thanks all the fellows in [@dyweb](https://github.com/dyweb) for their support (无私的播撒狗粮).
