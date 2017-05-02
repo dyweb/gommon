@@ -7,10 +7,25 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
+	"bytes"
+	"io"
+	"strings"
 )
 
-func Get(url string) (*Response, error) {
-	res, err := http.Get(url)
+const (
+	ContentJSON = "application/json"
+)
+
+func makeRequest(method string, url string, body io.Reader) (*Response, error) {
+	var res *http.Response
+	var err error
+	switch method {
+	case http.MethodGet:
+		res, err = http.Get(url)
+	case http.MethodPost:
+		// TODO: we only support JSON for now
+		res, err = http.Post(url, ContentJSON, body)
+	}
 	response := &Response{}
 	if err != nil {
 		return response, errors.Wrap(err, "error making request")
@@ -25,13 +40,37 @@ func Get(url string) (*Response, error) {
 	return response, nil
 }
 
-func GetJSON(url string) (map[string]string, error) {
+func Get(url string) (*Response, error) {
+	return makeRequest(http.MethodGet, url, nil)
+}
+
+func PostJSONString(url string, data string) (*Response, error) {
+	return makeRequest(http.MethodPost, url, ioutil.NopCloser(strings.NewReader(data)))
+}
+
+func PostJSONBytes(url string, data []byte) (*Response, error) {
+	return makeRequest(http.MethodPost, url, ioutil.NopCloser(bytes.NewReader(data)))
+}
+
+func GetJSON(url string, data interface{}) error {
+	res, err := Get(url)
+	if err != nil {
+		return errors.Wrap(err, "error getting response")
+	}
+	err = res.JSON(data)
+	if err != nil {
+		return errors.Wrap(err, "error parsing json")
+	}
+	return nil
+}
+
+func GetJSONStringMap(url string) (map[string]string, error) {
 	var data map[string]string
 	res, err := Get(url)
 	if err != nil {
 		return data, errors.Wrap(err, "error getting response")
 	}
-	data, err = res.JSON()
+	data, err = res.JSONStringMap()
 	if err != nil {
 		return data, errors.Wrap(err, "error parsing json")
 	}

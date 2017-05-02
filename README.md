@@ -41,5 +41,6 @@ Gommon is inspired and in some sense a simplified and unified version of the fol
 - [logrus](https://github.com/sirupsen/logrus)
 - [Cast](https://github.com/spf13/cast)
 - [Viper](https://github.com/spf13/viper/)
+- [Requests](http://docs.python-requests.org/en/master/)
 
 The name Gommon is suggested by [@arrowrowe](https://github.com/arrowrowe)
