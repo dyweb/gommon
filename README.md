@@ -3,6 +3,7 @@
 [![GoDoc](https://godoc.org/github.com/dyweb/gommon?status.svg)](https://godoc.org/github.com/dyweb/gommon)
 [![Build Status](https://travis-ci.org/dyweb/gommon.svg?branch=master)](https://travis-ci.org/dyweb/gommon)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dyweb/gommon)](https://goreportcard.com/report/github.com/dyweb/gommon)
+[![codebeat badge](https://codebeat.co/badges/8d42a846-f1dc-4a6b-8bd9-5862726ed35d)](https://codebeat.co/projects/github-com-dyweb-gommon-master)
 
 Gommon is a collection of common util libraries that was originally designed for [Ayi](https://github.com/dyweb/Ayi),
 and aims to provide a consistent and up to date API for building cli tools and server applications.
@@ -44,5 +45,6 @@ Gommon is inspired and in some sense a simplified and unified version of the fol
 - [Viper](https://github.com/spf13/viper/)
 - [Requests](http://docs.python-requests.org/en/master/)
 
-The name Gommon is suggested by [@arrowrowe](https://github.com/arrowrowe). The original blog post can be found [here](http://blog.dongyueweb.com/ayi.html)
-Thanks all the fellows in [@dyweb](https://github.com/dyweb) for their support (无私的播撒狗粮).
+The name Gommon is suggested by [@arrowrowe](https://github.com/arrowrowe).
+The original blog post can be found [here](http://blog.dongyueweb.com/ayi.html).
+Thanks all the fellows in [@dyweb](https://github.com/dyweb) for their support.
