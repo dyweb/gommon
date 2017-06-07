@@ -15,6 +15,7 @@ type PkgFilter struct {
 	allow st.Set
 }
 
+// Filter checks if the pkg field is in the white list
 func (filter *PkgFilter) Filter(entry *Entry) bool {
 	pkg, ok := entry.Fields["pkg"]
 	// entry without pkg is not filtered
@@ -24,10 +25,12 @@ func (filter *PkgFilter) Filter(entry *Entry) bool {
 	return filter.allow.Contains(pkg)
 }
 
+// Name implements Filter interface
 func (filter *PkgFilter) Name() string {
 	return "PkgFilter"
 }
 
+// NewPkgFilter returns a filter that allow log that contains `pkg` filed in the allow set
 func NewPkgFilter(allow st.Set) *PkgFilter {
 	return &PkgFilter{
 		allow: allow,

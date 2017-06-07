@@ -4,6 +4,10 @@ import (
 	"io"
 	"os"
 	"sync"
+
+	"strings"
+
+	"github.com/pkg/errors"
 )
 
 // Level is log level
@@ -53,7 +57,7 @@ func (level Level) String() string {
 	case FatalLevel:
 		return "fatal"
 	case PanicLevel:
-		return "painc"
+		return "panic"
 	case ErrorLevel:
 		return "error"
 	case WarnLevel:
@@ -66,6 +70,49 @@ func (level Level) String() string {
 		return "trace"
 	default:
 		return "unknown"
+	}
+}
+
+// ParseLevel match the level string with Level, it will use strings.HasPrefix in non strict mode
+func ParseLevel(s string, strict bool) (Level, error) {
+	str := strings.ToLower(s)
+	if strict {
+		switch str {
+		case "fatal":
+			return FatalLevel, nil
+		case "panic":
+			return PanicLevel, nil
+		case "error":
+			return ErrorLevel, nil
+		case "warn":
+			return WarnLevel, nil
+		case "info":
+			return InfoLevel, nil
+		case "debug":
+			return DebugLevel, nil
+		case "trace":
+			return TraceLevel, nil
+		default:
+			return Level(250), errors.Errorf("unknown log level %s", str)
+		}
+	}
+	switch {
+	case strings.HasPrefix(str, "f"):
+		return FatalLevel, nil
+	case strings.HasPrefix(str, "p"):
+		return PanicLevel, nil
+	case strings.HasPrefix(str, "e"):
+		return ErrorLevel, nil
+	case strings.HasPrefix(str, "w"):
+		return WarnLevel, nil
+	case strings.HasPrefix(str, "i"):
+		return InfoLevel, nil
+	case strings.HasPrefix(str, "d"):
+		return DebugLevel, nil
+	case strings.HasPrefix(str, "t"):
+		return TraceLevel, nil
+	default:
+		return Level(250), errors.Errorf("unknown log level %s", str)
 	}
 }
 
@@ -109,10 +156,12 @@ func NewLogger() *Logger {
 	return l
 }
 
+// EnableSourceLine add `source` field when logging, it use runtime.Caller(), the overhead has not been measured
 func (log *Logger) EnableSourceLine() {
 	log.showSourceLine = true
 }
 
+// DisableSourceLine does not show `source` field
 func (log *Logger) DisableSourceLine() {
 	log.showSourceLine = false
 }
