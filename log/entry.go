@@ -79,7 +79,7 @@ func (entry *Entry) Panic(args ...interface{}) {
 
 func (entry *Entry) Fatal(args ...interface{}) {
 	if entry.Logger.Level >= FatalLevel {
-		entry.log(PanicLevel, fmt.Sprint(args...))
+		entry.log(FatalLevel, fmt.Sprint(args...))
 	}
 	// TODO: allow register handlers like logrus
 	os.Exit(1)
