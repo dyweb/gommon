@@ -1,29 +1,10 @@
 package config
 
 import (
-	//"github.com/dyweb/gommon/util"
+	"github.com/dyweb/gommon/util"
 	asst "github.com/stretchr/testify/assert"
 	"testing"
 )
-
-var sampleMultiDoc = `
-vars:
-    influxdb_port: 8081
-    databases:
-        - influxdb
-        - kairosdb
-foo: 1
----
-vars:
-    kairosdb_port: 8080
-    ssl: false
-{% for db in vars.databases %}
-    {{ db }}:
-        name: {{ db }}
-        ssl: {{ vars.ssl }}
-{% endfor %}
-foo: 2
-`
 
 func TestYAMLConfig_ParseWithoutTemplate(t *testing.T) {
 	assert := asst.New(t)
@@ -34,7 +15,7 @@ b:
   d: [3, 4]
 `
 	c := NewYAMLConfig()
-	err := c.ParseMultiDocumentBytes([]byte(dat))
+	err := c.ParseMultiDocument([]byte(dat))
 	assert.Nil(err)
 
 	// NOTE： this is invalid yaml because when you use ` syntax to declare long string in Golang,
@@ -47,7 +28,7 @@ b:
 	`
 	// the print should show you the string has indent you may not be expecting
 	//log.Print(invalidDat)
-	err = c.ParseMultiDocumentBytes([]byte(invalidDat))
+	err = c.ParseMultiDocument([]byte(invalidDat))
 	assert.NotNil(err)
 	//log.Print(err.Error())
 }
@@ -84,59 +65,51 @@ action: grand slam
 	assert.Equal(2, len(documents))
 }
 
-//func TestYAMLConfig_ParseMultiDocumentBytes(t *testing.T) {
-//	assert := asst.New(t)
-//	c := NewYAMLConfig()
-//
-//	// NOTE: use space instead of tab, YAML does not support tab
-//	// TODO: Add tab check in parser check, and tab inside quote should be allowed
-//	// WONTFIX: pongo2 render false to False, but Yaml spec support a lot of values http://yaml.org/type/bool.html
-//	var sampleUsePreviousVars = `
-//vars:
-//    influxdb_port: 8081
-//    databases:
-//        - influxdb
-//        - kairosdb
-//---
-//vars:
-//    kairosdb_port: 8080
-//    ssl: false
-//{% for db in vars.databases %}
-//    {{ db }}:
-//        name: {{ db }}
-//        ssl: {{ vars.ssl }}
-//{% endfor %}
-//`
-//	err := c.ParseMultiDocumentBytes([]byte(sampleUsePreviousVars))
-//	assert.Nil(err)
-//	// TODO: assert the value, need to use the dot syntax like Viper
-//	//assert.Equal(c.data)
-//	c.clear()
-//
-//	var sampleUseCurrentVars = `
-//vars:
-//    foo: 1
-//bar:
-//    foo: {{ vars.foo }}
-//`
-//	err = c.ParseMultiDocumentBytes([]byte(sampleUseCurrentVars))
-//	assert.Nil(err)
-//	c.clear()
-//
-//	// NOTE: I think HOME is set on most machines, at least travis?
-//	var sampleUseEnvironmentVars = `
-//vars:
-//    user: {{ envs.HOME }}
-//`
-//	err = c.ParseMultiDocumentBytes([]byte(sampleUseEnvironmentVars))
-//	assert.Nil(err)
-//
-//}
-//
+func TestYAMLConfig_ParseSingleDocument(t *testing.T) {
+	cases := []struct {
+		file string
+	}{
+		{"single_doc_no_vars"},
+		{"single_doc_vars"},
+	}
+	c := NewYAMLConfig()
+	for _, tc := range cases {
+		t.Run(tc.file, func(t *testing.T) {
+			assert := asst.New(t)
+			c.clear()
+			doc := util.ReadFixture(t, "testdata/"+tc.file+".yml")
+			assert.Nil(c.ParseSingleDocument(doc))
+			// TODO: expect value, not just log
+			t.Log(c.data)
+		})
+	}
+}
+
+func TestYAMLConfig_ParseMultiDocument(t *testing.T) {
+	cases := []struct {
+		file string
+	}{
+		{"multi_doc_single_vars"},
+		{"multi_doc_multi_vars"},
+	}
+	c := NewYAMLConfig()
+	//util.UseVerboseLog()
+	for _, tc := range cases {
+		t.Run(tc.file, func(t *testing.T) {
+			assert := asst.New(t)
+			c.clear()
+			doc := util.ReadFixture(t, "testdata/"+tc.file+".yml")
+			assert.Nil(c.ParseMultiDocument(doc))
+			t.Log(c.data)
+		})
+	}
+	//util.DisableVerboseLog()
+}
+
 //func TestYAMLConfig_Get(t *testing.T) {
 //	assert := asst.New(t)
 //	c := NewYAMLConfig()
-//	err := c.ParseMultiDocumentBytes([]byte(sampleMultiDoc))
+//	err := c.ParseMultiDocument([]byte(sampleMultiDoc))
 //	assert.Nil(err)
 //	util.UseVerboseLog()
 //	assert.Equal(8081, c.Get("vars.influxdb_port"))
@@ -149,7 +122,7 @@ action: grand slam
 //func TestYAMLConfig_GetOrFail(t *testing.T) {
 //	assert := asst.New(t)
 //	c := NewYAMLConfig()
-//	err := c.ParseMultiDocumentBytes([]byte(sampleMultiDoc))
+//	err := c.ParseMultiDocument([]byte(sampleMultiDoc))
 //	assert.Nil(err)
 //	_, err = c.GetOrFail("vars.oh_lala")
 //	assert.NotNil(err)
@@ -158,7 +131,7 @@ action: grand slam
 //func TestYAMLConfig_GetOrDefault(t *testing.T) {
 //	assert := asst.New(t)
 //	c := NewYAMLConfig()
-//	err := c.ParseMultiDocumentBytes([]byte(sampleMultiDoc))
+//	err := c.ParseMultiDocument([]byte(sampleMultiDoc))
 //	assert.Nil(err)
 //	assert.Equal("lalala", c.GetOrDefault("vars.oh_lala", "lalala"))
 //}

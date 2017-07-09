@@ -8,6 +8,6 @@ var log = util.Logger.NewEntryWithPkg("gommon.config")
 
 const (
 	yamlDocumentSeparator = "---"
-	defaultTemplateName = "gommon yaml"
+	defaultTemplateName   = "gommon yaml"
 	defaultKeyDelimiter   = "."
 )

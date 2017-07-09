@@ -1,0 +1,29 @@
+vars:
+  databases:
+    - influxdb
+    - kairosdb
+    # defined in another document
+    - xephonk
+  influxdb:
+    backend: tsm
+    language: golang
+  kairosdb:
+    backend: cassandra
+    language: java
+  foo1: bar1
+---
+vars:
+# NOTE: when merging vars, it's a shallow merge, we merge by top level key under vars, so we can't have
+# databases:
+#   - xephonk
+  xephonk:
+    backend: disk
+    language: golang
+  foo2: bar2
+{{ range $name := var "databases" }}
+{{ $name }}:
+{{ $db := var $name }}
+    name: {{ $name }}
+    backend: {{ $db.backend }}
+    language: {{ $db.language }}
+{{ end }}

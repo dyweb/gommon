@@ -1,4 +1,4 @@
-package std
+package stdlib
 
 import (
 	"os"
@@ -45,13 +45,12 @@ func TestTemplate_Funcs(t *testing.T) {
 	assert.Contains(rendered, "bar2", "var function should be using the updated value")
 }
 
-
 func TestTemplate_Range(t *testing.T) {
 	assert := asst.New(t)
 	// NOTE: the `-` is used to remove the following new line https://golang.org/pkg/text/template/#hdr-Text_and_spaces
 	// FIXME: - will also remove space which would break yaml indent
 	const tmplText = `
-{{ range $name := var "databases" }}
+{{ range $name := var "databases" -}}
 {{ $name -}}:
 {{ $db := var $name }}
     name: {{ $name }}
@@ -65,7 +64,6 @@ func TestTemplate_Range(t *testing.T) {
 	vars["mysql"] = map[string]string{"type": "sql"}
 	vars["xephonk"] = map[string]string{"type": "tsdb"}
 
-
 	funcMap := template.FuncMap{
 		"env": func(name string) string {
 			return os.Getenv(name)
@@ -75,9 +73,23 @@ func TestTemplate_Range(t *testing.T) {
 		},
 	}
 
+	const rendered = `
+cassandra:
+
+    name: cassandra
+    type: nosqlmysql:
+
+    name: mysql
+    type: sqlxephonk:
+
+    name: xephonk
+    type: tsdb
+`
 	tmpl, err := template.New("range test").Funcs(funcMap).Parse(tmplText)
 	assert.Nil(err)
-	err = tmpl.Execute(os.Stdout, "")
-	t.Log(err)
+	var b bytes.Buffer
+	err = tmpl.Execute(&b, "")
+	//t.Log(err)
 	assert.Nil(err)
+	assert.Equal(rendered, b.String())
 }

@@ -65,11 +65,11 @@ func (c *YAMLConfig) FuncMaps() template.FuncMap {
 	}
 }
 
-func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
+func (c *YAMLConfig) ParseMultiDocument(data []byte) error {
 	// split the doc, parse by order, add result to context so the following parser can use it
 	docs := SplitMultiDocument(data)
 	for _, doc := range docs {
-		err := c.ParseSingleDocumentBytes(doc)
+		err := c.ParseSingleDocument(doc)
 		if err != nil {
 			return errors.Wrap(err, "error when parsing one of the documents")
 		}
@@ -77,7 +77,7 @@ func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
 	return nil
 }
 
-func (c *YAMLConfig) ParseSingleDocumentBytes(doc []byte) error {
+func (c *YAMLConfig) ParseSingleDocument(doc []byte) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -85,7 +85,7 @@ func (c *YAMLConfig) ParseSingleDocumentBytes(doc []byte) error {
 	// second time, we use vars declared in this document, if any.
 
 	// this is the first render
-	rendered, err := c.RenderDocumentBytes(doc)
+	rendered, err := c.renderDocument(doc)
 	if err != nil {
 		return errors.Wrap(err, "can't render template with previous documents' vars")
 	}
@@ -112,7 +112,7 @@ func (c *YAMLConfig) ParseSingleDocumentBytes(doc []byte) error {
 		util.MergeStringMap(c.vars, vars)
 
 		// render again using vars in current document
-		rendered, err = c.RenderDocumentBytes(doc)
+		rendered, err = c.renderDocument(doc)
 		if err != nil {
 			return errors.Wrap(err, "can't render template with vars in current document")
 		}
@@ -196,7 +196,7 @@ func searchMap(src map[string]interface{}, path []string) (interface{}, error) {
 	return result, nil
 }
 
-func (c *YAMLConfig) RenderDocumentBytes(tplBytes []byte) ([]byte, error) {
+func (c *YAMLConfig) renderDocument(tplBytes []byte) ([]byte, error) {
 	tmpl, err := template.New(defaultTemplateName).Funcs(c.FuncMaps()).Parse(string(tplBytes[:]))
 	if err != nil {
 		return nil, errors.Wrapf(err, "can't parse template")

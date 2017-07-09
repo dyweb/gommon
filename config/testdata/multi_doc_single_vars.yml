@@ -1,0 +1,14 @@
+vars:
+    influxdb_port: 8081
+    databases:
+        - influxdb
+        - kairosdb
+    ssl: false
+foo: 1
+---
+{{ range $name := var "databases" }}
+{{ $name }}:
+    name: {{ $name }}
+    ssl: {{ var "ssl" }}
+{{ end }}
+foo: 2
