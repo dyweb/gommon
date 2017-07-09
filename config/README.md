@@ -8,17 +8,17 @@ Yaml configuration with template, inspired by [Ansible](http://docs.ansible.com/
   - the [encoder & decoder PR](https://github.com/go-yaml/yaml/pull/163/) seems to support multiple documents but I don't
 understand why it does.
   - Actually it would be interesting to look into how to unmarshal stream data since that is needed for Xephon-B,
-  though for most formats, go already have encoder and decoder
-  - A easier way is to split the whole file by `---` before put it into go-yaml
-
+though for most formats, go already have encoder and decoder
+  - (Adopted) A easier way is to split the whole file by `---` before put it into go-yaml
 
 ## Specification
 
-- only support single file
+- only support single file, but can have multiple documents separated by `---`
+  - pongo2 support include other templates from local file system, but we didn't make use of it
 - variables
-  - built in environment variable support
+  - built in environment variable support, use `envs`
   - http://docs.ansible.com/ansible/playbooks_variables.html
-- condition
+- [ ] condition (not tested)
   - when
   - http://docs.ansible.com/ansible/playbooks_conditionals.html
 - loop
@@ -28,7 +28,7 @@ understand why it does.
 
 Without using multiple document
 
-````
+````yaml
 vars:
     influxdb_port: 8080
     databases:
@@ -51,9 +51,10 @@ tests:
 
 Using multiple document
 
-<!-- FIXME: the highlight for markdown in editors are wrong due to the example config, removing yaml works for atom but Gogland still stuck -->
+<!-- FIXED: it seems --- is treated as front matter http://assemble.io/docs/YAML-front-matter.html -->
 
-````
+````yaml
+
 ---
 vars:
     influxdb_port: 8080

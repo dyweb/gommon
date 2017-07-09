@@ -9,8 +9,13 @@ end_of_line = lf
 # Set default charset
 [*.{sh,go}]
 charset = utf-8
-# TODO: it seems gofmt use tab instead of space for golang code, the only trouble for using tab is yaml
+# NOTE: gofmt use tab instead of space for golang code, the only trouble for using tab is yaml
+# > Gofmt formats Go programs. It uses tabs (width = 8) for indentation and blanks for alignmen
 # indent_style = space
+
+[*.{md}]
+indent_style = space
+indent_size = 2
 
 [{.travis.yml}]
 indent_style = space

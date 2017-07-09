@@ -3,7 +3,7 @@ package log
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	asst "github.com/stretchr/testify/assert"
 )
 
 func TestFilterInterface(t *testing.T) {
@@ -13,7 +13,7 @@ func TestFilterInterface(t *testing.T) {
 
 func TestPkgFilter_Filter(t *testing.T) {
 	t.Parallel()
-	assert := assert.New(t)
+	assert := asst.New(t)
 
 	allow := make(map[string]bool)
 	allow["ayi.app.git"] = true

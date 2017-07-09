@@ -13,15 +13,15 @@ var (
 
 // RenderDocumentString uses defaultSet due to pongo2's strange API
 func RenderDocumentString(tplStr string, context pongo2.Context) (string, error) {
-	//pongo2.Context{} is just map[string]interface{}
-	//FIXME: pongo2.FromString is not longer in the new API, must first create a set
+	// pongo2.Context{} is just map[string]interface{}
+	// FIXME: pongo2.FromString is not longer in the new API, must first create a set
 	tpl, err := defaultSet.FromString(tplStr)
 	if err != nil {
 		return "", errors.Wrap(err, "can't parse template")
 	}
 	out, err := tpl.Execute(context)
 	if err != nil {
-		return "", errors.Wrap(err, "can'r render template")
+		return "", errors.Wrap(err, "can't render template")
 	}
 	return out, nil
 }
@@ -35,7 +35,7 @@ func RenderDocumentBytes(tplBytes []byte, context pongo2.Context) ([]byte, error
 	}
 	out, err = tpl.ExecuteBytes(context)
 	if err != nil {
-		return out, errors.Wrap(err, "can'r render template")
+		return out, errors.Wrap(err, "can't render template")
 	}
 	return out, nil
 }

@@ -15,6 +15,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+const documentSeparator = "---"
+
 // YAMLConfig is a thread safe struct for parse YAML file and get value
 type YAMLConfig struct {
 	vars         map[string]interface{}
@@ -28,7 +30,7 @@ type YAMLConfig struct {
 // SplitMultiDocument splits a yaml file that contains multiple documents and
 // (only) trim the first one if it is empty
 func SplitMultiDocument(data []byte) [][]byte {
-	docs := bytes.Split(data, []byte("---"))
+	docs := bytes.Split(data, []byte(documentSeparator))
 	// check the first one, it could be empty
 	if len(docs[0]) != 0 {
 		return docs
