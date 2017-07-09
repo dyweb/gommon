@@ -28,6 +28,8 @@ though for most formats, go already have encoder and decoder
 
 Without using multiple document
 
+- [ ] TODO: there is not function as `env()` shown in the example
+
 ````yaml
 vars:
     influxdb_port: 8080

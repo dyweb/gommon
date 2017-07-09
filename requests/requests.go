@@ -6,8 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/pkg/errors"
 	"bytes"
+	"github.com/pkg/errors"
 	"io"
 	"strings"
 )

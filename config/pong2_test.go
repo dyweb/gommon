@@ -14,5 +14,4 @@ func TestRenderDocument(t *testing.T) {
 	//t.Log(err)
 	assert.Nil(err)
 	assert.Equal("bar and 1 and 1", out)
-
 }

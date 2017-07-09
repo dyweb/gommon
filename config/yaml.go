@@ -15,14 +15,12 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-const documentSeparator = "---"
-
 // YAMLConfig is a thread safe struct for parse YAML file and get value
 type YAMLConfig struct {
 	vars         map[string]interface{}
 	data         map[string]interface{}
 	keyDelimiter string
-	mu           sync.RWMutex // TODO: may use RWMutex
+	mu           sync.RWMutex
 	loader       pongo2.TemplateLoader
 	set          *pongo2.TemplateSet
 }
@@ -30,7 +28,7 @@ type YAMLConfig struct {
 // SplitMultiDocument splits a yaml file that contains multiple documents and
 // (only) trim the first one if it is empty
 func SplitMultiDocument(data []byte) [][]byte {
-	docs := bytes.Split(data, []byte(documentSeparator))
+	docs := bytes.Split(data, []byte(yamlDocumentSeparator))
 	// check the first one, it could be empty
 	if len(docs[0]) != 0 {
 		return docs
@@ -43,8 +41,8 @@ func NewYAMLConfig() *YAMLConfig {
 	c := new(YAMLConfig)
 	c.clear()
 	c.keyDelimiter = defaultKeyDelimiter
-	c.loader = pongo2.MustNewLocalFileSystemLoader("")
-	c.set = pongo2.NewSet("gommon-yaml", c.loader)
+	c.loader = pongo2.MustNewLocalFileSystemLoader(pongo2DefaultBaseDir)
+	c.set = pongo2.NewSet(pongo2DefaultSetName, c.loader)
 	return c
 }
 
@@ -71,12 +69,12 @@ func (c *YAMLConfig) ParseSingleDocumentBytes(doc []byte) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
+	// we render the template twice, first time we use vars from previous documents and environment variables
+	// second time, we use vars declared in this document, if any.
 	pongoContext := pongo2.Context{
 		"vars": c.vars,
 		"envs": util.EnvAsMap(),
 	}
-	// we render the template twice, first time we use vars from previous documents and environment variables
-	// second time, we use vars declared in this document, if any.
 	// this is the first render
 	rendered, err := c.RenderDocumentBytes(doc, pongoContext)
 	if err != nil {

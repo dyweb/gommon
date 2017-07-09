@@ -1,12 +1,12 @@
 package requests
 
 import (
-	"testing"
-	"net/http"
 	"fmt"
-	"io/ioutil"
-	"net/http/httptest"
 	asst "github.com/stretchr/testify/assert"
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 )
 
 func TestRequestsE2E(t *testing.T) {

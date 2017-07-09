@@ -6,6 +6,7 @@ import (
 )
 
 // EnvAsMap returns environment variables as string map
+// TODO: might cache it when package init, the problem of doing so is user might call os.Setenv, we also do this in test
 func EnvAsMap() map[string]string {
 	//https://coderwall.com/p/kjuyqw/get-environment-variables-as-a-map-in-golang
 	envMap := make(map[string]string)

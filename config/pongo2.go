@@ -12,6 +12,7 @@ var (
 )
 
 // RenderDocumentString uses defaultSet due to pongo2's strange API
+// Deprecated use the methods in YAMLConfig instead
 func RenderDocumentString(tplStr string, context pongo2.Context) (string, error) {
 	// pongo2.Context{} is just map[string]interface{}
 	// FIXME: pongo2.FromString is not longer in the new API, must first create a set
@@ -27,6 +28,7 @@ func RenderDocumentString(tplStr string, context pongo2.Context) (string, error)
 }
 
 // RenderDocumentBytes uses defaultSet and since pongo2 have two function for String and Bytes, the wrapper also has two function
+// Deprecated use the methods in YAMLConfig instead
 func RenderDocumentBytes(tplBytes []byte, context pongo2.Context) ([]byte, error) {
 	tpl, err := defaultSet.FromBytes(tplBytes)
 	var out []byte

@@ -6,4 +6,9 @@ import (
 
 var log = util.Logger.NewEntryWithPkg("gommon.config")
 
-var defaultKeyDelimiter = "."
+const (
+	yamlDocumentSeparator = "---"
+	pongo2DefaultBaseDir  = ""
+	pongo2DefaultSetName  = "gommon-yaml"
+	defaultKeyDelimiter   = "."
+)
