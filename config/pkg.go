@@ -8,7 +8,6 @@ var log = util.Logger.NewEntryWithPkg("gommon.config")
 
 const (
 	yamlDocumentSeparator = "---"
-	pongo2DefaultBaseDir  = ""
-	pongo2DefaultSetName  = "gommon-yaml"
+	defaultTemplateName = "gommon yaml"
 	defaultKeyDelimiter   = "."
 )

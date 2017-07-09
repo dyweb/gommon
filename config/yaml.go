@@ -10,9 +10,10 @@ import (
 
 	"github.com/dyweb/gommon/cast"
 	"github.com/dyweb/gommon/util"
-	"github.com/flosch/pongo2"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
+	"os"
+	"text/template"
 )
 
 // YAMLConfig is a thread safe struct for parse YAML file and get value
@@ -21,8 +22,6 @@ type YAMLConfig struct {
 	data         map[string]interface{}
 	keyDelimiter string
 	mu           sync.RWMutex
-	loader       pongo2.TemplateLoader
-	set          *pongo2.TemplateSet
 }
 
 // SplitMultiDocument splits a yaml file that contains multiple documents and
@@ -41,8 +40,6 @@ func NewYAMLConfig() *YAMLConfig {
 	c := new(YAMLConfig)
 	c.clear()
 	c.keyDelimiter = defaultKeyDelimiter
-	c.loader = pongo2.MustNewLocalFileSystemLoader(pongo2DefaultBaseDir)
-	c.set = pongo2.NewSet(pongo2DefaultSetName, c.loader)
 	return c
 }
 
@@ -51,6 +48,21 @@ func NewYAMLConfig() *YAMLConfig {
 func (c *YAMLConfig) clear() {
 	c.vars = make(map[string]interface{})
 	c.data = make(map[string]interface{})
+}
+
+func (c *YAMLConfig) Var(name string) interface{} {
+	return c.vars[name]
+}
+
+func (c *YAMLConfig) Env(name string) string {
+	return os.Getenv(name)
+}
+
+func (c *YAMLConfig) FuncMaps() template.FuncMap {
+	return template.FuncMap{
+		"env": c.Env,
+		"var": c.Var,
+	}
 }
 
 func (c *YAMLConfig) ParseMultiDocumentBytes(data []byte) error {
@@ -71,12 +83,9 @@ func (c *YAMLConfig) ParseSingleDocumentBytes(doc []byte) error {
 
 	// we render the template twice, first time we use vars from previous documents and environment variables
 	// second time, we use vars declared in this document, if any.
-	pongoContext := pongo2.Context{
-		"vars": c.vars,
-		"envs": util.EnvAsMap(),
-	}
+
 	// this is the first render
-	rendered, err := c.RenderDocumentBytes(doc, pongoContext)
+	rendered, err := c.RenderDocumentBytes(doc)
 	if err != nil {
 		return errors.Wrap(err, "can't render template with previous documents' vars")
 	}
@@ -103,8 +112,7 @@ func (c *YAMLConfig) ParseSingleDocumentBytes(doc []byte) error {
 		util.MergeStringMap(c.vars, vars)
 
 		// render again using vars in current document
-		// NOTE: we don't need to assign c.vars to pongoContext again because it stores the reference to the map, not the copy of the map
-		rendered, err = c.RenderDocumentBytes(doc, pongoContext)
+		rendered, err = c.RenderDocumentBytes(doc)
 		if err != nil {
 			return errors.Wrap(err, "can't render template with vars in current document")
 		}
@@ -188,32 +196,15 @@ func searchMap(src map[string]interface{}, path []string) (interface{}, error) {
 	return result, nil
 }
 
-// TODO: this is quite duplicate with code in pongo2.go, but I think struct methods
-// will be used more frequently than those using default set?
-// Or maybe the method should accept set as the first parameter
-func (c *YAMLConfig) RenderDocumentString(tplStr string, context pongo2.Context) (string, error) {
-	//pongo2.Context{} is just map[string]interface{}
-	//FIXME: pongo2.FromString is not longer in the new API, must first create a set
-	tpl, err := c.set.FromString(tplStr)
+func (c *YAMLConfig) RenderDocumentBytes(tplBytes []byte) ([]byte, error) {
+	tmpl, err := template.New(defaultTemplateName).Funcs(c.FuncMaps()).Parse(string(tplBytes[:]))
 	if err != nil {
-		return "", errors.Wrap(err, "can't parse template")
+		return nil, errors.Wrapf(err, "can't parse template")
 	}
-	out, err := tpl.Execute(context)
+	var b bytes.Buffer
+	err = tmpl.Execute(&b, "")
 	if err != nil {
-		return "", errors.Wrap(err, "can'r render template")
+		return nil, errors.Wrapf(err, "can't render template")
 	}
-	return out, nil
-}
-
-func (c *YAMLConfig) RenderDocumentBytes(tplBytes []byte, context pongo2.Context) ([]byte, error) {
-	tpl, err := c.set.FromBytes(tplBytes)
-	var out []byte
-	if err != nil {
-		return out, errors.Wrap(err, "can't parse template")
-	}
-	out, err = tpl.ExecuteBytes(context)
-	if err != nil {
-		return out, errors.Wrap(err, "can'r render template")
-	}
-	return out, nil
+	return b.Bytes(), nil
 }

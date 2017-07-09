@@ -1,9 +1,6 @@
-hash: 4718ad41d9d69b57dee8cbf94ed6fababb74e38ca40baf87e96d64565cb23bb0
-updated: 2017-01-09T14:51:34.311050109-08:00
+hash: 81cf32392334f945409ee097e195c625be6a972b39093ff19022fb62cd20ef25
+updated: 2017-07-09T15:00:32.229967469-07:00
 imports:
-- name: github.com/flosch/pongo2
-  version: 22499f94d3d56c7238591344a6902715d0b8fbbf
-  vcs: git
 - name: github.com/kballard/go-shellquote
   version: d8ec1a69a250a17bb0e419c386eac1f3711dc142
   vcs: git
@@ -11,7 +8,7 @@ imports:
   version: 645ef00459ed84a119197bfb8d8205042c6df63d
   vcs: git
 - name: gopkg.in/yaml.v2
-  version: a83829b6f1293c91addabc89d0571c246397bbf4
+  version: cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b
 testImports:
 - name: github.com/davecgh/go-spew
   version: 04cdfd42973bb9c8589fd6a731800cf222fde1a9
