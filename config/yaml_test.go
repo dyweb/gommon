@@ -119,6 +119,14 @@ func TestYAMLConfig_Get(t *testing.T) {
 	//util.DisableVerboseLog()
 }
 
+func TestYAMLConfig_GetOrDefault(t *testing.T) {
+	assert := asst.New(t)
+	c := NewYAMLConfig()
+	err := c.ParseMultiDocument(util.ReadFixture(t, "testdata/multi_doc_multi_vars.yml"))
+	assert.Nil(err)
+	assert.Equal("lalala", c.GetOrDefault("vars.oh_lala", "lalala"))
+}
+
 func TestYAMLConfig_GetOrFail(t *testing.T) {
 	assert := asst.New(t)
 	c := NewYAMLConfig()
@@ -128,12 +136,47 @@ func TestYAMLConfig_GetOrFail(t *testing.T) {
 	assert.NotNil(err)
 }
 
-func TestYAMLConfig_GetOrDefault(t *testing.T) {
+type logConfig struct {
+	Level  string `yaml:"level"`
+	Color  bool   `yaml:"color"`
+	Source bool   `yaml:"source"`
+}
+
+type structuredConfig struct {
+	Logging logConfig              `yaml:"logging"`
+	Mode    string                 `yaml:"mode"`
+	Base    string                 `yaml:"base"`
+	XXX     map[string]interface{} `yaml:",inline"` // NOTE: this is used to catch unmatched fields
+}
+
+func TestYAMLConfig_Unmarshal(t *testing.T) {
 	assert := asst.New(t)
 	c := NewYAMLConfig()
-	err := c.ParseMultiDocument(util.ReadFixture(t, "testdata/multi_doc_multi_vars.yml"))
+	err := c.ParseMultiDocument(util.ReadFixture(t, "testdata/structured.yml"))
 	assert.Nil(err)
-	assert.Equal("lalala", c.GetOrDefault("vars.oh_lala", "lalala"))
+	var conf structuredConfig
+	// `vars` is always there even if it is not shown in config, sometimes we want user not to specify any fields we
+	// didn't use, and use XXX (see above) to capture them, the removeVars flag would remove vars before Unmarshal and put
+	// it back afterwards
+	err = c.Unmarshal(&conf, false)
+	assert.Nil(err)
+	assert.NotNil(conf.XXX)
+	assert.Equal("local", conf.Mode)
+	err = c.Unmarshal(&conf, true)
+	assert.Nil(err)
+	assert.Nil(conf.XXX)
+}
+
+func TestYAMLConfig_UnmarshalKey(t *testing.T) {
+	assert := asst.New(t)
+	c := NewYAMLConfig()
+	err := c.ParseMultiDocument(util.ReadFixture(t, "testdata/structured.yml"))
+	assert.Nil(err)
+	var conf logConfig
+	err = c.UnmarshalKey("logging", &conf)
+	assert.Nil(err)
+	//t.Log(conf)
+	assert.Equal("info", conf.Level)
 }
 
 func TestSearchMap(t *testing.T) {

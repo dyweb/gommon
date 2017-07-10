@@ -2,18 +2,16 @@ package config
 
 import (
 	"bytes"
-	"sync"
-
+	"os"
 	"reflect"
-
 	"strings"
+	"sync"
+	"text/template"
 
 	"github.com/dyweb/gommon/cast"
 	"github.com/dyweb/gommon/util"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
-	"os"
-	"text/template"
 )
 
 // YAMLConfig is a thread safe struct for parse YAML file and get value
@@ -139,6 +137,7 @@ func (c *YAMLConfig) ParseSingleDocument(doc []byte) error {
 func (c *YAMLConfig) Get(key string) interface{} {
 	val, err := c.GetOrFail(key)
 	if err != nil {
+		// TODO: so Get does not do any error handling? what did viper do?
 		log.Debugf("can't get key %s due to %s", key, err.Error())
 	}
 	return val
@@ -165,6 +164,43 @@ func (c *YAMLConfig) GetOrFail(key string) (interface{}, error) {
 	return val, nil
 }
 
+func (c *YAMLConfig) Unmarshal(structuredConfig interface{}, removeVars bool) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	// TODO: maybe we no longer need to keep vars in data?
+	if removeVars {
+		delete(c.data, "vars")
+		defer func() { c.data["vars"] = c.vars }()
+	}
+	out, err := yaml.Marshal(c.data)
+	if err != nil {
+		return errors.Wrapf(err, "can't marshal data back to yaml")
+	}
+	err = yaml.Unmarshal(out, structuredConfig)
+	if err != nil {
+		return errors.Wrapf(err, "can't unmarshal data to specified config struct")
+	}
+	return nil
+}
+
+func (c *YAMLConfig) UnmarshalKey(key string, structuredConfig interface{}) error {
+	val, err := c.GetOrFail(key)
+	if err != nil {
+		return errors.Wrapf(err, "can't get the val for unmarshal")
+	}
+	out, err := yaml.Marshal(val)
+	if err != nil {
+		return errors.Wrapf(err, "can't marshal data back to yaml")
+	}
+	err = yaml.Unmarshal(out, structuredConfig)
+	if err != nil {
+		return errors.Wrapf(err, "can't unmarshal data to specified config struct")
+	}
+	return nil
+}
+
+// TODO: what if the user use key that includes `.`, like {"github.com": 123}
 func searchMap(src map[string]interface{}, path []string) (interface{}, error) {
 	var result interface{}
 	if len(path) == 0 {

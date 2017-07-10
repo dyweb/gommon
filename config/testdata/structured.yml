@@ -1,0 +1,6 @@
+logging:
+  level: info
+  color: true
+  source: false
+mode: local
+base: {{ env "HOME" }}
