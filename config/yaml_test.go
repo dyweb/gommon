@@ -106,35 +106,35 @@ func TestYAMLConfig_ParseMultiDocument(t *testing.T) {
 	//util.DisableVerboseLog()
 }
 
-//func TestYAMLConfig_Get(t *testing.T) {
-//	assert := asst.New(t)
-//	c := NewYAMLConfig()
-//	err := c.ParseMultiDocument([]byte(sampleMultiDoc))
-//	assert.Nil(err)
-//	util.UseVerboseLog()
-//	assert.Equal(8081, c.Get("vars.influxdb_port"))
-//	assert.Equal(nil, c.Get("vars.that_does_not_exists"))
-//	// NOTE: top level keys other than vars are overwritten instead of merged
-//	assert.Equal(2, c.Get("foo"))
-//	util.DisableVerboseLog()
-//}
-//
-//func TestYAMLConfig_GetOrFail(t *testing.T) {
-//	assert := asst.New(t)
-//	c := NewYAMLConfig()
-//	err := c.ParseMultiDocument([]byte(sampleMultiDoc))
-//	assert.Nil(err)
-//	_, err = c.GetOrFail("vars.oh_lala")
-//	assert.NotNil(err)
-//}
-//
-//func TestYAMLConfig_GetOrDefault(t *testing.T) {
-//	assert := asst.New(t)
-//	c := NewYAMLConfig()
-//	err := c.ParseMultiDocument([]byte(sampleMultiDoc))
-//	assert.Nil(err)
-//	assert.Equal("lalala", c.GetOrDefault("vars.oh_lala", "lalala"))
-//}
+func TestYAMLConfig_Get(t *testing.T) {
+	assert := asst.New(t)
+	c := NewYAMLConfig()
+	err := c.ParseMultiDocument(util.ReadFixture(t, "testdata/multi_doc_multi_vars.yml"))
+	assert.Nil(err)
+	//util.UseVerboseLog()
+	assert.Equal("bar1", c.Get("vars.foo1"))
+	assert.Equal(nil, c.Get("vars.that_does_not_exists"))
+	// NOTE: top level keys other than vars are overwritten instead of merged
+	assert.Equal(2, c.Get("foo"))
+	//util.DisableVerboseLog()
+}
+
+func TestYAMLConfig_GetOrFail(t *testing.T) {
+	assert := asst.New(t)
+	c := NewYAMLConfig()
+	err := c.ParseMultiDocument(util.ReadFixture(t, "testdata/multi_doc_multi_vars.yml"))
+	assert.Nil(err)
+	_, err = c.GetOrFail("vars.oh_lala")
+	assert.NotNil(err)
+}
+
+func TestYAMLConfig_GetOrDefault(t *testing.T) {
+	assert := asst.New(t)
+	c := NewYAMLConfig()
+	err := c.ParseMultiDocument(util.ReadFixture(t, "testdata/multi_doc_multi_vars.yml"))
+	assert.Nil(err)
+	assert.Equal("lalala", c.GetOrDefault("vars.oh_lala", "lalala"))
+}
 
 func TestSearchMap(t *testing.T) {
 	assert := asst.New(t)

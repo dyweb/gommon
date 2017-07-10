@@ -11,6 +11,7 @@ vars:
     backend: cassandra
     language: java
   foo1: bar1
+foo: 1
 ---
 vars:
 # NOTE: when merging vars, it's a shallow merge, we merge by top level key under vars, so we can't have
@@ -27,3 +28,4 @@ vars:
     backend: {{ $db.backend }}
     language: {{ $db.language }}
 {{ end }}
+foo: 2
