@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/dyweb/gommon/util"
 	dlog "github.com/dyweb/gommon/log"
+	"github.com/dyweb/gommon/util"
 )
 
 var log = util.Logger.NewEntryWithPkg("gommon.config")

@@ -59,3 +59,18 @@ func TestRequestsE2E(t *testing.T) {
 		assert.Equal(payload, string(res.Text))
 	})
 }
+
+func TestNewClient(t *testing.T) {
+	assert := asst.New(t)
+	tr, err := TransportBuilder.UseShadowSocks().Build()
+	assert.Nil(err)
+	c, err := NewClient(func(h *http.Client) {
+		h.Transport = tr
+	})
+	assert.Nil(err)
+	assert.NotNil(c)
+	// uncomment the following if you have local socks 5 proxy running
+	//_, err = c.Get("https://google.com")
+	//t.Log(err)
+	//assert.Nil(err)
+}

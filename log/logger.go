@@ -158,7 +158,7 @@ func NewLogger() *Logger {
 
 func (log *Logger) ApplyConfig(c *Config) error {
 	if err := c.Validate(); err != nil {
-		return err;
+		return err
 	}
 	if log.Level.String() != c.Level {
 		newLevel, err := ParseLevel(c.Level, false)

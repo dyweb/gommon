@@ -4,7 +4,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-
 type Config struct {
 	Level  string                 `yaml:"level" json:"level"`
 	Color  bool                   `yaml:"color" json:"color"`

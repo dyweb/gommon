@@ -13,18 +13,42 @@ import (
 )
 
 const (
-	ContentJSON = "application/json"
+	ShadowSocksLocal = "127.0.0.1:1080"
+	ContentJSON      = "application/json"
 )
 
+var (
+	defaultClient = &Client{http: &http.Client{Transport: &http.Transport{}}}
+)
+
+type Client struct {
+	http *http.Client
+}
+
+func NewClient(options ...func(h *http.Client)) (*Client, error) {
+	c := &Client{http: &http.Client{Transport: &http.Transport{}}}
+	for _, option := range options {
+		option(c.http)
+	}
+	return c, nil
+}
+
 func makeRequest(method string, url string, body io.Reader) (*Response, error) {
+	return defaultClient.makeRequest(method, url, body)
+}
+
+func (client *Client) makeRequest(method string, url string, body io.Reader) (*Response, error) {
+	if client.http == nil {
+		return nil, errors.New("http client is not initialized")
+	}
 	var res *http.Response
 	var err error
 	switch method {
 	case http.MethodGet:
-		res, err = http.Get(url)
+		res, err = client.http.Get(url)
 	case http.MethodPost:
 		// TODO: we only support JSON for now
-		res, err = http.Post(url, ContentJSON, body)
+		res, err = client.http.Post(url, ContentJSON, body)
 	}
 	response := &Response{}
 	if err != nil {
@@ -44,16 +68,32 @@ func Get(url string) (*Response, error) {
 	return makeRequest(http.MethodGet, url, nil)
 }
 
+func (client *Client) Get(url string) (*Response, error) {
+	return client.makeRequest(http.MethodGet, url, nil)
+}
+
 func PostJSONString(url string, data string) (*Response, error) {
 	return makeRequest(http.MethodPost, url, ioutil.NopCloser(strings.NewReader(data)))
+}
+
+func (client *Client) PostJSONString(url string, data string) (*Response, error) {
+	return client.makeRequest(http.MethodPost, url, ioutil.NopCloser(strings.NewReader(data)))
 }
 
 func PostJSONBytes(url string, data []byte) (*Response, error) {
 	return makeRequest(http.MethodPost, url, ioutil.NopCloser(bytes.NewReader(data)))
 }
 
+func (client *Client) PostJSONBytes(url string, data []byte) (*Response, error) {
+	return client.makeRequest(http.MethodPost, url, ioutil.NopCloser(bytes.NewReader(data)))
+}
+
 func GetJSON(url string, data interface{}) error {
-	res, err := Get(url)
+	return defaultClient.GetJSON(url, data)
+}
+
+func (client *Client) GetJSON(url string, data interface{}) error {
+	res, err := client.Get(url)
 	if err != nil {
 		return errors.Wrap(err, "error getting response")
 	}
@@ -65,8 +105,12 @@ func GetJSON(url string, data interface{}) error {
 }
 
 func GetJSONStringMap(url string) (map[string]string, error) {
+	return defaultClient.GetJSONStringMap(url)
+}
+
+func (client *Client) GetJSONStringMap(url string) (map[string]string, error) {
 	var data map[string]string
-	res, err := Get(url)
+	res, err := client.Get(url)
 	if err != nil {
 		return data, errors.Wrap(err, "error getting response")
 	}

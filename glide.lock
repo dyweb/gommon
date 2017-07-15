@@ -1,5 +1,5 @@
 hash: 81cf32392334f945409ee097e195c625be6a972b39093ff19022fb62cd20ef25
-updated: 2017-07-09T15:00:32.229967469-07:00
+updated: 2017-07-15T00:45:42.574887406-07:00
 imports:
 - name: github.com/kballard/go-shellquote
   version: d8ec1a69a250a17bb0e419c386eac1f3711dc142
@@ -7,6 +7,10 @@ imports:
 - name: github.com/pkg/errors
   version: 645ef00459ed84a119197bfb8d8205042c6df63d
   vcs: git
+- name: golang.org/x/net
+  version: 7dcfb8076726a3fdd9353b6b8a1f1b6be6811bd6
+  subpackages:
+  - proxy
 - name: gopkg.in/yaml.v2
   version: cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b
 testImports:
