@@ -8,7 +8,7 @@ import (
 var Logger = dlog.NewLogger()
 
 // Short name use in util package
-var log = Logger.NewEntryWithPkg("gommon.util")
+var log = Logger.RegisterPkg()
 
 func init() {
 	f := dlog.NewTextFormatter()

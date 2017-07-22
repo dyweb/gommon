@@ -3,12 +3,12 @@ package log
 import (
 	"io"
 	"os"
+	"runtime"
+	"strings"
 	"sync"
 
-	"strings"
-
 	"github.com/pkg/errors"
-	"runtime"
+	"fmt"
 )
 
 // Level is log level
@@ -139,6 +139,7 @@ type Logger struct {
 	mu             sync.Mutex // FIXME: this mutex is never used, I guess I was following logrus when I wrote this
 	showSourceLine bool
 	Filters        map[Level]map[string]Filter
+	Entries        map[string]*Entry
 }
 
 // NewLogger returns a new logger using StdOut and InfoLevel
@@ -152,6 +153,7 @@ func NewLogger() *Logger {
 		Formatter:      NewTextFormatter(),
 		Level:          InfoLevel,
 		Filters:        f,
+		Entries:        make(map[string]*Entry),
 		showSourceLine: false,
 	}
 	return l
@@ -214,10 +216,19 @@ func (log *Logger) NewEntryWithPkg(pkgName string) *Entry {
 // TODO: this is better than do filter in logger since we can apply the logging to each entry
 func (log *Logger) RegisterPkg() *Entry {
 	fields := make(map[string]string, 1)
-	fields["pkg"] = getCallerPackage(2)
-	return &Entry{
+	pkg := getCallerPackage(2)
+	fields["pkg"] = pkg
+	e := &Entry{
 		Logger: log,
 		Fields: fields,
+	}
+	log.Entries[pkg] = e
+	return e
+}
+
+func (log *Logger) PrintEntries() {
+	for pkg := range log.Entries {
+		fmt.Println(pkg)
 	}
 }
 
@@ -232,4 +243,3 @@ func getCallerPackage(skip int) string {
 	lastDot := strings.LastIndex(fnName, ".")
 	return fnName[:lastDot]
 }
-

@@ -10,6 +10,7 @@ var log = Logger.RegisterPkg()
 
 func TestLogger_RegisterPkg(t *testing.T) {
 	log.Info("should show the right package")
+	Logger.PrintEntries()
 }
 
 func init() {
