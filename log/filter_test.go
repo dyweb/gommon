@@ -19,13 +19,13 @@ func TestPkgFilter_Filter(t *testing.T) {
 	allow["ayi.app.git"] = true
 	f := NewPkgFilter(allow)
 	entryWithoutField := &Entry{}
-	assert.True(f.Filter(entryWithoutField))
+	assert.True(f.Accept(entryWithoutField))
 	field := make(map[string]string, 1)
 	field["pkg"] = "ayi.app.git"
 	entryWithAllowedPkg := &Entry{Fields: field}
-	assert.True(f.Filter(entryWithAllowedPkg))
+	assert.True(f.Accept(entryWithAllowedPkg))
 	field["pkg"] = "ayi.app.web"
 	entryWithDisallowedPkg := &Entry{Fields: field}
-	assert.False(f.Filter(entryWithDisallowedPkg))
+	assert.False(f.Accept(entryWithDisallowedPkg))
 
 }

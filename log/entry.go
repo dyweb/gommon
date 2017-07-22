@@ -39,7 +39,7 @@ func (entry Entry) log(level Level, msg string) bool {
 	entry.Message = msg
 	// don't log if it can't pass the filter
 	for _, filter := range entry.Logger.Filters[level] {
-		if !filter.Filter(&entry) {
+		if !filter.Accept(&entry) {
 			return false
 		}
 	}

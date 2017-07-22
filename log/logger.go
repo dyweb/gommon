@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	"runtime"
 )
 
 // Level is log level
@@ -187,7 +188,7 @@ func (log *Logger) DisableSourceLine() {
 
 // AddFilter add a filter to logger, the filter should be simple string check on fields, i.e. PkgFilter check pkg field
 func (log *Logger) AddFilter(filter Filter, level Level) {
-	log.Filters[level][filter.Name()] = filter
+	log.Filters[level][filter.FilterName()] = filter
 }
 
 // NewEntry returns an Entry with empty Fields
@@ -208,3 +209,27 @@ func (log *Logger) NewEntryWithPkg(pkgName string) *Entry {
 		Fields: fields,
 	}
 }
+
+// TODO: keep track of the registered entries, and allow different level for each entry
+// TODO: this is better than do filter in logger since we can apply the logging to each entry
+func (log *Logger) RegisterPkg() *Entry {
+	fields := make(map[string]string, 1)
+	fields["pkg"] = getCallerPackage(2)
+	return &Entry{
+		Logger: log,
+		Fields: fields,
+	}
+}
+
+// FIXME: it should be in util package, but we put it here for avoid import cycle
+func getCallerPackage(skip int) string {
+	pc, _, _, ok := runtime.Caller(skip)
+	if !ok {
+		return "unknown"
+	}
+	fn := runtime.FuncForPC(pc)
+	fnName := fn.Name()
+	lastDot := strings.LastIndex(fnName, ".")
+	return fnName[:lastDot]
+}
+
