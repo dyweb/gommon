@@ -3,7 +3,21 @@ package util
 import (
 	"os"
 	"strings"
+	"testing"
+	"io/ioutil"
 )
+
+func LoadDotEnv(t *testing.T) {
+	b, err := ioutil.ReadFile(".env")
+	if err != nil {
+		t.Fatalf("failed to loade .env %v", err)
+	}
+	lines := strings.Split(string(b), "\n")
+	for _, line := range lines {
+		kv := strings.SplitN(line, "=", 2)
+		os.Setenv(kv[0], kv[1])
+	}
+}
 
 // EnvAsMap returns environment variables as string map
 // TODO: might cache it when package init, the problem of doing so is user might call os.Setenv, we also do this in test

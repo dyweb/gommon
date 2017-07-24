@@ -203,16 +203,19 @@ func (log *Logger) NewEntry() *Entry {
 }
 
 // NewEntryWithPkg returns an Entry with pkg Field set to pkgName, should be used with PkgFilter
+// Deprecated: use RegisterPkg instead
 func (log *Logger) NewEntryWithPkg(pkgName string) *Entry {
 	fields := make(map[string]string, 1)
 	fields["pkg"] = pkgName
-	return &Entry{
+	e := &Entry{
 		Logger: log,
 		Fields: fields,
 	}
+	log.Entries[pkgName] = e
+	return e
 }
 
-// TODO: keep track of the registered entries, and allow different level for each entry
+// TODO: allow different level for each entry
 // TODO: this is better than do filter in logger since we can apply the logging to each entry
 func (log *Logger) RegisterPkg() *Entry {
 	fields := make(map[string]string, 1)
