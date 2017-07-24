@@ -56,10 +56,19 @@ func (c *YAMLConfig) Env(name string) string {
 	return os.Getenv(name)
 }
 
+func (c *YAMLConfig) EnvOr(name string, defaultVal string) string {
+	val := os.Getenv(name)
+	if val == "" {
+		return defaultVal
+	}
+	return val
+}
+
 func (c *YAMLConfig) FuncMaps() template.FuncMap {
 	return template.FuncMap{
-		"env": c.Env,
-		"var": c.Var,
+		"env":   c.Env,
+		"envOr": c.EnvOr,
+		"var":   c.Var,
 	}
 }
 

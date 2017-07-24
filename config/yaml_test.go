@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/dyweb/gommon/util"
 	asst "github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
 
@@ -146,6 +147,8 @@ type structuredConfig struct {
 	Logging logConfig              `yaml:"logging"`
 	Mode    string                 `yaml:"mode"`
 	Base    string                 `yaml:"base"`
+	Base2   string                 `yaml:"base2"`
+	Base3   string                 `yaml:"base3"`
 	XXX     map[string]interface{} `yaml:",inline"` // NOTE: this is used to catch unmatched fields
 }
 
@@ -162,6 +165,9 @@ func TestYAMLConfig_Unmarshal(t *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(conf.XXX)
 	assert.Equal("local", conf.Mode)
+	// test envOr
+	assert.Equal("base2", conf.Base2)
+	assert.Equal(os.Getenv("HOME"), conf.Base3)
 	err = c.Unmarshal(&conf, true)
 	assert.Nil(err)
 	assert.Nil(conf.XXX)
