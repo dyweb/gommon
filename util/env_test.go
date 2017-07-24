@@ -11,6 +11,7 @@ func TestLoadDotEnv(t *testing.T) {
 	LoadDotEnv(t)
 	assert.Equal("BAR1", os.Getenv("FOO1"))
 	assert.Equal("BAR2=BAR1", os.Getenv("FOO2"))
+	assert.Equal("", os.Getenv("FOO3"))
 }
 
 func TestEnvAsMap(t *testing.T) {

@@ -7,8 +7,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/pkg/errors"
 	"fmt"
+	"github.com/pkg/errors"
 )
 
 // Level is log level

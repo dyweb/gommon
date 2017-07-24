@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 )
 
+// LoadDotEnv load .env in current directory into environment variable, line start with # are comments
+// It is modeled after https://github.com/motdotla/dotenv
 func LoadDotEnv(t *testing.T) {
 	b, err := ioutil.ReadFile(".env")
 	if err != nil {
@@ -14,8 +16,16 @@ func LoadDotEnv(t *testing.T) {
 	}
 	lines := strings.Split(string(b), "\n")
 	for _, line := range lines {
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
 		kv := strings.SplitN(line, "=", 2)
-		os.Setenv(kv[0], kv[1])
+		if len(kv) == 1 {
+			os.Setenv(kv[0], "")
+		}
+		if len(kv) == 2 {
+			os.Setenv(kv[0], kv[1])
+		}
 	}
 }
 
