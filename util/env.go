@@ -1,10 +1,10 @@
 package util
 
 import (
+	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
-	"io/ioutil"
 )
 
 // LoadDotEnv load .env in current directory into environment variable, line start with # are comments

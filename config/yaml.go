@@ -97,6 +97,7 @@ func (c *YAMLConfig) ParseSingleDocument(doc []byte) error {
 		return errors.Wrap(err, "can't render template with previous documents' vars")
 	}
 
+	// TODO: change to trace level
 	log.Debugf("01-before\n%s", doc)
 	log.Debugf("01-after\n%s", rendered)
 
@@ -183,6 +184,7 @@ func (c *YAMLConfig) Unmarshal(structuredConfig interface{}, removeVars bool) er
 		defer func() { c.data["vars"] = c.vars }()
 	}
 	out, err := yaml.Marshal(c.data)
+	// FIXME: those Wrapf should be Wrap
 	if err != nil {
 		return errors.Wrapf(err, "can't marshal data back to yaml")
 	}

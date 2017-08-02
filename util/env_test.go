@@ -1,9 +1,9 @@
 package util
 
 import (
-	"testing"
-	"os"
 	asst "github.com/stretchr/testify/assert"
+	"os"
+	"testing"
 )
 
 func TestLoadDotEnv(t *testing.T) {
