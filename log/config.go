@@ -4,6 +4,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// TODO: timestamp format, time duration format
 type Config struct {
 	Level  string                 `yaml:"level" json:"level"`
 	Color  bool                   `yaml:"color" json:"color"`

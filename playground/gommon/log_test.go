@@ -11,6 +11,8 @@ var log = Logger.RegisterPkg()
 func TestLogger_RegisterPkg(t *testing.T) {
 	log.Info("should show the right package")
 	Logger.PrintEntries()
+	log.SetPkgAlias("util")
+	log.Info("should use alias for pkg")
 }
 
 func init() {

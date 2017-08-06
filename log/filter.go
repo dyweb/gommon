@@ -20,14 +20,9 @@ type PkgFilter struct {
 	allow st.Set
 }
 
-// Accept checks if the pkg field is in the white list, it will accept all the entry that does not have pkg field
+// Accept checks if the entry.Pkg (NOT entry.Fields["pkg"]) is in the white list
 func (filter *PkgFilter) Accept(entry *Entry) bool {
-	pkg, ok := entry.Fields["pkg"]
-	// entry without pkg is not filtered
-	if !ok {
-		return true
-	}
-	return filter.allow.Contains(pkg)
+	return filter.allow.Contains(entry.Pkg)
 }
 
 // FilterName implements Filter interface

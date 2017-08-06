@@ -10,11 +10,13 @@ import (
 
 // Entry is the real logger
 type Entry struct {
-	Logger  *Logger
-	Fields  Fields
-	Time    time.Time
-	Level   Level
-	Message string
+	Logger     *Logger
+	Pkg        string
+	EntryLevel Level
+	Fields     Fields
+	Time       time.Time
+	Level      Level
+	Message    string
 }
 
 // AddField adds tag to entry
@@ -27,6 +29,11 @@ func (entry *Entry) AddFields(fields Fields) {
 	for k, v := range fields {
 		entry.Fields[k] = v
 	}
+}
+
+// SetPkgAlias allows use shorter name for pkg when logging
+func (entry *Entry) SetPkgAlias(alias string) {
+	entry.Fields["pkg"] = alias
 }
 
 // This function is not defined with a pointer receiver because we change

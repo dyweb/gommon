@@ -17,7 +17,7 @@ type Level uint8
 const (
 	// FatalLevel log error and call `os.Exit(1)`
 	FatalLevel Level = iota
-	// PanicLevel log error and call panic
+	// PanicLevel log error and call `panic`
 	PanicLevel
 	// ErrorLevel log error
 	ErrorLevel
@@ -27,7 +27,7 @@ const (
 	InfoLevel
 	// DebugLevel log debug message, user should enable DebugLevel logging when report bug
 	DebugLevel
-	// TraceLevel is used by developer only, user should stop at DebugLevel if they just want to report
+	// TraceLevel is very verbose, user should enable it only on packages they are currently investing instead of globally
 	TraceLevel
 )
 
@@ -131,7 +131,7 @@ var AllLevels = []Level{
 // Fields is key-value string pair to annotate the log and can be used by filter
 type Fields map[string]string
 
-// Logger is used to set output, formatter and filters, the real log is using Entry
+// Logger is used to set output, formatter and filters, the real log operation is in Entry
 type Logger struct {
 	Out            io.Writer
 	Formatter      Formatter
@@ -195,7 +195,7 @@ func (log *Logger) AddFilter(filter Filter, level Level) {
 
 // NewEntry returns an Entry with empty Fields
 func (log *Logger) NewEntry() *Entry {
-	// TODO: may use pool
+	// TODO: may use pool, but need benchmark to see if using pool provides improvement
 	return &Entry{
 		Logger: log,
 		Fields: make(map[string]string, 1),
@@ -210,6 +210,7 @@ func (log *Logger) NewEntryWithPkg(pkgName string) *Entry {
 	e := &Entry{
 		Logger: log,
 		Fields: fields,
+		Pkg:    pkgName,
 	}
 	log.Entries[pkgName] = e
 	return e
@@ -224,18 +225,26 @@ func (log *Logger) RegisterPkg() *Entry {
 	e := &Entry{
 		Logger: log,
 		Fields: fields,
+		Pkg:    pkg,
 	}
 	log.Entries[pkg] = e
 	return e
 }
 
+func (log *Logger) RegisteredPkgs() map[string]*Entry {
+	return log.Entries
+}
+
 func (log *Logger) PrintEntries() {
+	// TODO: sort and print it in a hierarchy
+	// github.com/dyweb/Ayi/web
+	// github.com/dyweb/Ayi/web/static
 	for pkg := range log.Entries {
 		fmt.Println(pkg)
 	}
 }
 
-// FIXME: it should be in util package, but we put it here for avoid import cycle
+// FIXME: it should be in util package, but we put it here to avoid import cycle
 func getCallerPackage(skip int) string {
 	pc, _, _, ok := runtime.Caller(skip)
 	if !ok {
