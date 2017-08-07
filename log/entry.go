@@ -6,6 +6,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 // Entry is the real logger
@@ -19,6 +21,20 @@ type Entry struct {
 	Message    string
 }
 
+// SetPkgAlias allows use shorter name for pkg when logging
+func (entry *Entry) SetPkgAlias(alias string) {
+	entry.Fields["pkg"] = alias
+}
+
+func (entry *Entry) SetEntryLevel(s string) error {
+	newLevel, err := ParseLevel(s, false)
+	if err != nil {
+		return errors.WithMessage(err, fmt.Sprintf("can't set logging level to %s", s))
+	}
+	entry.EntryLevel = newLevel
+	return nil
+}
+
 // AddField adds tag to entry
 func (entry *Entry) AddField(key string, value string) {
 	entry.Fields[key] = value
@@ -29,11 +45,6 @@ func (entry *Entry) AddFields(fields Fields) {
 	for k, v := range fields {
 		entry.Fields[k] = v
 	}
-}
-
-// SetPkgAlias allows use shorter name for pkg when logging
-func (entry *Entry) SetPkgAlias(alias string) {
-	entry.Fields["pkg"] = alias
 }
 
 // This function is not defined with a pointer receiver because we change
@@ -78,14 +89,14 @@ func (entry Entry) log(level Level, msg string) bool {
 }
 
 func (entry *Entry) Panic(args ...interface{}) {
-	if entry.Logger.Level >= PanicLevel {
+	if entry.EntryLevel >= PanicLevel {
 		entry.log(PanicLevel, fmt.Sprint(args...))
 	}
 	panic(fmt.Sprint(args...))
 }
 
 func (entry *Entry) Fatal(args ...interface{}) {
-	if entry.Logger.Level >= FatalLevel {
+	if entry.EntryLevel >= FatalLevel {
 		entry.log(FatalLevel, fmt.Sprint(args...))
 	}
 	// TODO: allow register handlers like logrus

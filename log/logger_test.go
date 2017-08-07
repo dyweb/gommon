@@ -3,7 +3,10 @@ package log
 import (
 	"testing"
 
+	"bytes"
 	asst "github.com/stretchr/testify/assert"
+	"io"
+	"os"
 )
 
 func TestLogger_AddFilter(t *testing.T) {
@@ -23,23 +26,26 @@ func TestLogger_NewEntryWithPkg(t *testing.T) {
 	entry.Info("show me the pkg")
 }
 
-func TestParseLevel(t *testing.T) {
+func TestLogger_SetLevel(t *testing.T) {
 	assert := asst.New(t)
-	// strict
-	for _, l := range AllLevels {
-		s := l.String()
-		l2, err := ParseLevel(s, true)
-		assert.Nil(err)
-		assert.Equal(l, l2)
-	}
-	// not strict
-	levels := []string{"FA", "Pa", "er", "Warn", "infooo", "debugggg", "Tracer"}
-	for i := 0; i < len(AllLevels); i++ {
-		l, err := ParseLevel(levels[i], false)
-		assert.Nil(err)
-		assert.Equal(AllLevels[i], l)
-	}
-	// invalid
-	_, err := ParseLevel("haha", false)
-	assert.NotNil(err)
+
+	var b bytes.Buffer
+	writer := io.MultiWriter(os.Stdout, &b)
+	logger := NewLogger()
+	logger.Out = writer
+	entry1 := logger.NewEntryWithPkg("pkg1")
+	assert.Equal(entry1.EntryLevel, InfoLevel)
+	entry2 := logger.NewEntryWithPkg("pkg2")
+
+	entry1.Info("should see me")
+	entry1.Debug("should not see me")
+	assert.NotContains(b.String(), "not")
+
+	assert.Nil(entry2.SetEntryLevel("trace"))
+	assert.Nil(logger.SetLevel("debug"))
+
+	entry1.Debug("should see me")
+	entry1.Trace("should not see me")
+	entry2.Trace("should see me")
+	assert.NotContains(b.String(), "not")
 }
