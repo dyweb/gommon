@@ -97,9 +97,8 @@ func (c *YAMLConfig) ParseSingleDocument(doc []byte) error {
 		return errors.Wrap(err, "can't render template with previous documents' vars")
 	}
 
-	// TODO: change to trace level
-	log.Debugf("01-before\n%s", doc)
-	log.Debugf("01-after\n%s", rendered)
+	log.Tracef("01-before\n%s", doc)
+	log.Tracef("01-after\n%s", rendered)
 
 	tmpData := make(map[string]interface{})
 	err = yaml.Unmarshal(rendered, &tmpData)
@@ -125,8 +124,8 @@ func (c *YAMLConfig) ParseSingleDocument(doc []byte) error {
 			return errors.Wrap(err, "can't render template with vars in current document")
 		}
 
-		log.Debugf("02-before\n%s", doc)
-		log.Debugf("02-after\n%s", rendered)
+		log.Tracef("02-before\n%s", doc)
+		log.Tracef("02-after\n%s", rendered)
 
 		tmpData = make(map[string]interface{})
 		err = yaml.Unmarshal(rendered, &tmpData)

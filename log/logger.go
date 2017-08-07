@@ -61,25 +61,6 @@ func (log *Logger) SetLevel(s string) error {
 	return nil
 }
 
-func (log *Logger) ApplyConfig(c *Config) error {
-	if err := c.Validate(); err != nil {
-		return err
-	}
-	if log.Level.String() != c.Level {
-		newLevel, err := ParseLevel(c.Level, false)
-		if err != nil {
-			return errors.WithMessage(err, fmt.Sprintf("can't set logging level to %s", c.Level))
-		}
-		log.Level = newLevel
-	}
-	if c.Source {
-		log.EnableSourceLine()
-	}
-	// TODO: set color is not supported in formatter interface, so does time format
-	// TODO: pkg filter should also be considered
-	return nil
-}
-
 // EnableSourceLine add `source` field when logging, it use runtime.Caller(), the overhead has not been measured
 func (log *Logger) EnableSourceLine() {
 	log.showSourceLine = true
