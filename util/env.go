@@ -1,9 +1,33 @@
 package util
 
 import (
+	"io/ioutil"
 	"os"
 	"strings"
+	"testing"
 )
+
+// LoadDotEnv load .env in current directory into environment variable, line start with # are comments
+// It is modeled after https://github.com/motdotla/dotenv
+func LoadDotEnv(t *testing.T) {
+	b, err := ioutil.ReadFile(".env")
+	if err != nil {
+		t.Fatalf("failed to loade .env %v", err)
+	}
+	lines := strings.Split(string(b), "\n")
+	for _, line := range lines {
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		kv := strings.SplitN(line, "=", 2)
+		if len(kv) == 1 {
+			os.Setenv(kv[0], "")
+		}
+		if len(kv) == 2 {
+			os.Setenv(kv[0], kv[1])
+		}
+	}
+}
 
 // EnvAsMap returns environment variables as string map
 // TODO: might cache it when package init, the problem of doing so is user might call os.Setenv, we also do this in test

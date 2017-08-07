@@ -8,7 +8,7 @@ import (
 var Logger = dlog.NewLogger()
 
 // Short name use in util package
-var log = Logger.NewEntryWithPkg("gommon.util")
+var log = Logger.RegisterPkg()
 
 func init() {
 	f := dlog.NewTextFormatter()
@@ -22,7 +22,6 @@ func UseVerboseLog() {
 	Logger.Level = dlog.DebugLevel
 	log.Debug("enable debug logging")
 }
-
 
 func DisableVerboseLog() {
 	Logger.Level = dlog.InfoLevel

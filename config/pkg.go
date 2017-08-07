@@ -5,7 +5,7 @@ import (
 	"github.com/dyweb/gommon/util"
 )
 
-var log = util.Logger.NewEntryWithPkg("gommon.config")
+var log = util.Logger.RegisterPkg()
 
 const (
 	yamlDocumentSeparator = "---"

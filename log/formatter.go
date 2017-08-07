@@ -62,6 +62,7 @@ func (f *TextFormatter) Format(entry *Entry) ([]byte, error) {
 	if f.EnableTimeStamp {
 		if f.EnableElapsedTime {
 			// NOTE: the elapsedTime copied from logrus is wrong
+			// https://github.com/sirupsen/logrus/pull/465
 			fmt.Fprintf(b, "[%04d]", int(entry.Time.Sub(baseTimeStamp)/time.Second))
 		} else {
 			// TODO: what if the user set TimeStampFormat to an invalid format
@@ -79,9 +80,4 @@ func (f *TextFormatter) Format(entry *Entry) ([]byte, error) {
 	}
 	b.WriteByte('\n')
 	return b.Bytes(), nil
-}
-
-// NOTE: the elapsedTime copied from logrus is wrong
-func elapsedTime() int {
-	return int(time.Since(baseTimeStamp) / time.Second)
 }
