@@ -3,6 +3,7 @@ package util
 import (
 	"io/ioutil"
 	"testing"
+	"encoding/json"
 )
 
 func ReadFixture(t *testing.T, path string) []byte {
@@ -11,4 +12,11 @@ func ReadFixture(t *testing.T, path string) []byte {
 		t.Fatalf("can't read fixture %s: %v", path, err)
 	}
 	return b
+}
+
+func ReadJson(t *testing.T, path string, v interface{}) {
+	b := ReadFixture(t, path)
+	if err := json.Unmarshal(b, v); err != nil {
+		t.Fatalf("can't unmarshal fixture %v", err)
+	}
 }
