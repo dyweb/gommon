@@ -1,11 +1,11 @@
-package util
+package runtimeutil
 
 import (
 	"runtime"
 	"strings"
 )
 
-// FIXME: there is a same copy in log package because of import cycle
+// GetCallerPackage is used by log package to get caller source code position
 func GetCallerPackage(skip int) string {
 	pc, _, _, ok := runtime.Caller(skip)
 	if !ok {

@@ -10,3 +10,6 @@ scripts:
     - xdg-open http://localhost:6060/pkg/github.com/dyweb/gommon
     # NOTE: should start godoc first and then run xdg-open, but currently Ayi can't run command in parallel or background
     - godoc -http=":6060"
+  docker-test:
+    - docker-compose -f scripts/docker-compose.yml run golang1.8
+    - docker-compose -f scripts/docker-compose.yml run golang1.9

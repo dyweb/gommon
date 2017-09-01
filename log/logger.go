@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"runtime"
-	"strings"
 	"sync"
 
+	"github.com/dyweb/gommon/util/runtimeutil"
 	"github.com/pkg/errors"
 )
 
@@ -61,25 +60,6 @@ func (log *Logger) SetLevel(s string) error {
 	return nil
 }
 
-func (log *Logger) ApplyConfig(c *Config) error {
-	if err := c.Validate(); err != nil {
-		return err
-	}
-	if log.Level.String() != c.Level {
-		newLevel, err := ParseLevel(c.Level, false)
-		if err != nil {
-			return errors.WithMessage(err, fmt.Sprintf("can't set logging level to %s", c.Level))
-		}
-		log.Level = newLevel
-	}
-	if c.Source {
-		log.EnableSourceLine()
-	}
-	// TODO: set color is not supported in formatter interface, so does time format
-	// TODO: pkg filter should also be considered
-	return nil
-}
-
 // EnableSourceLine add `source` field when logging, it use runtime.Caller(), the overhead has not been measured
 func (log *Logger) EnableSourceLine() {
 	log.showSourceLine = true
@@ -126,7 +106,7 @@ func (log *Logger) NewEntryWithPkg(pkgName string) *Entry {
 // TODO: this is better than do filter in logger since we can apply the logging to each entry
 func (log *Logger) RegisterPkg() *Entry {
 	fields := make(map[string]string, 1)
-	pkg := getCallerPackage(2)
+	pkg := runtimeutil.GetCallerPackage(2)
 	fields["pkg"] = pkg
 	e := &Entry{
 		Logger:     log,
@@ -149,16 +129,4 @@ func (log *Logger) PrintEntries() {
 	for pkg := range log.Entries {
 		fmt.Println(pkg)
 	}
-}
-
-// FIXME: it should be in util package, but we put it here to avoid import cycle
-func getCallerPackage(skip int) string {
-	pc, _, _, ok := runtime.Caller(skip)
-	if !ok {
-		return "unknown"
-	}
-	fn := runtime.FuncForPC(pc)
-	fnName := fn.Name()
-	lastDot := strings.LastIndex(fnName, ".")
-	return fnName[:lastDot]
 }

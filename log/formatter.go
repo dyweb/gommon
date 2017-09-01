@@ -8,6 +8,9 @@ import (
 
 type Formatter interface {
 	Format(*Entry) ([]byte, error)
+	SetColor(bool)
+	SetElapsedTime(bool)
+	SetTimeFormat(string)
 }
 
 var (
@@ -23,6 +26,12 @@ const (
 	gray    = 37
 )
 
+const (
+	defaultTimeStampFormat = time.RFC3339
+)
+
+var _ Formatter = (*TextFormatter)(nil)
+
 type TextFormatter struct {
 	EnableColor       bool
 	EnableTimeStamp   bool
@@ -35,7 +44,7 @@ func NewTextFormatter() *TextFormatter {
 		EnableColor:       false,
 		EnableTimeStamp:   true,
 		EnableElapsedTime: true,
-		TimeStampFormat:   time.RFC3339,
+		TimeStampFormat:   defaultTimeStampFormat,
 	}
 }
 
@@ -65,7 +74,7 @@ func (f *TextFormatter) Format(entry *Entry) ([]byte, error) {
 			// https://github.com/sirupsen/logrus/pull/465
 			fmt.Fprintf(b, "[%04d]", int(entry.Time.Sub(baseTimeStamp)/time.Second))
 		} else {
-			// TODO: what if the user set TimeStampFormat to an invalid format
+			// NOTE: config.Validate would check if timestamp format set by user is valid, and time.Format does not return error
 			fmt.Fprintf(b, "[%s]", entry.Time.Format(f.TimeStampFormat))
 		}
 	}
@@ -80,4 +89,20 @@ func (f *TextFormatter) Format(entry *Entry) ([]byte, error) {
 	}
 	b.WriteByte('\n')
 	return b.Bytes(), nil
+}
+
+func (f *TextFormatter) SetColor(b bool) {
+	f.EnableColor = b
+}
+
+func (f *TextFormatter) SetElapsedTime(b bool) {
+	f.EnableElapsedTime = b
+}
+
+func (f *TextFormatter) SetTimeFormat(tf string) {
+	if tf == "" {
+		f.TimeStampFormat = defaultTimeStampFormat
+	} else {
+		f.TimeStampFormat = tf
+	}
 }
