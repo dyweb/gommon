@@ -1,0 +1,14 @@
+version: '2'
+services:
+  golang1.8:
+    image: golang:1.8
+    command: go test -v -cover ./cast ./config ./log ./requests ./structure ./util
+    working_dir: /go/src/github.com/dyweb/gommon
+    volumes:
+      - "..:/go/src/github.com/dyweb/gommon:rw"
+  golang1.9:
+    image: golang:1.9
+    command: go test -v -cover ./cast ./config ./log ./requests ./structure ./util
+    working_dir: /go/src/github.com/dyweb/gommon
+    volumes:
+     - "..:/go/src/github.com/dyweb/gommon:rw"

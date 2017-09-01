@@ -1,9 +1,9 @@
 package util
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"testing"
-	"encoding/json"
 )
 
 func ReadFixture(t *testing.T, path string) []byte {
