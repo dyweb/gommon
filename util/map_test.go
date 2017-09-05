@@ -1,8 +1,9 @@
 package util
 
 import (
-	asst "github.com/stretchr/testify/assert"
 	"testing"
+
+	asst "github.com/stretchr/testify/assert"
 )
 
 func TestMergeStringMap(t *testing.T) {
@@ -15,4 +16,21 @@ func TestMergeStringMap(t *testing.T) {
 	MergeStringMap(m, m2)
 	assert.Equal(124, m["a"])
 	assert.Equal(2, len(m))
+}
+
+func TestMapKeys(t *testing.T) {
+	assert := asst.New(t)
+	// nil
+	assert.Empty(MapKeys(nil))
+	assert.Empty(MapSortedKeys(nil, true))
+
+	// empty map
+	m := make(map[string]interface{})
+	assert.Empty(MapKeys(m))
+	assert.Empty(MapSortedKeys(m, true))
+
+	m["a"] = 123
+	m["b"] = 124
+	assert.Equal([]string{"a", "b"}, MapSortedKeys(m, true))
+	assert.Equal([]string{"b", "a"}, MapSortedKeys(m, false))
 }

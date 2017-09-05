@@ -1,7 +1,7 @@
 package runner
 
 import (
-	"github.com/dyweb/gommon/util"
+	"github.com/dyweb/gommon/util/logutil"
 )
 
-var log = util.Logger.RegisterPkg()
+var log = logutil.Logger.RegisterPkg()

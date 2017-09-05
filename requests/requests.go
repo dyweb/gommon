@@ -72,6 +72,8 @@ func (client *Client) Get(url string) (*Response, error) {
 	return client.makeRequest(http.MethodGet, url, nil)
 }
 
+// TODO: accept io.reader
+
 func PostJSONString(url string, data string) (*Response, error) {
 	return makeRequest(http.MethodPost, url, ioutil.NopCloser(strings.NewReader(data)))
 }

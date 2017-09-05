@@ -2,6 +2,8 @@ package config
 
 import (
 	"bytes"
+	"fmt"
+	"io/ioutil"
 	"os"
 	"reflect"
 	"strings"
@@ -22,8 +24,24 @@ type YAMLConfig struct {
 	mu           sync.RWMutex
 }
 
-// SplitMultiDocument splits a yaml file that contains multiple documents and
-// (only) trim the first one if it is empty
+// LoadYAMLAsStruct is a convenient wrapper for loading a single YAML file into struct, you should pass a pointer to the
+// struct as second argument. It will remove the vars section.
+func LoadYAMLAsStruct(file string, structuredConfig interface{}) error {
+	b, err := ioutil.ReadFile(file)
+	if err != nil {
+		return errors.Wrapf(err, "can't read config file %s", file)
+	}
+	c := NewYAMLConfig()
+	if err := c.ParseSingleDocument(b); err != nil {
+		return errors.WithMessage(err, "can't parse as single document")
+	}
+	if err := c.Unmarshal(structuredConfig, true); err != nil {
+		return errors.WithMessage(err, fmt.Sprintf("can't turn file %s into structured config", file))
+	}
+	return nil
+}
+
+// SplitMultiDocument splits a yaml file that contains multiple documents and (only) trim the first one if it is empty
 func SplitMultiDocument(data []byte) [][]byte {
 	docs := bytes.Split(data, []byte(yamlDocumentSeparator))
 	// check the first one, it could be empty

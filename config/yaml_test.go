@@ -7,6 +7,21 @@ import (
 	"testing"
 )
 
+type logConfig struct {
+	Level  string `yaml:"level"`
+	Color  bool   `yaml:"color"`
+	Source bool   `yaml:"source"`
+}
+
+type structuredConfig struct {
+	Logging logConfig              `yaml:"logging"`
+	Mode    string                 `yaml:"mode"`
+	Base    string                 `yaml:"base"`
+	Base2   string                 `yaml:"base2"`
+	Base3   string                 `yaml:"base3"`
+	XXX     map[string]interface{} `yaml:",inline"` // NOTE: this is used to catch unmatched fields
+}
+
 func TestYAMLConfig_ParseWithoutTemplate(t *testing.T) {
 	assert := asst.New(t)
 	var dat = `
@@ -32,6 +47,12 @@ b:
 	err = c.ParseMultiDocument([]byte(invalidDat))
 	assert.NotNil(err)
 	//log.Print(err.Error())
+}
+
+func TestLoadYAMLAsStruct(t *testing.T) {
+	assert := asst.New(t)
+	var conf structuredConfig
+	assert.Nil(LoadYAMLAsStruct("testdata/structured.yml", &conf))
 }
 
 func TestSplitMultiDocument(t *testing.T) {
@@ -135,21 +156,6 @@ func TestYAMLConfig_GetOrFail(t *testing.T) {
 	assert.Nil(err)
 	_, err = c.GetOrFail("vars.oh_lala")
 	assert.NotNil(err)
-}
-
-type logConfig struct {
-	Level  string `yaml:"level"`
-	Color  bool   `yaml:"color"`
-	Source bool   `yaml:"source"`
-}
-
-type structuredConfig struct {
-	Logging logConfig              `yaml:"logging"`
-	Mode    string                 `yaml:"mode"`
-	Base    string                 `yaml:"base"`
-	Base2   string                 `yaml:"base2"`
-	Base3   string                 `yaml:"base3"`
-	XXX     map[string]interface{} `yaml:",inline"` // NOTE: this is used to catch unmatched fields
 }
 
 func TestYAMLConfig_Unmarshal(t *testing.T) {

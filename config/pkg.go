@@ -2,10 +2,10 @@ package config
 
 import (
 	dlog "github.com/dyweb/gommon/log"
-	"github.com/dyweb/gommon/util"
+	"github.com/dyweb/gommon/util/logutil"
 )
 
-var log = util.Logger.RegisterPkg()
+var log = logutil.Logger.RegisterPkg()
 
 const (
 	yamlDocumentSeparator = "---"

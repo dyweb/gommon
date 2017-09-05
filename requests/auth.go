@@ -2,9 +2,10 @@ package requests
 
 import (
 	"encoding/base64"
-	"github.com/pkg/errors"
 	"net/http"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 const AuthorizationHeader = "Authorization"

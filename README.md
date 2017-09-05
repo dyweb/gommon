@@ -11,11 +11,11 @@ and aims to provide a consistent and up to date API for building cli tools and s
 
 It has the following components:
 
-- [Command runner](runner) A processes manager for both short and long running processes.
 - [Cast](cast) Convert Golang types
 - [Data structure](structure) Bring Set etc. to Golang.
 - [Log](log) A log4j style logger, support filtering by package, custom filters etc.
 - [Requests](requests) A pythonic wrapper for `net/http`, HTTP for Gopher.
+- [Runner](runner) A os/exec wrapper
 
 <!--- web server - resource binding (replace go.rice)-->
 
