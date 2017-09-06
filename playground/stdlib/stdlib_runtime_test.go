@@ -4,9 +4,9 @@ import (
 	"testing"
 	"runtime"
 	"go/build"
+	"strings"
 
 	asst "github.com/stretchr/testify/assert"
-	"strings"
 )
 
 func TestRuntime_GOROOT(t *testing.T) {
