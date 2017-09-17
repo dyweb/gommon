@@ -14,7 +14,8 @@ func main() {
 		usage()
 		os.Exit(2)
 	}
-	bs := parseFile(os.Args[1])
+	benchmarkOutput := os.Args[1]
+	bs := parseFile(benchmarkOutput)
 	var groups map[string]map[string]*parse.Benchmark
 	groups = make(map[string]map[string]*parse.Benchmark)
 	for name, bb := range bs {
@@ -33,8 +34,8 @@ func main() {
 		group[sub] = b
 		groups[parent] = group
 	}
-	fmt.Println("groups", len(groups))
-	charts := ECharts{Title: os.Args[1]}
+	fmt.Printf("output has %d groups\n", len(groups))
+	charts := ECharts{Title: benchmarkOutput}
 	// one graph for each group
 	for groupName, group := range groups {
 		// nanoseconds per iteration
@@ -72,14 +73,18 @@ func main() {
 	if err != nil {
 		fatal(err)
 	}
-	if err := ioutil.WriteFile("zap.html", b, os.ModePerm); err != nil {
+	htmlLocation := benchmarkOutput + ".html"
+	if len(os.Args) > 2 {
+		htmlLocation = os.Args[2]
+	}
+	if err := ioutil.WriteFile(htmlLocation, b, os.ModePerm); err != nil {
 		fatal(err)
 	}
-	fmt.Println("graph zap.html generated")
+	fmt.Printf("charts %s generated from %s\n", htmlLocation, benchmarkOutput)
 }
 
 func usage() {
-	fmt.Printf("usage: %s bench.txt\n\n", os.Args[0])
+	fmt.Printf("usage: %s bench.txt bech.html\n\n", os.Args[0])
 }
 
 func fatal(msg interface{}) {
@@ -93,6 +98,7 @@ func parseFile(path string) parse.Set {
 		fatal(err)
 	}
 	defer f.Close()
+	// TODO: I think benchcmp might allow concat output of different runs, so there is more than one result for one benchmark
 	b, err := parse.ParseSet(f)
 	if err != nil {
 		fatal(err)
