@@ -8,10 +8,10 @@
 </head>
 <body>
 
-<div id="totalRequestChart" style="width: 600px;height:400px;"></div>
+<div id="totalRequestChart" style="width: 1024px;height:600px;"></div>
 <br/>
 
-<div id="totalRequestChart2" style="width: 600px;height:400px;"></div>
+<div id="totalRequestChart2" style="width: 1024px;height:600px;"></div>
 <br/>
 
 
@@ -38,13 +38,20 @@ var totalRequestChartOption = {
 //            left: 'right',
 		top: 'bottom'
 	},
-	xAxis: {
-		name: 'number of concurrent clients',
-		nameLocation: 'middle',
-		nameGap: 20,
-		data: ["10","100","1000","5000"]
+	yAxis: {
+		type: 'category',
+		data: ["10","100","1000","5000"],
+		axisLabel: {
+			interval: 0,
+			rotate: 30
+		}
 	},
-	yAxis: {},
+	xAxis: {
+		type: 'value',
+		name: 'x Axis',
+		nameLocation: 'middle',
+		nameGap: 20
+	},
 	series: [{"name":"Xephon-K(Mem)","type":"bar","data":[12327,21099,31791,12279]},{"name":"Xephon-K(Cassandra)","type":"bar","data":[7931,11336,14590,8703]},{"name":"KairosDB","type":"bar","data":[15561,26154,26939,16506]},{"name":"InfluxDB","type":"bar","data":[118,139,131,130]}]
 };
 
@@ -74,13 +81,20 @@ var totalRequestChart2Option = {
 //            left: 'right',
 		top: 'bottom'
 	},
-	xAxis: {
-		name: 'number of concurrent clients',
-		nameLocation: 'middle',
-		nameGap: 20,
-		data: ["10","100","1000","5000"]
+	yAxis: {
+		type: 'category',
+		data: ["10","100","1000","5000"],
+		axisLabel: {
+			interval: 0,
+			rotate: 30
+		}
 	},
-	yAxis: {},
+	xAxis: {
+		type: 'value',
+		name: 'x Axis',
+		nameLocation: 'middle',
+		nameGap: 20
+	},
 	series: [{"name":"Xephon-K(Mem)","type":"bar","data":[12327,21099,31791,12279]},{"name":"Xephon-K(Cassandra)","type":"bar","data":[7931,11336,14590,8703]},{"name":"KairosDB","type":"bar","data":[15561,26154,26939,16506]},{"name":"InfluxDB","type":"bar","data":[118,139,131,130]}]
 };
 

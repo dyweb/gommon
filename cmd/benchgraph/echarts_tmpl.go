@@ -10,7 +10,7 @@ var chartsTemplate = `
 </head>
 <body>
 {{ range .Charts }}
-<div id="{{.Name}}" style="width: 600px;height:400px;"></div>
+<div id="{{.Name}}" style="width: 1024px;height:600px;"></div>
 <br/>
 {{ end }}
 {{ range .Charts }}
@@ -37,13 +37,20 @@ var {{.Name}}Option = {
 //            left: 'right',
 		top: 'bottom'
 	},
-	xAxis: {
-		name: 'number of concurrent clients',
-		nameLocation: 'middle',
-		nameGap: 20,
-		data: {{ json .XAxis }}
+	yAxis: {
+		type: 'category',
+		data: {{ json .YAxis }},
+		axisLabel: {
+			interval: 0,
+			rotate: 30
+		}
 	},
-	yAxis: {},
+	xAxis: {
+		type: 'value',
+		name: 'x Axis',
+		nameLocation: 'middle',
+		nameGap: 20
+	},
 	series: {{ json .Series }}
 };
 

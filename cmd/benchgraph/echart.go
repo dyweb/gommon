@@ -21,7 +21,7 @@ type EChartOption struct {
 	Name   string
 	Title  string
 	Legend []string
-	XAxis  []string
+	YAxis  []string
 	Series []Series
 }
 

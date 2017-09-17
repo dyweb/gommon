@@ -59,9 +59,9 @@ func main() {
 		}
 		// TODO: sort by sub ...
 		for subName, b := range group {
-			nsChart.XAxis = append(nsChart.XAxis, subName)
+			nsChart.YAxis = append(nsChart.YAxis, subName)
 			nsSeries.Data = append(nsSeries.Data, float64(b.NsPerOp))
-			bChart.XAxis = append(bChart.XAxis, subName)
+			bChart.YAxis = append(bChart.YAxis, subName)
 			bSeries.Data = append(bSeries.Data, float64(b.AllocedBytesPerOp))
 		}
 		nsChart.Series = append(nsChart.Series, nsSeries)

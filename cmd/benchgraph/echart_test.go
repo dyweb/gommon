@@ -12,7 +12,7 @@ func TestECharts_Render(t *testing.T) {
 		Name:   "totalRequestChart",
 		Title:  "Total Success Request in 5 seconds",
 		Legend: []string{"Xephon-K(Mem)", "Xephon-K(Cassandra)", "KairosDB", "InfluxDB"},
-		XAxis:  []string{"10", "100", "1000", "5000"},
+		YAxis:  []string{"10", "100", "1000", "5000"},
 	}
 	s1 := Series{
 		Name: "Xephon-K(Mem)",
