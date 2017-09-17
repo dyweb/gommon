@@ -1,9 +1,14 @@
 package main
 
-import "testing"
+import (
+	"testing"
+	"fmt"
+	"io/ioutil"
+	"os"
+)
 
-func TestEchartOption_Render(t *testing.T) {
-	o := EchartOption{
+func TestECharts_Render(t *testing.T) {
+	c1 := EChartOption{
 		Name:   "totalRequestChart",
 		Title:  "Total Success Request in 5 seconds",
 		Legend: []string{"Xephon-K(Mem)", "Xephon-K(Cassandra)", "KairosDB", "InfluxDB"},
@@ -29,7 +34,18 @@ func TestEchartOption_Render(t *testing.T) {
 		Type: "bar",
 		Data: []float64{118, 139, 131, 130},
 	}
+	c1.Series = append(c1.Series, s1, s2, s3, s4)
 
-	o.Series = append(o.Series, s1, s2, s3, s4)
-	o.Render()
+	c2 := c1
+	c2.Name = "totalRequestChart2"
+	c2.Title = "Total Success Request in 5 seconds Dup"
+
+	charts := ECharts{Title: "TSDB Bench"}
+	charts.Charts = append(charts.Charts, c1, c2)
+	b, err := charts.Render()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Print(string(b))
+	ioutil.WriteFile("tsdb-bench.html", b, os.ModePerm)
 }

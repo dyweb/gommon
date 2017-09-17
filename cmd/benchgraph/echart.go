@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"text/template"
-	"os"
+	"bytes"
 )
 
 type Series struct {
@@ -12,17 +12,17 @@ type Series struct {
 	Data []float64 `json:"data"` // TODO: float or int ?
 }
 
-type EchartOption struct {
+type ECharts struct {
+	Title string
+	Charts []EChartOption
+}
+
+type EChartOption struct {
 	Name   string
 	Title  string
 	Legend []string
 	XAxis  []string
 	Series []Series
-	//Legend struct{
-	//	Data []string
-	//	//Orient string
-	//	//Top string
-	//}
 }
 
 func jsonPipe(d interface{}) (string, error) {
@@ -30,17 +30,33 @@ func jsonPipe(d interface{}) (string, error) {
 	return string(b), err
 }
 
-func (opt *EchartOption) Render() ([]byte, error) {
+func (charts *ECharts) Render() ([]byte, error) {
 	funcMap := template.FuncMap{
 		"json": jsonPipe,
 	}
-	tmpl, err := template.New("chart").Funcs(funcMap).Parse(chartTemplate)
+	tmpl, err := template.New("chart").Funcs(funcMap).Parse(chartsTemplate)
 	if err != nil {
 		return nil, err
 	}
-	err = tmpl.Execute(os.Stdout, opt)
+	var b bytes.Buffer
+	err = tmpl.Execute(&b, charts)
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return b.Bytes(), nil
 }
+
+//func (opt *EChartOption) Render() ([]byte, error) {
+//	funcMap := template.FuncMap{
+//		"json": jsonPipe,
+//	}
+//	tmpl, err := template.New("chart").Funcs(funcMap).Parse(chartTemplate)
+//	if err != nil {
+//		return nil, err
+//	}
+//	err = tmpl.Execute(os.Stdout, opt)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return nil, nil
+//}

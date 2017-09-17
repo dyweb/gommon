@@ -1,6 +1,20 @@
 package main
 
-var chartTemplate = `
+var chartsTemplate = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{.Title}}</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.7.1/echarts.min.js"></script>
+</head>
+<body>
+{{ range .Charts }}
+<div id="{{.Name}}" style="width: 600px;height:400px;"></div>
+<br/>
+{{ end }}
+{{ range .Charts }}
+<script type="text/javascript">
 var {{.Name}} = echarts.init(document.getElementById('{{.Name}}'));
 
 var {{.Name}}Option = {
@@ -34,4 +48,8 @@ var {{.Name}}Option = {
 };
 
 {{.Name}}.setOption({{.Name}}Option);
+</script>
+{{ end }}
+</body>
+</html>
 `
