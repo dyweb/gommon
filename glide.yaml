@@ -7,6 +7,7 @@ import:
 - package: github.com/kballard/go-shellquote
   vcs: git
   version: d8ec1a69a250a17bb0e419c386eac1f3711dc142
+- package: golang.org/x/tools/benchmark/parse
 testImport:
 - package: github.com/stretchr/testify
   vcs: git
