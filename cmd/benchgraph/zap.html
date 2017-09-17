@@ -1,0 +1,481 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>fixture/zap.txt</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.7.1/echarts.min.js"></script>
+</head>
+<body>
+
+<div id="BenchmarkWithoutFieldsNs" style="width: 600px;height:400px;"></div>
+<br/>
+
+<div id="BenchmarkWithoutFieldsBytes" style="width: 600px;height:400px;"></div>
+<br/>
+
+<div id="BenchmarkAddingFieldsNs" style="width: 600px;height:400px;"></div>
+<br/>
+
+<div id="BenchmarkAddingFieldsBytes" style="width: 600px;height:400px;"></div>
+<br/>
+
+<div id="BenchmarkDisabledAccumulatedContextNs" style="width: 600px;height:400px;"></div>
+<br/>
+
+<div id="BenchmarkDisabledAccumulatedContextBytes" style="width: 600px;height:400px;"></div>
+<br/>
+
+<div id="BenchmarkDisabledAddingFieldsNs" style="width: 600px;height:400px;"></div>
+<br/>
+
+<div id="BenchmarkDisabledAddingFieldsBytes" style="width: 600px;height:400px;"></div>
+<br/>
+
+<div id="BenchmarkAccumulatedContextNs" style="width: 600px;height:400px;"></div>
+<br/>
+
+<div id="BenchmarkAccumulatedContextBytes" style="width: 600px;height:400px;"></div>
+<br/>
+
+<div id="BenchmarkDisabledWithoutFieldsNs" style="width: 600px;height:400px;"></div>
+<br/>
+
+<div id="BenchmarkDisabledWithoutFieldsBytes" style="width: 600px;height:400px;"></div>
+<br/>
+
+
+<script type="text/javascript">
+var BenchmarkWithoutFieldsNs = echarts.init(document.getElementById('BenchmarkWithoutFieldsNs'));
+
+var BenchmarkWithoutFieldsNsOption = {
+	title: {
+		text: 'BenchmarkWithoutFields NsPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["nanosecond per iteration"],
+//            orient: 'vertical',
+		orient: 'horizontal',
+//            left: 'right',
+		top: 'bottom'
+	},
+	xAxis: {
+		name: 'number of concurrent clients',
+		nameLocation: 'middle',
+		nameGap: 20,
+		data: ["rs/zerolog.Check-8","Zap-8","stdlib.Printf-8","Zap.Check-8","Zap.SugarFormatting-8","apex/log-8","Zap.CheckSampled-8","rs/zerolog.Formatting-8","Zap.Sugar-8","go-kit/kit/log-8","go.pedge.io/lion-8","sirupsen/logrus-8","stdlib.Println-8","rs/zerolog-8","gommon/log-8","inconshreveable/log15-8"]
+	},
+	yAxis: {},
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[113,173,3371,157,3794,2452,39.7,3525,220,359,561,891,397,112,218,5463]}]
+};
+
+BenchmarkWithoutFieldsNs.setOption(BenchmarkWithoutFieldsNsOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkWithoutFieldsBytes = echarts.init(document.getElementById('BenchmarkWithoutFieldsBytes'));
+
+var BenchmarkWithoutFieldsBytesOption = {
+	title: {
+		text: 'BenchmarkWithoutFields BytesPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["bytes allocated per iteration"],
+//            orient: 'vertical',
+		orient: 'horizontal',
+//            left: 'right',
+		top: 'bottom'
+	},
+	xAxis: {
+		name: 'number of concurrent clients',
+		nameLocation: 'middle',
+		nameGap: 20,
+		data: ["rs/zerolog.Check-8","Zap-8","stdlib.Printf-8","Zap.Check-8","Zap.SugarFormatting-8","apex/log-8","Zap.CheckSampled-8","rs/zerolog.Formatting-8","Zap.Sugar-8","go-kit/kit/log-8","go.pedge.io/lion-8","sirupsen/logrus-8","stdlib.Println-8","rs/zerolog-8","gommon/log-8","inconshreveable/log15-8"]
+	},
+	yAxis: {},
+	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,0,2058,0,2069,584,0,2060,80,656,1225,1507,80,0,488,1592]}]
+};
+
+BenchmarkWithoutFieldsBytes.setOption(BenchmarkWithoutFieldsBytesOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkAddingFieldsNs = echarts.init(document.getElementById('BenchmarkAddingFieldsNs'));
+
+var BenchmarkAddingFieldsNsOption = {
+	title: {
+		text: 'BenchmarkAddingFields NsPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["nanosecond per iteration"],
+//            orient: 'vertical',
+		orient: 'horizontal',
+//            left: 'right',
+		top: 'bottom'
+	},
+	xAxis: {
+		name: 'number of concurrent clients',
+		nameLocation: 'middle',
+		nameGap: 20,
+		data: ["Zap-8","sirupsen/logrus-8","go.pedge.io/lion-8","rs/zerolog-8","inconshreveable/log15-8","rs/zerolog.Check-8","apex/log-8","Zap.CheckSampled-8","Zap.Sugar-8","go-kit/kit/log-8","Zap.Check-8"]
+	},
+	yAxis: {},
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[1299,9031,6428,6327,34949,6180,47915,173,1630,6946,1339]}]
+};
+
+BenchmarkAddingFieldsNs.setOption(BenchmarkAddingFieldsNsOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkAddingFieldsBytes = echarts.init(document.getElementById('BenchmarkAddingFieldsBytes'));
+
+var BenchmarkAddingFieldsBytesOption = {
+	title: {
+		text: 'BenchmarkAddingFields BytesPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["bytes allocated per iteration"],
+//            orient: 'vertical',
+		orient: 'horizontal',
+//            left: 'right',
+		top: 'bottom'
+	},
+	xAxis: {
+		name: 'number of concurrent clients',
+		nameLocation: 'middle',
+		nameGap: 20,
+		data: ["Zap-8","sirupsen/logrus-8","go.pedge.io/lion-8","rs/zerolog-8","inconshreveable/log15-8","rs/zerolog.Check-8","apex/log-8","Zap.CheckSampled-8","Zap.Sugar-8","go-kit/kit/log-8","Zap.Check-8"]
+	},
+	yAxis: {},
+	series: [{"name":"bytes allocated per iteration","type":"bar","data":[771,14155,9324,8564,7705,8564,7582,88,1729,6635,771]}]
+};
+
+BenchmarkAddingFieldsBytes.setOption(BenchmarkAddingFieldsBytesOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkDisabledAccumulatedContextNs = echarts.init(document.getElementById('BenchmarkDisabledAccumulatedContextNs'));
+
+var BenchmarkDisabledAccumulatedContextNsOption = {
+	title: {
+		text: 'BenchmarkDisabledAccumulatedContext NsPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["nanosecond per iteration"],
+//            orient: 'vertical',
+		orient: 'horizontal',
+//            left: 'right',
+		top: 'bottom'
+	},
+	xAxis: {
+		name: 'number of concurrent clients',
+		nameLocation: 'middle',
+		nameGap: 20,
+		data: ["Zap.Sugar-8","Zap.Check-8","Zap-8","rs/zerolog-8","apex/log-8","Zap.SugarFormatting-8","sirupsen/logrus-8"]
+	},
+	yAxis: {},
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[11.7,7.19,7.07,3.28,1.32,71.7,9.66]}]
+};
+
+BenchmarkDisabledAccumulatedContextNs.setOption(BenchmarkDisabledAccumulatedContextNsOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkDisabledAccumulatedContextBytes = echarts.init(document.getElementById('BenchmarkDisabledAccumulatedContextBytes'));
+
+var BenchmarkDisabledAccumulatedContextBytesOption = {
+	title: {
+		text: 'BenchmarkDisabledAccumulatedContext BytesPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["bytes allocated per iteration"],
+//            orient: 'vertical',
+		orient: 'horizontal',
+//            left: 'right',
+		top: 'bottom'
+	},
+	xAxis: {
+		name: 'number of concurrent clients',
+		nameLocation: 'middle',
+		nameGap: 20,
+		data: ["Zap.Sugar-8","Zap.Check-8","Zap-8","rs/zerolog-8","apex/log-8","Zap.SugarFormatting-8","sirupsen/logrus-8"]
+	},
+	yAxis: {},
+	series: [{"name":"bytes allocated per iteration","type":"bar","data":[16,0,0,0,0,184,16]}]
+};
+
+BenchmarkDisabledAccumulatedContextBytes.setOption(BenchmarkDisabledAccumulatedContextBytesOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkDisabledAddingFieldsNs = echarts.init(document.getElementById('BenchmarkDisabledAddingFieldsNs'));
+
+var BenchmarkDisabledAddingFieldsNsOption = {
+	title: {
+		text: 'BenchmarkDisabledAddingFields NsPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["nanosecond per iteration"],
+//            orient: 'vertical',
+		orient: 'horizontal',
+//            left: 'right',
+		top: 'bottom'
+	},
+	xAxis: {
+		name: 'number of concurrent clients',
+		nameLocation: 'middle',
+		nameGap: 20,
+		data: ["Zap-8","apex/log-8","Zap.Sugar-8","rs/zerolog-8","Zap.Check-8","sirupsen/logrus-8"]
+	},
+	yAxis: {},
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[163,289,161,55.7,7.17,533]}]
+};
+
+BenchmarkDisabledAddingFieldsNs.setOption(BenchmarkDisabledAddingFieldsNsOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkDisabledAddingFieldsBytes = echarts.init(document.getElementById('BenchmarkDisabledAddingFieldsBytes'));
+
+var BenchmarkDisabledAddingFieldsBytesOption = {
+	title: {
+		text: 'BenchmarkDisabledAddingFields BytesPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["bytes allocated per iteration"],
+//            orient: 'vertical',
+		orient: 'horizontal',
+//            left: 'right',
+		top: 'bottom'
+	},
+	xAxis: {
+		name: 'number of concurrent clients',
+		nameLocation: 'middle',
+		nameGap: 20,
+		data: ["Zap-8","apex/log-8","Zap.Sugar-8","rs/zerolog-8","Zap.Check-8","sirupsen/logrus-8"]
+	},
+	yAxis: {},
+	series: [{"name":"bytes allocated per iteration","type":"bar","data":[768,934,344,128,0,1541]}]
+};
+
+BenchmarkDisabledAddingFieldsBytes.setOption(BenchmarkDisabledAddingFieldsBytesOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkAccumulatedContextNs = echarts.init(document.getElementById('BenchmarkAccumulatedContextNs'));
+
+var BenchmarkAccumulatedContextNsOption = {
+	title: {
+		text: 'BenchmarkAccumulatedContext NsPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["nanosecond per iteration"],
+//            orient: 'vertical',
+		orient: 'horizontal',
+//            left: 'right',
+		top: 'bottom'
+	},
+	xAxis: {
+		name: 'number of concurrent clients',
+		nameLocation: 'middle',
+		nameGap: 20,
+		data: ["Zap-8","apex/log-8","rs/zerolog.Check-8","inconshreveable/log15-8","Zap.SugarFormatting-8","Zap.Check-8","Zap.Sugar-8","go.pedge.io/lion-8","rs/zerolog.Formatting-8","rs/zerolog-8","go-kit/kit/log-8","sirupsen/logrus-8","Zap.CheckSampled-8"]
+	},
+	yAxis: {},
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[182,30764,117,18306,3812,182,219,2220,3525,117,7060,8382,41.6]}]
+};
+
+BenchmarkAccumulatedContextNs.setOption(BenchmarkAccumulatedContextNsOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkAccumulatedContextBytes = echarts.init(document.getElementById('BenchmarkAccumulatedContextBytes'));
+
+var BenchmarkAccumulatedContextBytesOption = {
+	title: {
+		text: 'BenchmarkAccumulatedContext BytesPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["bytes allocated per iteration"],
+//            orient: 'vertical',
+		orient: 'horizontal',
+//            left: 'right',
+		top: 'bottom'
+	},
+	xAxis: {
+		name: 'number of concurrent clients',
+		nameLocation: 'middle',
+		nameGap: 20,
+		data: ["Zap-8","apex/log-8","rs/zerolog.Check-8","inconshreveable/log15-8","Zap.SugarFormatting-8","Zap.Check-8","Zap.Sugar-8","go.pedge.io/lion-8","rs/zerolog.Formatting-8","rs/zerolog-8","go-kit/kit/log-8","sirupsen/logrus-8","Zap.CheckSampled-8"]
+	},
+	yAxis: {},
+	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,6648,0,3799,2078,0,80,5870,2060,0,6802,12615,0]}]
+};
+
+BenchmarkAccumulatedContextBytes.setOption(BenchmarkAccumulatedContextBytesOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkDisabledWithoutFieldsNs = echarts.init(document.getElementById('BenchmarkDisabledWithoutFieldsNs'));
+
+var BenchmarkDisabledWithoutFieldsNsOption = {
+	title: {
+		text: 'BenchmarkDisabledWithoutFields NsPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["nanosecond per iteration"],
+//            orient: 'vertical',
+		orient: 'horizontal',
+//            left: 'right',
+		top: 'bottom'
+	},
+	xAxis: {
+		name: 'number of concurrent clients',
+		nameLocation: 'middle',
+		nameGap: 20,
+		data: ["apex/log-8","sirupsen/logrus-8","Zap-8","Zap.Check-8","Zap.SugarFormatting-8","rs/zerolog-8","Zap.Sugar-8","gommon/log-8"]
+	},
+	yAxis: {},
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[4.65,9.88,7.11,7.63,71.9,3.28,11.7,9.57]}]
+};
+
+BenchmarkDisabledWithoutFieldsNs.setOption(BenchmarkDisabledWithoutFieldsNsOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkDisabledWithoutFieldsBytes = echarts.init(document.getElementById('BenchmarkDisabledWithoutFieldsBytes'));
+
+var BenchmarkDisabledWithoutFieldsBytesOption = {
+	title: {
+		text: 'BenchmarkDisabledWithoutFields BytesPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["bytes allocated per iteration"],
+//            orient: 'vertical',
+		orient: 'horizontal',
+//            left: 'right',
+		top: 'bottom'
+	},
+	xAxis: {
+		name: 'number of concurrent clients',
+		nameLocation: 'middle',
+		nameGap: 20,
+		data: ["apex/log-8","sirupsen/logrus-8","Zap-8","Zap.Check-8","Zap.SugarFormatting-8","rs/zerolog-8","Zap.Sugar-8","gommon/log-8"]
+	},
+	yAxis: {},
+	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,16,0,0,184,0,16,16]}]
+};
+
+BenchmarkDisabledWithoutFieldsBytes.setOption(BenchmarkDisabledWithoutFieldsBytesOption);
+</script>
+
+</body>
+</html>

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 
@@ -33,7 +34,48 @@ func main() {
 		groups[parent] = group
 	}
 	fmt.Println("groups", len(groups))
+	charts := ECharts{Title: os.Args[1]}
 	// one graph for each group
+	for groupName, group := range groups {
+		// nanoseconds per iteration
+		nsChart := EChartOption{
+			// TODO: groupName might not be a valid javascript variable name, sanitize?
+			Name:   groupName + "Ns",
+			Title:  groupName + " NsPerOp",
+			Legend: []string{"nanosecond per iteration"},
+		}
+		bChart := EChartOption{
+			Name:   groupName + "Bytes",
+			Title:  groupName + " BytesPerOp",
+			Legend: []string{"bytes allocated per iteration"},
+		}
+		nsSeries := Series{
+			Name: "nanosecond per iteration",
+			Type: "bar",
+		}
+		bSeries := Series{
+			Name: "bytes allocated per iteration",
+			Type: "bar",
+		}
+		// TODO: sort by sub ...
+		for subName, b := range group {
+			nsChart.XAxis = append(nsChart.XAxis, subName)
+			nsSeries.Data = append(nsSeries.Data, float64(b.NsPerOp))
+			bChart.XAxis = append(bChart.XAxis, subName)
+			bSeries.Data = append(bSeries.Data, float64(b.AllocedBytesPerOp))
+		}
+		nsChart.Series = append(nsChart.Series, nsSeries)
+		bChart.Series = append(bChart.Series, bSeries)
+		charts.Charts = append(charts.Charts, nsChart, bChart)
+	}
+	b, err := charts.Render()
+	if err != nil {
+		fatal(err)
+	}
+	if err := ioutil.WriteFile("zap.html", b, os.ModePerm); err != nil {
+		fatal(err)
+	}
+	fmt.Println("graph zap.html generated")
 }
 
 func usage() {
