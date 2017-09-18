@@ -13,7 +13,7 @@ import (
 // Entry is the real logger
 type Entry struct {
 	Logger     *Logger
-	Pkg        string
+	Pkg        string // TODO: we should make use of this and stop storing the it in the map field?
 	EntryLevel Level
 	Fields     Fields
 	Time       time.Time

@@ -72,14 +72,14 @@ var BenchmarkAccumulatedContextNsOption = {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","rs/zerolog.Formatting-8","sirupsen/logrus-8"],
 		axisLabel: {
-			interval: 0,
+			interval: 0, /* NOTE: this is needed to show all the labels */
 			rotate: 30
 		}
 	},
 	yAxis: {
 		type: 'value'
 	},
-	series: [{"name":"nanosecond per iteration","type":"bar","data":[182,182,41.6,219,3812,30764,7060,2220,18306,117,117,3525,8382]}]
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[195,182,42.3,238,4114,30380,7704,2518,19187,126,129,4222,9156]}]
 };
 
 BenchmarkAccumulatedContextNs.setOption(BenchmarkAccumulatedContextNsOption);
@@ -112,14 +112,14 @@ var BenchmarkAccumulatedContextBytesOption = {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","rs/zerolog.Formatting-8","sirupsen/logrus-8"],
 		axisLabel: {
-			interval: 0,
+			interval: 0, /* NOTE: this is needed to show all the labels */
 			rotate: 30
 		}
 	},
 	yAxis: {
 		type: 'value'
 	},
-	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,0,0,80,2078,6648,6802,5870,3799,0,0,2060,12615]}]
+	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,0,0,80,2078,6648,6803,5870,3800,0,0,2060,12614]}]
 };
 
 BenchmarkAccumulatedContextBytes.setOption(BenchmarkAccumulatedContextBytesOption);
@@ -152,14 +152,14 @@ var BenchmarkAddingFieldsNsOption = {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","sirupsen/logrus-8"],
 		axisLabel: {
-			interval: 0,
+			interval: 0, /* NOTE: this is needed to show all the labels */
 			rotate: 30
 		}
 	},
 	yAxis: {
 		type: 'value'
 	},
-	series: [{"name":"nanosecond per iteration","type":"bar","data":[1299,1339,173,1630,47915,6946,6428,34949,6327,6180,9031]}]
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[1435,1435,186,1764,31628,7471,7444,29476,6681,8865,10269]}]
 };
 
 BenchmarkAddingFieldsNs.setOption(BenchmarkAddingFieldsNsOption);
@@ -192,14 +192,14 @@ var BenchmarkAddingFieldsBytesOption = {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","sirupsen/logrus-8"],
 		axisLabel: {
-			interval: 0,
+			interval: 0, /* NOTE: this is needed to show all the labels */
 			rotate: 30
 		}
 	},
 	yAxis: {
 		type: 'value'
 	},
-	series: [{"name":"bytes allocated per iteration","type":"bar","data":[771,771,88,1729,7582,6635,9324,7705,8564,8564,14155]}]
+	series: [{"name":"bytes allocated per iteration","type":"bar","data":[771,771,88,1728,7587,6636,9324,7704,8564,8564,14155]}]
 };
 
 BenchmarkAddingFieldsBytes.setOption(BenchmarkAddingFieldsBytesOption);
@@ -232,14 +232,14 @@ var BenchmarkDisabledAccumulatedContextNsOption = {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","rs/zerolog-8","sirupsen/logrus-8"],
 		axisLabel: {
-			interval: 0,
+			interval: 0, /* NOTE: this is needed to show all the labels */
 			rotate: 30
 		}
 	},
 	yAxis: {
 		type: 'value'
 	},
-	series: [{"name":"nanosecond per iteration","type":"bar","data":[7.07,7.19,11.7,71.7,1.32,3.28,9.66]}]
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[7.48,7.35,13.4,93.3,1.39,3.42,11.6]}]
 };
 
 BenchmarkDisabledAccumulatedContextNs.setOption(BenchmarkDisabledAccumulatedContextNsOption);
@@ -272,7 +272,7 @@ var BenchmarkDisabledAccumulatedContextBytesOption = {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","rs/zerolog-8","sirupsen/logrus-8"],
 		axisLabel: {
-			interval: 0,
+			interval: 0, /* NOTE: this is needed to show all the labels */
 			rotate: 30
 		}
 	},
@@ -312,14 +312,14 @@ var BenchmarkDisabledAddingFieldsNsOption = {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","apex/log-8","rs/zerolog-8","sirupsen/logrus-8"],
 		axisLabel: {
-			interval: 0,
+			interval: 0, /* NOTE: this is needed to show all the labels */
 			rotate: 30
 		}
 	},
 	yAxis: {
 		type: 'value'
 	},
-	series: [{"name":"nanosecond per iteration","type":"bar","data":[163,7.17,161,289,55.7,533]}]
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[191,7.4,176,312,64.1,586]}]
 };
 
 BenchmarkDisabledAddingFieldsNs.setOption(BenchmarkDisabledAddingFieldsNsOption);
@@ -352,7 +352,7 @@ var BenchmarkDisabledAddingFieldsBytesOption = {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","apex/log-8","rs/zerolog-8","sirupsen/logrus-8"],
 		axisLabel: {
-			interval: 0,
+			interval: 0, /* NOTE: this is needed to show all the labels */
 			rotate: 30
 		}
 	},
@@ -392,14 +392,14 @@ var BenchmarkDisabledWithoutFieldsNsOption = {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","gommon/log-8","rs/zerolog-8","sirupsen/logrus-8"],
 		axisLabel: {
-			interval: 0,
+			interval: 0, /* NOTE: this is needed to show all the labels */
 			rotate: 30
 		}
 	},
 	yAxis: {
 		type: 'value'
 	},
-	series: [{"name":"nanosecond per iteration","type":"bar","data":[7.11,7.63,11.7,71.9,4.65,9.57,3.28,9.88]}]
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[7.36,7.3,13.2,78.2,2.47,10.1,3.38,10.2]}]
 };
 
 BenchmarkDisabledWithoutFieldsNs.setOption(BenchmarkDisabledWithoutFieldsNsOption);
@@ -432,7 +432,7 @@ var BenchmarkDisabledWithoutFieldsBytesOption = {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","gommon/log-8","rs/zerolog-8","sirupsen/logrus-8"],
 		axisLabel: {
-			interval: 0,
+			interval: 0, /* NOTE: this is needed to show all the labels */
 			rotate: 30
 		}
 	},
@@ -470,16 +470,16 @@ var BenchmarkWithoutFieldsNsOption = {
 	*/
 	xAxis: {
 		type: 'category',
-		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","gommon/log-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","rs/zerolog.Formatting-8","sirupsen/logrus-8","stdlib.Printf-8","stdlib.Println-8"],
+		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","gommon/log-8","gommon/log-pkg-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","rs/zerolog.Formatting-8","sirupsen/logrus-8","stdlib.Printf-8","stdlib.Println-8"],
 		axisLabel: {
-			interval: 0,
+			interval: 0, /* NOTE: this is needed to show all the labels */
 			rotate: 30
 		}
 	},
 	yAxis: {
 		type: 'value'
 	},
-	series: [{"name":"nanosecond per iteration","type":"bar","data":[173,157,39.7,220,3794,2452,359,561,218,5463,112,113,3525,891,3371,397]}]
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[163,173,40.2,232,4101,3144,387,612,218,243,4946,115,116,3726,1003,3598,408]}]
 };
 
 BenchmarkWithoutFieldsNs.setOption(BenchmarkWithoutFieldsNsOption);
@@ -510,16 +510,16 @@ var BenchmarkWithoutFieldsBytesOption = {
 	*/
 	xAxis: {
 		type: 'category',
-		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","gommon/log-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","rs/zerolog.Formatting-8","sirupsen/logrus-8","stdlib.Printf-8","stdlib.Println-8"],
+		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","gommon/log-8","gommon/log-pkg-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","rs/zerolog.Formatting-8","sirupsen/logrus-8","stdlib.Printf-8","stdlib.Println-8"],
 		axisLabel: {
-			interval: 0,
+			interval: 0, /* NOTE: this is needed to show all the labels */
 			rotate: 30
 		}
 	},
 	yAxis: {
 		type: 'value'
 	},
-	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,0,0,80,2069,584,656,1225,488,1592,0,0,2060,1507,2058,80]}]
+	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,0,0,80,2069,584,656,1225,488,488,1592,0,0,2059,1507,2058,80]}]
 };
 
 BenchmarkWithoutFieldsBytes.setOption(BenchmarkWithoutFieldsBytesOption);

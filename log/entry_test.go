@@ -48,3 +48,11 @@ func TestEntry_LeveledLog(t *testing.T) {
 	entry4 := logger4.NewEntry()
 	entry4.Info("show me source")
 }
+
+
+func TestEntry_DeleteField(t *testing.T) {
+	logger := NewLogger()
+	entry := logger.RegisterPkg()
+	entry.DeleteField("pkg")
+	t.Log(len(entry.Fields))
+}
