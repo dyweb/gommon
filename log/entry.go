@@ -47,6 +47,11 @@ func (entry *Entry) AddFields(fields Fields) {
 	}
 }
 
+// DeleteField remove a tag from entry, this was added for benchmark to remove the automatically added pkg tag when using RegisterPkg
+func (entry *Entry) DeleteField(key string) {
+	delete(entry.Fields, key)
+}
+
 // This function is not defined with a pointer receiver because we change
 // the attribute of struct without using lock, if we use pointer, it would
 // become race condition for multiple goroutines.
@@ -107,14 +112,14 @@ func (entry *Entry) Fatal(args ...interface{}) {
 // NOTE: the *f functions does NOT call * functions like logrus does, it just copy and paste
 
 func (entry *Entry) Panicf(format string, args ...interface{}) {
-	if entry.Logger.Level >= PanicLevel {
+	if entry.EntryLevel >= PanicLevel {
 		entry.log(PanicLevel, fmt.Sprintf(format, args...))
 	}
 	panic(fmt.Sprint(args...))
 }
 
 func (entry *Entry) Fatalf(format string, args ...interface{}) {
-	if entry.Logger.Level >= FatalLevel {
+	if entry.EntryLevel >= FatalLevel {
 		entry.log(FatalLevel, fmt.Sprintf(format, args...))
 	}
 	// TODO: allow register handlers like logrus

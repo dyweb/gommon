@@ -8,10 +8,10 @@
 </head>
 <body>
 
-<div id="totalRequestChart" style="width: 1024px;height:600px;"></div>
+<div id="totalRequestChart" style="width: 800px;height:400px;"></div>
 <br/>
 
-<div id="totalRequestChart2" style="width: 1024px;height:600px;"></div>
+<div id="totalRequestChart2" style="width: 800px;height:400px;"></div>
 <br/>
 
 
@@ -31,26 +31,23 @@ var totalRequestChartOption = {
 			saveAsImage: {show: true}
 		}
 	},
+	/*
 	legend: {
 		data: ["Xephon-K(Mem)","Xephon-K(Cassandra)","KairosDB","InfluxDB"],
-//            orient: 'vertical',
 		orient: 'horizontal',
-//            left: 'right',
 		top: 'bottom'
 	},
-	yAxis: {
+	*/
+	xAxis: {
 		type: 'category',
 		data: ["10","100","1000","5000"],
 		axisLabel: {
-			interval: 0,
+			interval: 0, /* NOTE: this is needed to show all the labels */
 			rotate: 30
 		}
 	},
-	xAxis: {
-		type: 'value',
-		name: 'x Axis',
-		nameLocation: 'middle',
-		nameGap: 20
+	yAxis: {
+		type: 'value'
 	},
 	series: [{"name":"Xephon-K(Mem)","type":"bar","data":[12327,21099,31791,12279]},{"name":"Xephon-K(Cassandra)","type":"bar","data":[7931,11336,14590,8703]},{"name":"KairosDB","type":"bar","data":[15561,26154,26939,16506]},{"name":"InfluxDB","type":"bar","data":[118,139,131,130]}]
 };
@@ -74,26 +71,23 @@ var totalRequestChart2Option = {
 			saveAsImage: {show: true}
 		}
 	},
+	/*
 	legend: {
 		data: ["Xephon-K(Mem)","Xephon-K(Cassandra)","KairosDB","InfluxDB"],
-//            orient: 'vertical',
 		orient: 'horizontal',
-//            left: 'right',
 		top: 'bottom'
 	},
-	yAxis: {
+	*/
+	xAxis: {
 		type: 'category',
 		data: ["10","100","1000","5000"],
 		axisLabel: {
-			interval: 0,
+			interval: 0, /* NOTE: this is needed to show all the labels */
 			rotate: 30
 		}
 	},
-	xAxis: {
-		type: 'value',
-		name: 'x Axis',
-		nameLocation: 'middle',
-		nameGap: 20
+	yAxis: {
+		type: 'value'
 	},
 	series: [{"name":"Xephon-K(Mem)","type":"bar","data":[12327,21099,31791,12279]},{"name":"Xephon-K(Cassandra)","type":"bar","data":[7931,11336,14590,8703]},{"name":"KairosDB","type":"bar","data":[15561,26154,26939,16506]},{"name":"InfluxDB","type":"bar","data":[118,139,131,130]}]
 };

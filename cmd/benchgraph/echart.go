@@ -22,7 +22,7 @@ type EChartOption struct {
 	Width  int // TODO: width and hight is not used in template yet
 	Height int
 	Legend []string
-	YAxis  []string
+	Axis   []string
 	Series []Series
 }
 
@@ -70,7 +70,7 @@ var chartsTemplate = `
 </head>
 <body>
 {{ range .Charts }}
-<div id="{{.Name}}" style="width: 1024px;height:600px;"></div>
+<div id="{{.Name}}" style="width: 800px;height:400px;"></div>
 <br/>
 {{ end }}
 {{ range .Charts }}
@@ -90,20 +90,22 @@ var {{.Name}}Option = {
 			saveAsImage: {show: true}
 		}
 	},
+	/*
 	legend: {
 		data: {{ json .Legend }},
 		orient: 'horizontal',
 		top: 'bottom'
 	},
-	yAxis: {
+	*/
+	xAxis: {
 		type: 'category',
-		data: {{ json .YAxis }},
+		data: {{ json .Axis }},
 		axisLabel: {
-			interval: 0,
+			interval: 0, /* NOTE: this is needed to show all the labels */
 			rotate: 30
 		}
 	},
-	xAxis: {
+	yAxis: {
 		type: 'value'
 	},
 	series: {{ json .Series }}

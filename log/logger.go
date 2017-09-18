@@ -52,6 +52,7 @@ func (log *Logger) SetLevel(s string) error {
 	// update all the registered entries
 	for _, entry := range log.Entries {
 		// only update entry's level if the new global level is more verbose
+		// TODO: allow force set level to all registered entries
 		if newLevel > entry.EntryLevel {
 			entry.EntryLevel = newLevel
 		}
@@ -102,8 +103,7 @@ func (log *Logger) NewEntryWithPkg(pkgName string) *Entry {
 	return e
 }
 
-// TODO: allow different level for each entry
-// TODO: this is better than do filter in logger since we can apply the logging to each entry
+// RegisterPkg creates a new entry with pkg field set to the caller's package and register this entry to logger
 func (log *Logger) RegisterPkg() *Entry {
 	fields := make(map[string]string, 1)
 	pkg := runtimeutil.GetCallerPackage(2)

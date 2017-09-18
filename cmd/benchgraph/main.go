@@ -72,9 +72,9 @@ func main() {
 		sort.Strings(keys)
 		for _, subName := range keys {
 			b := group[subName]
-			nsChart.YAxis = append(nsChart.YAxis, subName)
+			nsChart.Axis = append(nsChart.Axis, subName)
 			nsSeries.Data = append(nsSeries.Data, float64(b.NsPerOp))
-			bChart.YAxis = append(bChart.YAxis, subName)
+			bChart.Axis = append(bChart.Axis, subName)
 			bSeries.Data = append(bSeries.Data, float64(b.AllocedBytesPerOp))
 		}
 		nsChart.Series = append(nsChart.Series, nsSeries)

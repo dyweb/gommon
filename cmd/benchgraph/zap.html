@@ -8,40 +8,40 @@
 </head>
 <body>
 
-<div id="BenchmarkAccumulatedContextNs" style="width: 1024px;height:600px;"></div>
+<div id="BenchmarkAccumulatedContextNs" style="width: 800px;height:400px;"></div>
 <br/>
 
-<div id="BenchmarkAccumulatedContextBytes" style="width: 1024px;height:600px;"></div>
+<div id="BenchmarkAccumulatedContextBytes" style="width: 800px;height:400px;"></div>
 <br/>
 
-<div id="BenchmarkAddingFieldsNs" style="width: 1024px;height:600px;"></div>
+<div id="BenchmarkAddingFieldsNs" style="width: 800px;height:400px;"></div>
 <br/>
 
-<div id="BenchmarkAddingFieldsBytes" style="width: 1024px;height:600px;"></div>
+<div id="BenchmarkAddingFieldsBytes" style="width: 800px;height:400px;"></div>
 <br/>
 
-<div id="BenchmarkDisabledAccumulatedContextNs" style="width: 1024px;height:600px;"></div>
+<div id="BenchmarkDisabledAccumulatedContextNs" style="width: 800px;height:400px;"></div>
 <br/>
 
-<div id="BenchmarkDisabledAccumulatedContextBytes" style="width: 1024px;height:600px;"></div>
+<div id="BenchmarkDisabledAccumulatedContextBytes" style="width: 800px;height:400px;"></div>
 <br/>
 
-<div id="BenchmarkDisabledAddingFieldsNs" style="width: 1024px;height:600px;"></div>
+<div id="BenchmarkDisabledAddingFieldsNs" style="width: 800px;height:400px;"></div>
 <br/>
 
-<div id="BenchmarkDisabledAddingFieldsBytes" style="width: 1024px;height:600px;"></div>
+<div id="BenchmarkDisabledAddingFieldsBytes" style="width: 800px;height:400px;"></div>
 <br/>
 
-<div id="BenchmarkDisabledWithoutFieldsNs" style="width: 1024px;height:600px;"></div>
+<div id="BenchmarkDisabledWithoutFieldsNs" style="width: 800px;height:400px;"></div>
 <br/>
 
-<div id="BenchmarkDisabledWithoutFieldsBytes" style="width: 1024px;height:600px;"></div>
+<div id="BenchmarkDisabledWithoutFieldsBytes" style="width: 800px;height:400px;"></div>
 <br/>
 
-<div id="BenchmarkWithoutFieldsNs" style="width: 1024px;height:600px;"></div>
+<div id="BenchmarkWithoutFieldsNs" style="width: 800px;height:400px;"></div>
 <br/>
 
-<div id="BenchmarkWithoutFieldsBytes" style="width: 1024px;height:600px;"></div>
+<div id="BenchmarkWithoutFieldsBytes" style="width: 800px;height:400px;"></div>
 <br/>
 
 
@@ -61,12 +61,14 @@ var BenchmarkAccumulatedContextNsOption = {
 			saveAsImage: {show: true}
 		}
 	},
+	/*
 	legend: {
 		data: ["nanosecond per iteration"],
 		orient: 'horizontal',
 		top: 'bottom'
 	},
-	yAxis: {
+	*/
+	xAxis: {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","rs/zerolog.Formatting-8","sirupsen/logrus-8"],
 		axisLabel: {
@@ -74,7 +76,7 @@ var BenchmarkAccumulatedContextNsOption = {
 			rotate: 30
 		}
 	},
-	xAxis: {
+	yAxis: {
 		type: 'value'
 	},
 	series: [{"name":"nanosecond per iteration","type":"bar","data":[182,182,41.6,219,3812,30764,7060,2220,18306,117,117,3525,8382]}]
@@ -99,12 +101,14 @@ var BenchmarkAccumulatedContextBytesOption = {
 			saveAsImage: {show: true}
 		}
 	},
+	/*
 	legend: {
 		data: ["bytes allocated per iteration"],
 		orient: 'horizontal',
 		top: 'bottom'
 	},
-	yAxis: {
+	*/
+	xAxis: {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","rs/zerolog.Formatting-8","sirupsen/logrus-8"],
 		axisLabel: {
@@ -112,7 +116,7 @@ var BenchmarkAccumulatedContextBytesOption = {
 			rotate: 30
 		}
 	},
-	xAxis: {
+	yAxis: {
 		type: 'value'
 	},
 	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,0,0,80,2078,6648,6802,5870,3799,0,0,2060,12615]}]
@@ -137,12 +141,14 @@ var BenchmarkAddingFieldsNsOption = {
 			saveAsImage: {show: true}
 		}
 	},
+	/*
 	legend: {
 		data: ["nanosecond per iteration"],
 		orient: 'horizontal',
 		top: 'bottom'
 	},
-	yAxis: {
+	*/
+	xAxis: {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","sirupsen/logrus-8"],
 		axisLabel: {
@@ -150,7 +156,7 @@ var BenchmarkAddingFieldsNsOption = {
 			rotate: 30
 		}
 	},
-	xAxis: {
+	yAxis: {
 		type: 'value'
 	},
 	series: [{"name":"nanosecond per iteration","type":"bar","data":[1299,1339,173,1630,47915,6946,6428,34949,6327,6180,9031]}]
@@ -175,12 +181,14 @@ var BenchmarkAddingFieldsBytesOption = {
 			saveAsImage: {show: true}
 		}
 	},
+	/*
 	legend: {
 		data: ["bytes allocated per iteration"],
 		orient: 'horizontal',
 		top: 'bottom'
 	},
-	yAxis: {
+	*/
+	xAxis: {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","sirupsen/logrus-8"],
 		axisLabel: {
@@ -188,7 +196,7 @@ var BenchmarkAddingFieldsBytesOption = {
 			rotate: 30
 		}
 	},
-	xAxis: {
+	yAxis: {
 		type: 'value'
 	},
 	series: [{"name":"bytes allocated per iteration","type":"bar","data":[771,771,88,1729,7582,6635,9324,7705,8564,8564,14155]}]
@@ -213,12 +221,14 @@ var BenchmarkDisabledAccumulatedContextNsOption = {
 			saveAsImage: {show: true}
 		}
 	},
+	/*
 	legend: {
 		data: ["nanosecond per iteration"],
 		orient: 'horizontal',
 		top: 'bottom'
 	},
-	yAxis: {
+	*/
+	xAxis: {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","rs/zerolog-8","sirupsen/logrus-8"],
 		axisLabel: {
@@ -226,7 +236,7 @@ var BenchmarkDisabledAccumulatedContextNsOption = {
 			rotate: 30
 		}
 	},
-	xAxis: {
+	yAxis: {
 		type: 'value'
 	},
 	series: [{"name":"nanosecond per iteration","type":"bar","data":[7.07,7.19,11.7,71.7,1.32,3.28,9.66]}]
@@ -251,12 +261,14 @@ var BenchmarkDisabledAccumulatedContextBytesOption = {
 			saveAsImage: {show: true}
 		}
 	},
+	/*
 	legend: {
 		data: ["bytes allocated per iteration"],
 		orient: 'horizontal',
 		top: 'bottom'
 	},
-	yAxis: {
+	*/
+	xAxis: {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","rs/zerolog-8","sirupsen/logrus-8"],
 		axisLabel: {
@@ -264,7 +276,7 @@ var BenchmarkDisabledAccumulatedContextBytesOption = {
 			rotate: 30
 		}
 	},
-	xAxis: {
+	yAxis: {
 		type: 'value'
 	},
 	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,0,16,184,0,0,16]}]
@@ -289,12 +301,14 @@ var BenchmarkDisabledAddingFieldsNsOption = {
 			saveAsImage: {show: true}
 		}
 	},
+	/*
 	legend: {
 		data: ["nanosecond per iteration"],
 		orient: 'horizontal',
 		top: 'bottom'
 	},
-	yAxis: {
+	*/
+	xAxis: {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","apex/log-8","rs/zerolog-8","sirupsen/logrus-8"],
 		axisLabel: {
@@ -302,7 +316,7 @@ var BenchmarkDisabledAddingFieldsNsOption = {
 			rotate: 30
 		}
 	},
-	xAxis: {
+	yAxis: {
 		type: 'value'
 	},
 	series: [{"name":"nanosecond per iteration","type":"bar","data":[163,7.17,161,289,55.7,533]}]
@@ -327,12 +341,14 @@ var BenchmarkDisabledAddingFieldsBytesOption = {
 			saveAsImage: {show: true}
 		}
 	},
+	/*
 	legend: {
 		data: ["bytes allocated per iteration"],
 		orient: 'horizontal',
 		top: 'bottom'
 	},
-	yAxis: {
+	*/
+	xAxis: {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","apex/log-8","rs/zerolog-8","sirupsen/logrus-8"],
 		axisLabel: {
@@ -340,7 +356,7 @@ var BenchmarkDisabledAddingFieldsBytesOption = {
 			rotate: 30
 		}
 	},
-	xAxis: {
+	yAxis: {
 		type: 'value'
 	},
 	series: [{"name":"bytes allocated per iteration","type":"bar","data":[768,0,344,934,128,1541]}]
@@ -365,12 +381,14 @@ var BenchmarkDisabledWithoutFieldsNsOption = {
 			saveAsImage: {show: true}
 		}
 	},
+	/*
 	legend: {
 		data: ["nanosecond per iteration"],
 		orient: 'horizontal',
 		top: 'bottom'
 	},
-	yAxis: {
+	*/
+	xAxis: {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","gommon/log-8","rs/zerolog-8","sirupsen/logrus-8"],
 		axisLabel: {
@@ -378,7 +396,7 @@ var BenchmarkDisabledWithoutFieldsNsOption = {
 			rotate: 30
 		}
 	},
-	xAxis: {
+	yAxis: {
 		type: 'value'
 	},
 	series: [{"name":"nanosecond per iteration","type":"bar","data":[7.11,7.63,11.7,71.9,4.65,9.57,3.28,9.88]}]
@@ -403,12 +421,14 @@ var BenchmarkDisabledWithoutFieldsBytesOption = {
 			saveAsImage: {show: true}
 		}
 	},
+	/*
 	legend: {
 		data: ["bytes allocated per iteration"],
 		orient: 'horizontal',
 		top: 'bottom'
 	},
-	yAxis: {
+	*/
+	xAxis: {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","gommon/log-8","rs/zerolog-8","sirupsen/logrus-8"],
 		axisLabel: {
@@ -416,7 +436,7 @@ var BenchmarkDisabledWithoutFieldsBytesOption = {
 			rotate: 30
 		}
 	},
-	xAxis: {
+	yAxis: {
 		type: 'value'
 	},
 	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,0,16,184,0,16,0,16]}]
@@ -441,12 +461,14 @@ var BenchmarkWithoutFieldsNsOption = {
 			saveAsImage: {show: true}
 		}
 	},
+	/*
 	legend: {
 		data: ["nanosecond per iteration"],
 		orient: 'horizontal',
 		top: 'bottom'
 	},
-	yAxis: {
+	*/
+	xAxis: {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","gommon/log-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","rs/zerolog.Formatting-8","sirupsen/logrus-8","stdlib.Printf-8","stdlib.Println-8"],
 		axisLabel: {
@@ -454,7 +476,7 @@ var BenchmarkWithoutFieldsNsOption = {
 			rotate: 30
 		}
 	},
-	xAxis: {
+	yAxis: {
 		type: 'value'
 	},
 	series: [{"name":"nanosecond per iteration","type":"bar","data":[173,157,39.7,220,3794,2452,359,561,218,5463,112,113,3525,891,3371,397]}]
@@ -479,12 +501,14 @@ var BenchmarkWithoutFieldsBytesOption = {
 			saveAsImage: {show: true}
 		}
 	},
+	/*
 	legend: {
 		data: ["bytes allocated per iteration"],
 		orient: 'horizontal',
 		top: 'bottom'
 	},
-	yAxis: {
+	*/
+	xAxis: {
 		type: 'category',
 		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","gommon/log-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","rs/zerolog.Formatting-8","sirupsen/logrus-8","stdlib.Printf-8","stdlib.Println-8"],
 		axisLabel: {
@@ -492,7 +516,7 @@ var BenchmarkWithoutFieldsBytesOption = {
 			rotate: 30
 		}
 	},
-	xAxis: {
+	yAxis: {
 		type: 'value'
 	},
 	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,0,0,80,2069,584,656,1225,488,1592,0,0,2060,1507,2058,80]}]
