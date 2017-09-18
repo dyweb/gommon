@@ -1,10 +1,10 @@
 package main
 
 import (
-	"testing"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"testing"
 )
 
 func TestECharts_Render(t *testing.T) {

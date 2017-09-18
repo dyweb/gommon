@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strings"
 
 	"golang.org/x/tools/benchmark/parse"
@@ -36,8 +37,14 @@ func main() {
 	}
 	fmt.Printf("output has %d groups\n", len(groups))
 	charts := ECharts{Title: benchmarkOutput}
+	sortedGroups := make([]string, 0, len(groups))
+	for groupName := range groups {
+		sortedGroups = append(sortedGroups, groupName)
+	}
+	sort.Strings(sortedGroups)
 	// one graph for each group
-	for groupName, group := range groups {
+	for _, groupName := range sortedGroups {
+		group := groups[groupName]
 		// nanoseconds per iteration
 		nsChart := EChartOption{
 			// TODO: groupName might not be a valid javascript variable name, sanitize?
@@ -58,8 +65,13 @@ func main() {
 			Name: "bytes allocated per iteration",
 			Type: "bar",
 		}
-		// TODO: sort by sub ...
-		for subName, b := range group {
+		keys := make([]string, 0, len(group))
+		for subName := range group {
+			keys = append(keys, subName)
+		}
+		sort.Strings(keys)
+		for _, subName := range keys {
+			b := group[subName]
 			nsChart.YAxis = append(nsChart.YAxis, subName)
 			nsSeries.Data = append(nsSeries.Data, float64(b.NsPerOp))
 			bChart.YAxis = append(bChart.YAxis, subName)
@@ -98,7 +110,7 @@ func parseFile(path string) parse.Set {
 		fatal(err)
 	}
 	defer f.Close()
-	// TODO: I think benchcmp might allow concat output of different runs, so there is more than one result for one benchmark
+	// TODO: I think benchcmp might allow concat output of different runs, so there is more than one result for one benchmark, it has select best ....
 	b, err := parse.ParseSet(f)
 	if err != nil {
 		fatal(err)

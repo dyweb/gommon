@@ -8,24 +8,6 @@
 </head>
 <body>
 
-<div id="BenchmarkDisabledWithoutFieldsNs" style="width: 1024px;height:600px;"></div>
-<br/>
-
-<div id="BenchmarkDisabledWithoutFieldsBytes" style="width: 1024px;height:600px;"></div>
-<br/>
-
-<div id="BenchmarkDisabledAddingFieldsNs" style="width: 1024px;height:600px;"></div>
-<br/>
-
-<div id="BenchmarkDisabledAddingFieldsBytes" style="width: 1024px;height:600px;"></div>
-<br/>
-
-<div id="BenchmarkWithoutFieldsNs" style="width: 1024px;height:600px;"></div>
-<br/>
-
-<div id="BenchmarkWithoutFieldsBytes" style="width: 1024px;height:600px;"></div>
-<br/>
-
 <div id="BenchmarkAccumulatedContextNs" style="width: 1024px;height:600px;"></div>
 <br/>
 
@@ -44,264 +26,24 @@
 <div id="BenchmarkDisabledAccumulatedContextBytes" style="width: 1024px;height:600px;"></div>
 <br/>
 
+<div id="BenchmarkDisabledAddingFieldsNs" style="width: 1024px;height:600px;"></div>
+<br/>
 
-<script type="text/javascript">
-var BenchmarkDisabledWithoutFieldsNs = echarts.init(document.getElementById('BenchmarkDisabledWithoutFieldsNs'));
+<div id="BenchmarkDisabledAddingFieldsBytes" style="width: 1024px;height:600px;"></div>
+<br/>
 
-var BenchmarkDisabledWithoutFieldsNsOption = {
-	title: {
-		text: 'BenchmarkDisabledWithoutFields NsPerOp'
-	},
-	tooltip: {},
-	toolbox: {
-		feature: {
-			dataView: {show: true, readOnly: true},
-			magicType: {show: true, type: ['line', 'bar']},
-			restore: {show: true},
-			saveAsImage: {show: true}
-		}
-	},
-	legend: {
-		data: ["nanosecond per iteration"],
-//            orient: 'vertical',
-		orient: 'horizontal',
-//            left: 'right',
-		top: 'bottom'
-	},
-	yAxis: {
-		type: 'category',
-		data: ["apex/log-8","sirupsen/logrus-8","Zap.Sugar-8","gommon/log-8","Zap.Check-8","Zap.SugarFormatting-8","Zap-8","rs/zerolog-8"],
-		axisLabel: {
-			interval: 0,
-			rotate: 30
-		}
-	},
-	xAxis: {
-		type: 'value',
-		name: 'x Axis',
-		nameLocation: 'middle',
-		nameGap: 20
-	},
-	series: [{"name":"nanosecond per iteration","type":"bar","data":[4.65,9.88,11.7,9.57,7.63,71.9,7.11,3.28]}]
-};
+<div id="BenchmarkDisabledWithoutFieldsNs" style="width: 1024px;height:600px;"></div>
+<br/>
 
-BenchmarkDisabledWithoutFieldsNs.setOption(BenchmarkDisabledWithoutFieldsNsOption);
-</script>
+<div id="BenchmarkDisabledWithoutFieldsBytes" style="width: 1024px;height:600px;"></div>
+<br/>
 
-<script type="text/javascript">
-var BenchmarkDisabledWithoutFieldsBytes = echarts.init(document.getElementById('BenchmarkDisabledWithoutFieldsBytes'));
+<div id="BenchmarkWithoutFieldsNs" style="width: 1024px;height:600px;"></div>
+<br/>
 
-var BenchmarkDisabledWithoutFieldsBytesOption = {
-	title: {
-		text: 'BenchmarkDisabledWithoutFields BytesPerOp'
-	},
-	tooltip: {},
-	toolbox: {
-		feature: {
-			dataView: {show: true, readOnly: true},
-			magicType: {show: true, type: ['line', 'bar']},
-			restore: {show: true},
-			saveAsImage: {show: true}
-		}
-	},
-	legend: {
-		data: ["bytes allocated per iteration"],
-//            orient: 'vertical',
-		orient: 'horizontal',
-//            left: 'right',
-		top: 'bottom'
-	},
-	yAxis: {
-		type: 'category',
-		data: ["apex/log-8","sirupsen/logrus-8","Zap.Sugar-8","gommon/log-8","Zap.Check-8","Zap.SugarFormatting-8","Zap-8","rs/zerolog-8"],
-		axisLabel: {
-			interval: 0,
-			rotate: 30
-		}
-	},
-	xAxis: {
-		type: 'value',
-		name: 'x Axis',
-		nameLocation: 'middle',
-		nameGap: 20
-	},
-	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,16,16,16,0,184,0,0]}]
-};
+<div id="BenchmarkWithoutFieldsBytes" style="width: 1024px;height:600px;"></div>
+<br/>
 
-BenchmarkDisabledWithoutFieldsBytes.setOption(BenchmarkDisabledWithoutFieldsBytesOption);
-</script>
-
-<script type="text/javascript">
-var BenchmarkDisabledAddingFieldsNs = echarts.init(document.getElementById('BenchmarkDisabledAddingFieldsNs'));
-
-var BenchmarkDisabledAddingFieldsNsOption = {
-	title: {
-		text: 'BenchmarkDisabledAddingFields NsPerOp'
-	},
-	tooltip: {},
-	toolbox: {
-		feature: {
-			dataView: {show: true, readOnly: true},
-			magicType: {show: true, type: ['line', 'bar']},
-			restore: {show: true},
-			saveAsImage: {show: true}
-		}
-	},
-	legend: {
-		data: ["nanosecond per iteration"],
-//            orient: 'vertical',
-		orient: 'horizontal',
-//            left: 'right',
-		top: 'bottom'
-	},
-	yAxis: {
-		type: 'category',
-		data: ["rs/zerolog-8","Zap-8","apex/log-8","Zap.Check-8","sirupsen/logrus-8","Zap.Sugar-8"],
-		axisLabel: {
-			interval: 0,
-			rotate: 30
-		}
-	},
-	xAxis: {
-		type: 'value',
-		name: 'x Axis',
-		nameLocation: 'middle',
-		nameGap: 20
-	},
-	series: [{"name":"nanosecond per iteration","type":"bar","data":[55.7,163,289,7.17,533,161]}]
-};
-
-BenchmarkDisabledAddingFieldsNs.setOption(BenchmarkDisabledAddingFieldsNsOption);
-</script>
-
-<script type="text/javascript">
-var BenchmarkDisabledAddingFieldsBytes = echarts.init(document.getElementById('BenchmarkDisabledAddingFieldsBytes'));
-
-var BenchmarkDisabledAddingFieldsBytesOption = {
-	title: {
-		text: 'BenchmarkDisabledAddingFields BytesPerOp'
-	},
-	tooltip: {},
-	toolbox: {
-		feature: {
-			dataView: {show: true, readOnly: true},
-			magicType: {show: true, type: ['line', 'bar']},
-			restore: {show: true},
-			saveAsImage: {show: true}
-		}
-	},
-	legend: {
-		data: ["bytes allocated per iteration"],
-//            orient: 'vertical',
-		orient: 'horizontal',
-//            left: 'right',
-		top: 'bottom'
-	},
-	yAxis: {
-		type: 'category',
-		data: ["rs/zerolog-8","Zap-8","apex/log-8","Zap.Check-8","sirupsen/logrus-8","Zap.Sugar-8"],
-		axisLabel: {
-			interval: 0,
-			rotate: 30
-		}
-	},
-	xAxis: {
-		type: 'value',
-		name: 'x Axis',
-		nameLocation: 'middle',
-		nameGap: 20
-	},
-	series: [{"name":"bytes allocated per iteration","type":"bar","data":[128,768,934,0,1541,344]}]
-};
-
-BenchmarkDisabledAddingFieldsBytes.setOption(BenchmarkDisabledAddingFieldsBytesOption);
-</script>
-
-<script type="text/javascript">
-var BenchmarkWithoutFieldsNs = echarts.init(document.getElementById('BenchmarkWithoutFieldsNs'));
-
-var BenchmarkWithoutFieldsNsOption = {
-	title: {
-		text: 'BenchmarkWithoutFields NsPerOp'
-	},
-	tooltip: {},
-	toolbox: {
-		feature: {
-			dataView: {show: true, readOnly: true},
-			magicType: {show: true, type: ['line', 'bar']},
-			restore: {show: true},
-			saveAsImage: {show: true}
-		}
-	},
-	legend: {
-		data: ["nanosecond per iteration"],
-//            orient: 'vertical',
-		orient: 'horizontal',
-//            left: 'right',
-		top: 'bottom'
-	},
-	yAxis: {
-		type: 'category',
-		data: ["Zap.CheckSampled-8","Zap.Sugar-8","stdlib.Println-8","go.pedge.io/lion-8","Zap-8","rs/zerolog.Check-8","rs/zerolog-8","sirupsen/logrus-8","gommon/log-8","rs/zerolog.Formatting-8","Zap.Check-8","stdlib.Printf-8","Zap.SugarFormatting-8","go-kit/kit/log-8","apex/log-8","inconshreveable/log15-8"],
-		axisLabel: {
-			interval: 0,
-			rotate: 30
-		}
-	},
-	xAxis: {
-		type: 'value',
-		name: 'x Axis',
-		nameLocation: 'middle',
-		nameGap: 20
-	},
-	series: [{"name":"nanosecond per iteration","type":"bar","data":[39.7,220,397,561,173,113,112,891,218,3525,157,3371,3794,359,2452,5463]}]
-};
-
-BenchmarkWithoutFieldsNs.setOption(BenchmarkWithoutFieldsNsOption);
-</script>
-
-<script type="text/javascript">
-var BenchmarkWithoutFieldsBytes = echarts.init(document.getElementById('BenchmarkWithoutFieldsBytes'));
-
-var BenchmarkWithoutFieldsBytesOption = {
-	title: {
-		text: 'BenchmarkWithoutFields BytesPerOp'
-	},
-	tooltip: {},
-	toolbox: {
-		feature: {
-			dataView: {show: true, readOnly: true},
-			magicType: {show: true, type: ['line', 'bar']},
-			restore: {show: true},
-			saveAsImage: {show: true}
-		}
-	},
-	legend: {
-		data: ["bytes allocated per iteration"],
-//            orient: 'vertical',
-		orient: 'horizontal',
-//            left: 'right',
-		top: 'bottom'
-	},
-	yAxis: {
-		type: 'category',
-		data: ["Zap.CheckSampled-8","Zap.Sugar-8","stdlib.Println-8","go.pedge.io/lion-8","Zap-8","rs/zerolog.Check-8","rs/zerolog-8","sirupsen/logrus-8","gommon/log-8","rs/zerolog.Formatting-8","Zap.Check-8","stdlib.Printf-8","Zap.SugarFormatting-8","go-kit/kit/log-8","apex/log-8","inconshreveable/log15-8"],
-		axisLabel: {
-			interval: 0,
-			rotate: 30
-		}
-	},
-	xAxis: {
-		type: 'value',
-		name: 'x Axis',
-		nameLocation: 'middle',
-		nameGap: 20
-	},
-	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,80,80,1225,0,0,0,1507,488,2060,0,2058,2069,656,584,1592]}]
-};
-
-BenchmarkWithoutFieldsBytes.setOption(BenchmarkWithoutFieldsBytesOption);
-</script>
 
 <script type="text/javascript">
 var BenchmarkAccumulatedContextNs = echarts.init(document.getElementById('BenchmarkAccumulatedContextNs'));
@@ -321,26 +63,21 @@ var BenchmarkAccumulatedContextNsOption = {
 	},
 	legend: {
 		data: ["nanosecond per iteration"],
-//            orient: 'vertical',
 		orient: 'horizontal',
-//            left: 'right',
 		top: 'bottom'
 	},
 	yAxis: {
 		type: 'category',
-		data: ["rs/zerolog.Check-8","rs/zerolog.Formatting-8","go-kit/kit/log-8","sirupsen/logrus-8","rs/zerolog-8","Zap-8","Zap.SugarFormatting-8","go.pedge.io/lion-8","Zap.Sugar-8","apex/log-8","inconshreveable/log15-8","Zap.Check-8","Zap.CheckSampled-8"],
+		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","rs/zerolog.Formatting-8","sirupsen/logrus-8"],
 		axisLabel: {
 			interval: 0,
 			rotate: 30
 		}
 	},
 	xAxis: {
-		type: 'value',
-		name: 'x Axis',
-		nameLocation: 'middle',
-		nameGap: 20
+		type: 'value'
 	},
-	series: [{"name":"nanosecond per iteration","type":"bar","data":[117,3525,7060,8382,117,182,3812,2220,219,30764,18306,182,41.6]}]
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[182,182,41.6,219,3812,30764,7060,2220,18306,117,117,3525,8382]}]
 };
 
 BenchmarkAccumulatedContextNs.setOption(BenchmarkAccumulatedContextNsOption);
@@ -364,26 +101,21 @@ var BenchmarkAccumulatedContextBytesOption = {
 	},
 	legend: {
 		data: ["bytes allocated per iteration"],
-//            orient: 'vertical',
 		orient: 'horizontal',
-//            left: 'right',
 		top: 'bottom'
 	},
 	yAxis: {
 		type: 'category',
-		data: ["rs/zerolog.Check-8","rs/zerolog.Formatting-8","go-kit/kit/log-8","sirupsen/logrus-8","rs/zerolog-8","Zap-8","Zap.SugarFormatting-8","go.pedge.io/lion-8","Zap.Sugar-8","apex/log-8","inconshreveable/log15-8","Zap.Check-8","Zap.CheckSampled-8"],
+		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","rs/zerolog.Formatting-8","sirupsen/logrus-8"],
 		axisLabel: {
 			interval: 0,
 			rotate: 30
 		}
 	},
 	xAxis: {
-		type: 'value',
-		name: 'x Axis',
-		nameLocation: 'middle',
-		nameGap: 20
+		type: 'value'
 	},
-	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,2060,6802,12615,0,0,2078,5870,80,6648,3799,0,0]}]
+	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,0,0,80,2078,6648,6802,5870,3799,0,0,2060,12615]}]
 };
 
 BenchmarkAccumulatedContextBytes.setOption(BenchmarkAccumulatedContextBytesOption);
@@ -407,26 +139,21 @@ var BenchmarkAddingFieldsNsOption = {
 	},
 	legend: {
 		data: ["nanosecond per iteration"],
-//            orient: 'vertical',
 		orient: 'horizontal',
-//            left: 'right',
 		top: 'bottom'
 	},
 	yAxis: {
 		type: 'category',
-		data: ["inconshreveable/log15-8","Zap.Check-8","sirupsen/logrus-8","Zap.Sugar-8","Zap.CheckSampled-8","rs/zerolog-8","go.pedge.io/lion-8","Zap-8","rs/zerolog.Check-8","apex/log-8","go-kit/kit/log-8"],
+		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","sirupsen/logrus-8"],
 		axisLabel: {
 			interval: 0,
 			rotate: 30
 		}
 	},
 	xAxis: {
-		type: 'value',
-		name: 'x Axis',
-		nameLocation: 'middle',
-		nameGap: 20
+		type: 'value'
 	},
-	series: [{"name":"nanosecond per iteration","type":"bar","data":[34949,1339,9031,1630,173,6327,6428,1299,6180,47915,6946]}]
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[1299,1339,173,1630,47915,6946,6428,34949,6327,6180,9031]}]
 };
 
 BenchmarkAddingFieldsNs.setOption(BenchmarkAddingFieldsNsOption);
@@ -450,26 +177,21 @@ var BenchmarkAddingFieldsBytesOption = {
 	},
 	legend: {
 		data: ["bytes allocated per iteration"],
-//            orient: 'vertical',
 		orient: 'horizontal',
-//            left: 'right',
 		top: 'bottom'
 	},
 	yAxis: {
 		type: 'category',
-		data: ["inconshreveable/log15-8","Zap.Check-8","sirupsen/logrus-8","Zap.Sugar-8","Zap.CheckSampled-8","rs/zerolog-8","go.pedge.io/lion-8","Zap-8","rs/zerolog.Check-8","apex/log-8","go-kit/kit/log-8"],
+		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","sirupsen/logrus-8"],
 		axisLabel: {
 			interval: 0,
 			rotate: 30
 		}
 	},
 	xAxis: {
-		type: 'value',
-		name: 'x Axis',
-		nameLocation: 'middle',
-		nameGap: 20
+		type: 'value'
 	},
-	series: [{"name":"bytes allocated per iteration","type":"bar","data":[7705,771,14155,1729,88,8564,9324,771,8564,7582,6635]}]
+	series: [{"name":"bytes allocated per iteration","type":"bar","data":[771,771,88,1729,7582,6635,9324,7705,8564,8564,14155]}]
 };
 
 BenchmarkAddingFieldsBytes.setOption(BenchmarkAddingFieldsBytesOption);
@@ -493,26 +215,21 @@ var BenchmarkDisabledAccumulatedContextNsOption = {
 	},
 	legend: {
 		data: ["nanosecond per iteration"],
-//            orient: 'vertical',
 		orient: 'horizontal',
-//            left: 'right',
 		top: 'bottom'
 	},
 	yAxis: {
 		type: 'category',
-		data: ["apex/log-8","Zap-8","Zap.SugarFormatting-8","sirupsen/logrus-8","rs/zerolog-8","Zap.Sugar-8","Zap.Check-8"],
+		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","rs/zerolog-8","sirupsen/logrus-8"],
 		axisLabel: {
 			interval: 0,
 			rotate: 30
 		}
 	},
 	xAxis: {
-		type: 'value',
-		name: 'x Axis',
-		nameLocation: 'middle',
-		nameGap: 20
+		type: 'value'
 	},
-	series: [{"name":"nanosecond per iteration","type":"bar","data":[1.32,7.07,71.7,9.66,3.28,11.7,7.19]}]
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[7.07,7.19,11.7,71.7,1.32,3.28,9.66]}]
 };
 
 BenchmarkDisabledAccumulatedContextNs.setOption(BenchmarkDisabledAccumulatedContextNsOption);
@@ -536,29 +253,252 @@ var BenchmarkDisabledAccumulatedContextBytesOption = {
 	},
 	legend: {
 		data: ["bytes allocated per iteration"],
-//            orient: 'vertical',
 		orient: 'horizontal',
-//            left: 'right',
 		top: 'bottom'
 	},
 	yAxis: {
 		type: 'category',
-		data: ["apex/log-8","Zap-8","Zap.SugarFormatting-8","sirupsen/logrus-8","rs/zerolog-8","Zap.Sugar-8","Zap.Check-8"],
+		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","rs/zerolog-8","sirupsen/logrus-8"],
 		axisLabel: {
 			interval: 0,
 			rotate: 30
 		}
 	},
 	xAxis: {
-		type: 'value',
-		name: 'x Axis',
-		nameLocation: 'middle',
-		nameGap: 20
+		type: 'value'
 	},
-	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,0,184,16,0,16,0]}]
+	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,0,16,184,0,0,16]}]
 };
 
 BenchmarkDisabledAccumulatedContextBytes.setOption(BenchmarkDisabledAccumulatedContextBytesOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkDisabledAddingFieldsNs = echarts.init(document.getElementById('BenchmarkDisabledAddingFieldsNs'));
+
+var BenchmarkDisabledAddingFieldsNsOption = {
+	title: {
+		text: 'BenchmarkDisabledAddingFields NsPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["nanosecond per iteration"],
+		orient: 'horizontal',
+		top: 'bottom'
+	},
+	yAxis: {
+		type: 'category',
+		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","apex/log-8","rs/zerolog-8","sirupsen/logrus-8"],
+		axisLabel: {
+			interval: 0,
+			rotate: 30
+		}
+	},
+	xAxis: {
+		type: 'value'
+	},
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[163,7.17,161,289,55.7,533]}]
+};
+
+BenchmarkDisabledAddingFieldsNs.setOption(BenchmarkDisabledAddingFieldsNsOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkDisabledAddingFieldsBytes = echarts.init(document.getElementById('BenchmarkDisabledAddingFieldsBytes'));
+
+var BenchmarkDisabledAddingFieldsBytesOption = {
+	title: {
+		text: 'BenchmarkDisabledAddingFields BytesPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["bytes allocated per iteration"],
+		orient: 'horizontal',
+		top: 'bottom'
+	},
+	yAxis: {
+		type: 'category',
+		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","apex/log-8","rs/zerolog-8","sirupsen/logrus-8"],
+		axisLabel: {
+			interval: 0,
+			rotate: 30
+		}
+	},
+	xAxis: {
+		type: 'value'
+	},
+	series: [{"name":"bytes allocated per iteration","type":"bar","data":[768,0,344,934,128,1541]}]
+};
+
+BenchmarkDisabledAddingFieldsBytes.setOption(BenchmarkDisabledAddingFieldsBytesOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkDisabledWithoutFieldsNs = echarts.init(document.getElementById('BenchmarkDisabledWithoutFieldsNs'));
+
+var BenchmarkDisabledWithoutFieldsNsOption = {
+	title: {
+		text: 'BenchmarkDisabledWithoutFields NsPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["nanosecond per iteration"],
+		orient: 'horizontal',
+		top: 'bottom'
+	},
+	yAxis: {
+		type: 'category',
+		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","gommon/log-8","rs/zerolog-8","sirupsen/logrus-8"],
+		axisLabel: {
+			interval: 0,
+			rotate: 30
+		}
+	},
+	xAxis: {
+		type: 'value'
+	},
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[7.11,7.63,11.7,71.9,4.65,9.57,3.28,9.88]}]
+};
+
+BenchmarkDisabledWithoutFieldsNs.setOption(BenchmarkDisabledWithoutFieldsNsOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkDisabledWithoutFieldsBytes = echarts.init(document.getElementById('BenchmarkDisabledWithoutFieldsBytes'));
+
+var BenchmarkDisabledWithoutFieldsBytesOption = {
+	title: {
+		text: 'BenchmarkDisabledWithoutFields BytesPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["bytes allocated per iteration"],
+		orient: 'horizontal',
+		top: 'bottom'
+	},
+	yAxis: {
+		type: 'category',
+		data: ["Zap-8","Zap.Check-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","gommon/log-8","rs/zerolog-8","sirupsen/logrus-8"],
+		axisLabel: {
+			interval: 0,
+			rotate: 30
+		}
+	},
+	xAxis: {
+		type: 'value'
+	},
+	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,0,16,184,0,16,0,16]}]
+};
+
+BenchmarkDisabledWithoutFieldsBytes.setOption(BenchmarkDisabledWithoutFieldsBytesOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkWithoutFieldsNs = echarts.init(document.getElementById('BenchmarkWithoutFieldsNs'));
+
+var BenchmarkWithoutFieldsNsOption = {
+	title: {
+		text: 'BenchmarkWithoutFields NsPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["nanosecond per iteration"],
+		orient: 'horizontal',
+		top: 'bottom'
+	},
+	yAxis: {
+		type: 'category',
+		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","gommon/log-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","rs/zerolog.Formatting-8","sirupsen/logrus-8","stdlib.Printf-8","stdlib.Println-8"],
+		axisLabel: {
+			interval: 0,
+			rotate: 30
+		}
+	},
+	xAxis: {
+		type: 'value'
+	},
+	series: [{"name":"nanosecond per iteration","type":"bar","data":[173,157,39.7,220,3794,2452,359,561,218,5463,112,113,3525,891,3371,397]}]
+};
+
+BenchmarkWithoutFieldsNs.setOption(BenchmarkWithoutFieldsNsOption);
+</script>
+
+<script type="text/javascript">
+var BenchmarkWithoutFieldsBytes = echarts.init(document.getElementById('BenchmarkWithoutFieldsBytes'));
+
+var BenchmarkWithoutFieldsBytesOption = {
+	title: {
+		text: 'BenchmarkWithoutFields BytesPerOp'
+	},
+	tooltip: {},
+	toolbox: {
+		feature: {
+			dataView: {show: true, readOnly: true},
+			magicType: {show: true, type: ['line', 'bar']},
+			restore: {show: true},
+			saveAsImage: {show: true}
+		}
+	},
+	legend: {
+		data: ["bytes allocated per iteration"],
+		orient: 'horizontal',
+		top: 'bottom'
+	},
+	yAxis: {
+		type: 'category',
+		data: ["Zap-8","Zap.Check-8","Zap.CheckSampled-8","Zap.Sugar-8","Zap.SugarFormatting-8","apex/log-8","go-kit/kit/log-8","go.pedge.io/lion-8","gommon/log-8","inconshreveable/log15-8","rs/zerolog-8","rs/zerolog.Check-8","rs/zerolog.Formatting-8","sirupsen/logrus-8","stdlib.Printf-8","stdlib.Println-8"],
+		axisLabel: {
+			interval: 0,
+			rotate: 30
+		}
+	},
+	xAxis: {
+		type: 'value'
+	},
+	series: [{"name":"bytes allocated per iteration","type":"bar","data":[0,0,0,80,2069,584,656,1225,488,1592,0,0,2060,1507,2058,80]}]
+};
+
+BenchmarkWithoutFieldsBytes.setOption(BenchmarkWithoutFieldsBytesOption);
 </script>
 
 </body>
