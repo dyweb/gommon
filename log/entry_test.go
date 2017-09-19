@@ -49,7 +49,6 @@ func TestEntry_LeveledLog(t *testing.T) {
 	entry4.Info("show me source")
 }
 
-
 func TestEntry_DeleteField(t *testing.T) {
 	logger := NewLogger()
 	entry := logger.RegisterPkg()
