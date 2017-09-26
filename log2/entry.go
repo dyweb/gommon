@@ -1,6 +1,10 @@
 package log2
 
-import "io"
+import (
+	"io"
+
+	"github.com/dyweb/gommon/structure"
+)
 
 type EntryType uint8
 
@@ -9,22 +13,32 @@ type Entry struct {
 	Children        []*Entry
 	IncludePackage  bool
 	IncludeFunction bool
-	IncludeLine     bool
+	IncludeFile     bool
 	Package         string
 	Function        string
-	Line            string // TODO: maybe int?
+	File            string // location in source code including line number
 }
 
-func (e *Entry) PrintEntryTree(w io.Writer) {
-
+func (e *Entry) PrintEntryTreeTo(w io.Writer) {
+	st := e.ToStringTree()
+	st.PrintTo(w)
 }
 
-func (e *Entry) PrintEntireEntryTree(w io.Writer) {
+func (e *Entry) ToStringTree() *structure.StringTreeNode {
+	// TODO: use package or function or line or all of them?
+	root := &structure.StringTreeNode{Val: e.Package}
+	for _, child := range e.Children {
+		root.Append(*child.ToStringTree())
+	}
+	return root
+}
+
+func (e *Entry) PrintEntireEntryTreeTo(w io.Writer) {
 	// find the root
 	root := e
 	for root.Parent != nil {
 		root = root.Parent
 	}
 	// print from root
-	root.PrintEntryTree(w)
+	root.PrintEntryTreeTo(w)
 }

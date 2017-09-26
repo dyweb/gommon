@@ -16,3 +16,8 @@ func GetCallerPackage(skip int) string {
 	lastDot := strings.LastIndex(fnName, ".")
 	return fnName[:lastDot]
 }
+
+// TODO: we can get file and line as well ...
+//func GetCallerPackageAndFunc(skip int) (string, string) {
+//
+//}
