@@ -47,15 +47,30 @@ tree command example output
 */
 
 func (tree *StringTreeNode) PrintTo(w io.Writer) {
-	treePrintHelper(tree, 0, false, w)
+	//treePrintHelper(tree, 0, true, false, w)
+	treePrintHelper(tree, 0, true, true, w)
 }
 
-func treePrintHelper(tree *StringTreeNode, level int, lastOfUs bool, w io.Writer) {
+func treePrintHelper(tree *StringTreeNode, level int, lastOfParent bool, lastOfUs bool, w io.Writer) {
 	// print the prefix before me, both vertically and horizontally
-	for i := 0; i < level-1; i++ {
+	for i := 0; i < level-2; i++ {
 		w.Write(vLine)
 		w.Write(hSpace)
 	}
+	// avoid the extra vertical line, we use level-2 and handle level-1 here
+	// main
+	// └── http
+	// │    └── auth
+	if level > 1 {
+		if lastOfParent {
+			w.Write(space)
+			w.Write(hSpace)
+		} else {
+			w.Write(vLine)
+			w.Write(hSpace)
+		}
+	}
+	// ├──  or └──
 	if level != 0 {
 		if !lastOfUs {
 			w.Write(vLineStart)
@@ -71,9 +86,9 @@ func treePrintHelper(tree *StringTreeNode, level int, lastOfUs bool, w io.Writer
 	level++
 	n := len(tree.Children)
 	for i := 0; i < n-1; i++ {
-		treePrintHelper(&tree.Children[i], level, false, w)
+		treePrintHelper(&tree.Children[i], level, lastOfUs, false, w)
 	}
 	if n > 0 {
-		treePrintHelper(&tree.Children[n-1], level, true, w)
+		treePrintHelper(&tree.Children[n-1], level, lastOfUs, true, w)
 	}
 }

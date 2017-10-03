@@ -2,9 +2,13 @@ package log2
 
 import (
 	"testing"
+	"bytes"
+
+	asst "github.com/stretchr/testify/assert"
 )
 
 func TestEntry_PrintEntryTree(t *testing.T) {
+	assert := asst.New(t)
 	project := newEntry()
 	project.Package = "main"
 	http := newEntry()
@@ -14,6 +18,13 @@ func TestEntry_PrintEntryTree(t *testing.T) {
 	auth := newEntry()
 	auth.Package = "auth"
 	http.Children = append(http.Children, auth)
-	// FIXME: there is extra vertical line
-	project.PrintEntryTree()
+	// FIXED: there was an extra vertical line in front of auth
+	var b bytes.Buffer
+	expected :=
+		`main
+└── http
+     └── auth
+`
+	project.PrintEntryTreeTo(&b)
+	assert.Equal(expected, string(b.Bytes()))
 }

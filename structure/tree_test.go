@@ -1,9 +1,8 @@
 package structure
 
 import (
-	"testing"
-
 	"bytes"
+	"testing"
 
 	asst "github.com/stretchr/testify/assert"
 )
@@ -24,8 +23,31 @@ func TestStringTreeNode_PrintTo(t *testing.T) {
 	root.PrintTo(&b)
 	assert.Equal(expected, string(b.Bytes()))
 
-	// FIXME: there are extra vertical lines
+	// FIXED: there were extra vertical lines
 	// main
 	// └── http
 	// │    └── auth
+	root.Children = root.Children[0:1]
+	expected =
+		`root
+└── level1-A
+     └── level2-A
+`
+	b.Reset()
+	root.PrintTo(&b)
+	assert.Equal(expected, string(b.Bytes()))
+
+	// TODO: test more complex situation like this
+	//.
+	//├── benchgraph
+	//│   ├── echart.go
+	//│   ├── echart_test.go
+	//│   │   └── zap-no-delete-field.txt
+	//│   │
+	//│   └── fixture
+	//│       ├── zap-no-delete-field.txt
+	//│       └── zap.txt
+	//├── gommon
+	//│   └── main.go
+	//└── README.md
 }
