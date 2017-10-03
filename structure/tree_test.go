@@ -3,14 +3,15 @@ package structure
 import (
 	"testing"
 
-	asst "github.com/stretchr/testify/assert"
 	"bytes"
+
+	asst "github.com/stretchr/testify/assert"
 )
 
 func TestStringTreeNode_PrintTo(t *testing.T) {
 	assert := asst.New(t)
 	expected :=
-`root
+		`root
 ├── level1-A
 │    └── level2-A
 └── level1-B
@@ -22,4 +23,9 @@ func TestStringTreeNode_PrintTo(t *testing.T) {
 	var b bytes.Buffer
 	root.PrintTo(&b)
 	assert.Equal(expected, string(b.Bytes()))
+
+	// FIXME: there are extra vertical lines
+	// main
+	// └── http
+	// │    └── auth
 }

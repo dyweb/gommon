@@ -2,6 +2,7 @@ package log2
 
 import (
 	"io"
+	"os"
 
 	"github.com/dyweb/gommon/structure"
 )
@@ -17,6 +18,17 @@ type Entry struct {
 	Package         string
 	Function        string
 	File            string // location in source code including line number
+}
+
+func newEntry() *Entry {
+	// TODO: grab the caller information here?
+	return &Entry{
+		Parent: nil,
+	}
+}
+
+func (e *Entry) PrintEntryTree() {
+	e.PrintEntireEntryTreeTo(os.Stdout)
 }
 
 func (e *Entry) PrintEntryTreeTo(w io.Writer) {
