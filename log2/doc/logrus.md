@@ -86,6 +86,7 @@ Differences with gommon/log v1
 - has json formatter
 - has `Debug` etc. on `Logger`, implemented by create a new entry
   - gommon: user must create entry if they want to log
+- has `*ln` functions, where `*` is `Debug`, `Info` etc.
 - does not have concept of package
 - does not have filter by package
 - does not have source line

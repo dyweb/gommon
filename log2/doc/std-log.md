@@ -11,7 +11,11 @@ https://golang.org/src/log/log.go
 
 ````go
 var std = New(os.Stderr, "", LstdFlags)
-  
+
+func Printf(format string, v ...interface{}) {
+  	std.Output(2, fmt.Sprintf(format, v...))
+}
+
 // A Logger represents an active logging object that generates lines of
 // output to an io.Writer. Each logging operation makes a single call to
 // the Writer's Write method. A Logger can be used simultaneously from
