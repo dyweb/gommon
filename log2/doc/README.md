@@ -12,8 +12,9 @@ https://github.com/avelino/awesome-go#logging
 - [gokit/log](gokit-log.md)
 - [nanolog](nanolog.md)
 - [glog](glog.md)
-
+- [seelog](seelog.md)
 - [ ] TODO: survey of Java logging package, maybe C++/Rust as well?
+- [ ] TODO: might check open tracing as well
 
 ## Goals
 
