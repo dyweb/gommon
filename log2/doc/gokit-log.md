@@ -2,11 +2,14 @@
 
 https://github.com/go-kit/kit/tree/master/log
 
-- [ ] [Slide: The Hunt for a Logger Interface](http://go-talks.appspot.com/github.com/ChrisHines/talks/structured-logging/structured-logging.slide)
-  - mainly about design interface, logging is just the context
-  - glog is ad-hoc, non structual
-  - log15 allow context `log.Info("I am msg", "t1", "v1", "t2", "v2")`, `clog = log.New("common", "field")`
-  - mainly focus on small interface (just one method, seems to extreme to me)
+- complexity: low
+
+[Slide: The Hunt for a Logger Interface](http://go-talks.appspot.com/github.com/ChrisHines/talks/structured-logging/structured-logging.slide)
+
+- mainly about design interface, logging is just the context
+- glog is ad-hoc, non structual
+- log15 allow context `log.Info("I am msg", "t1", "v1", "t2", "v2")`, `clog = log.New("common", "field")`
+- mainly focus on small interface (just one method, seems to extreme to me)
 
 
 - it supports redirect stdlib logger

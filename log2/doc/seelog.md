@@ -2,6 +2,8 @@
 
 https://github.com/cihub/seelog
 
+- complexity: high
+
 it has very detailed config (like log4j), also allow control logging behaviour of library.
 besides level, it also support file and function pattern.
 

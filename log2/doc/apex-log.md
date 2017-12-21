@@ -2,6 +2,7 @@
 
 https://github.com/apex/log
 
+- complexity: medium
 - use handler instead of formatter + writer
   - like `net/http` you can use a function as handler
   - [ ] TODO: why it is `func (f HandlerFunc)` instead of `func (f *HandlerFunc)`, can we have a `type HandlerFuncPtr`?

@@ -2,6 +2,7 @@
 
 https://golang.org/src/log/log.go
 
+- complexity: low
 - it locks the logger when output
 - output is `io.Writer`
 - the buffer seems to be shared globally, that's why the unlock is using `defer`

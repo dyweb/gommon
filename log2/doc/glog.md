@@ -2,6 +2,7 @@
 
 https://github.com/golang/glog
 
+- complexity: medium
 - supports rotate file and log to different file?
 - log methods like `Info`, `Infof` are implemented on `Verbose` which is a boolean indicate if required level should be logged
 - includes buffer etc.

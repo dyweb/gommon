@@ -2,6 +2,8 @@
 
 https://github.com/sirupsen/logrus
 
+- complexity: medium
+
 The first version of gommon/log is modeled after logrus, also found [a small bug #457 in its timing output when hook is involved](https://github.com/sirupsen/logrus/issues/457)
 
 ````text

@@ -4,6 +4,7 @@ https://github.com/uber-go/zap
 
 Zap focus on speed, reduce allocation
 
+- complexity: high
 - standard logger use `fmt.Sprintf`, it is slow because it is based on reflection, also apply to `encoding/json`
 - it has `SugaredLogger` with a `Printf` like API, it is based on Logger
 - Logger requires using `zapcore.Field` in `fields.go`
