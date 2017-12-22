@@ -185,3 +185,20 @@ func (h *Handler) HandleLog(e *log.Entry) error {
 	return nil
 }
 ````
+
+- its level string name is using a string array instead of a bunch of switch
+
+```go
+var levelNames = [...]string{
+	DebugLevel: "debug",
+	InfoLevel:  "info",
+	WarnLevel:  "warn",
+	ErrorLevel: "error",
+	FatalLevel: "fatal",
+}
+
+// String implementation.
+func (l Level) String() string {
+	return levelNames[l]
+}
+```

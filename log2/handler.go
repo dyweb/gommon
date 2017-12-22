@@ -1,7 +1,7 @@
 package log2
 
 type Handler interface {
-	HandleLog() // TODO: we might not use entry, just level, msg, fields instead
+	HandleLog(level Level, msg string)
 	Flush()
 }
 

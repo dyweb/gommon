@@ -58,3 +58,5 @@ Changes from v1
   - handler takes care of both format and output
 - `Fields` is now has two sorted slice, `[]string` for keys, `[]interface{}` for values
   - [ ] our use map? depends on how we want to use context, may not need to modify it
+  - **two types of field**, one that don't change once set, one change in different log
+    - i.e. protocol=http don't change, but code=500 may change to code=400

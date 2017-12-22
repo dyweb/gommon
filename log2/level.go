@@ -20,3 +20,24 @@ const (
 	// TraceLevel is very verbose, user should enable it only on packages they are currently investing instead of globally
 	TraceLevel
 )
+
+func (level Level) String() string {
+	switch level {
+	case FatalLevel:
+		return "fatal"
+	case PanicLevel:
+		return "panic"
+	case ErrorLevel:
+		return "error"
+	case WarnLevel:
+		return "warn"
+	case InfoLevel:
+		return "info"
+	case DebugLevel:
+		return "debug"
+	case TraceLevel:
+		return "trace"
+	default:
+		return "unknown"
+	}
+}
