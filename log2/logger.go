@@ -36,13 +36,13 @@ func (l *Logger) SetHandler(h Handler) {
 
 func (l *Logger) Debug(args ...interface{}) {
 	if l.level >= DebugLevel {
-		l.h.HandleLog(DebugLevel, fmt.Sprint(args))
+		l.h.HandleLog(DebugLevel, fmt.Sprint(args...))
 	}
 }
 
 func (l *Logger) Info(args ...interface{}) {
 	if l.level >= InfoLevel {
-		l.h.HandleLog(InfoLevel, fmt.Sprint(args))
+		l.h.HandleLog(InfoLevel, fmt.Sprint(args...))
 	}
 }
 
