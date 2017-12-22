@@ -76,6 +76,7 @@ and zap is using switch as well, except based on pre stored int (represent type)
 
 - https://blog.golang.org/laws-of-reflection
 - I remember I seems to have played with reflection when trying to add strcut tag support for [go-solr#11](https://github.com/at15/go-solr/issues/11)
+- reflection is different from type switches 
 
 ````go
 func (p *pp) doPrintf(format string, a []interface{}) {
