@@ -1,8 +1,8 @@
 package log2
 
 import (
-	"testing"
 	"bytes"
+	"testing"
 
 	asst "github.com/stretchr/testify/assert"
 )

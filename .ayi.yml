@@ -4,7 +4,7 @@ test:
     - sh -c "go test -v -cover $(glide novendor)"
 scripts:
   fmt:
-    - gofmt -d -l -w ./cast ./config ./log ./requests ./runner ./structure ./util
+    - gofmt -d -l -w ./cast ./config ./log ./log2 ./requests ./runner ./structure ./util
     - git status
   doc:
     - xdg-open http://localhost:6060/pkg/github.com/dyweb/gommon

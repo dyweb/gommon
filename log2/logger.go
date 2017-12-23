@@ -7,13 +7,6 @@ import (
 	"sync"
 )
 
-// TODO: might switch to ident (for identifier)
-//type Position struct {
-//	pkgName  string
-//	funcName string
-//	fileName string
-//}
-
 type Logger struct {
 	mu       sync.Mutex
 	h        Handler
@@ -21,7 +14,7 @@ type Logger struct {
 	fields   Fields
 	parent   *Logger
 	children []*Logger
-	//pos      Position
+	id       *Identity
 }
 
 func (l *Logger) SetLevel(level Level) {
