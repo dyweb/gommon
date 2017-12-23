@@ -11,6 +11,7 @@ func GetCallerPackage(skip int) string {
 	if !ok {
 		return "unknown"
 	}
+	// FIXME: https://github.com/golang/go/issues/19426 use runtime.Frames instead of runtime.FuncForPC
 	fn := runtime.FuncForPC(pc)
 	fnName := fn.Name()
 	lastDot := strings.LastIndex(fnName, ".")

@@ -21,23 +21,17 @@ const (
 	TraceLevel
 )
 
+// based on https://github.com/apex/log/blob/master/levels.go
+var levelStrings = []string{
+	FatalLevel: "fatal",
+	PanicLevel: "panic",
+	ErrorLevel: "error",
+	WarnLevel:  "warn",
+	InfoLevel:  "info",
+	DebugLevel: "debug",
+	TraceLevel: "trace",
+}
+
 func (level Level) String() string {
-	switch level {
-	case FatalLevel:
-		return "fatal"
-	case PanicLevel:
-		return "panic"
-	case ErrorLevel:
-		return "error"
-	case WarnLevel:
-		return "warn"
-	case InfoLevel:
-		return "info"
-	case DebugLevel:
-		return "debug"
-	case TraceLevel:
-		return "trace"
-	default:
-		return "unknown"
-	}
+	return levelStrings[level]
 }

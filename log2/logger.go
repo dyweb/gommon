@@ -1,16 +1,17 @@
 package log2
 
 import (
-	"sync"
 	"fmt"
+	"io"
+	"os"
+	"sync"
 )
 
-//type Logger interface {
-//	SetHandler(h Handler)
-//}
-
-//type NonTerminalLogger interface {
-//	Children() []Logger
+// TODO: might switch to ident (for identifier)
+//type Position struct {
+//	pkgName  string
+//	funcName string
+//	fileName string
 //}
 
 type Logger struct {
@@ -20,6 +21,7 @@ type Logger struct {
 	fields   Fields
 	parent   *Logger
 	children []*Logger
+	//pos      Position
 }
 
 func (l *Logger) SetLevel(level Level) {
@@ -46,36 +48,14 @@ func (l *Logger) Info(args ...interface{}) {
 	}
 }
 
-//type AppLogger struct {
-//	*BaseLogger
-//}
-//
-//type PkgLogger struct {
-//	*BaseLogger
-//}
-//
-//type FuncLogger struct {
-//	*BaseLogger
-//	Parent *PkgLogger
-//}
-//
-//type StructLogger struct {
-//	*BaseLogger
-//	Parent   *PkgLogger
-//	children []*MethodLogger
-//}
-//
-//type MethodLogger struct {
-//	*BaseLogger
-//	Parent *StructLogger
-//}
-//
+func (l *Logger) PrintTree() {
+	l.PrintTreeTo(os.Stdout)
+}
+
+func (l *Logger) PrintTreeTo(w io.Writer) {
+	//root := &structure.StringTreeNode{Val: }
+}
+
 //// TODO: deal w/ http access log later
 //type HttpAccessLogger struct {
-//}
-
-//func (l *BaseLogger) SetHandler(h Handler) {
-//	l.mu.Lock()
-//	l.h = h
-//	l.mu.Unlock()
 //}
