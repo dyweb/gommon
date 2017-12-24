@@ -1,14 +1,14 @@
 package log2
 
 import (
-	"runtime"
 	"fmt"
+	"runtime"
 )
 
 type LoggerType uint8
 
 const (
-	UnknownLogger     LoggerType = iota
+	UnknownLogger LoggerType = iota
 	ApplicationLogger
 	PackageLogger
 	FunctionLogger

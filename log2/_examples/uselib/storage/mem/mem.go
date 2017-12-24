@@ -22,7 +22,7 @@ func NewMemStorage() *Store {
 	}
 }
 
-func init()  {
+func init() {
 	storage.Register("mem", func() storage.Driver {
 		return NewMemStorage()
 	})

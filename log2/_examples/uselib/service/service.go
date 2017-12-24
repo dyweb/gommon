@@ -3,8 +3,8 @@ package service
 import (
 	"errors"
 
-	"github.com/dyweb/gommon/log2/_examples/uselib/storage"
 	"github.com/dyweb/gommon/log2"
+	"github.com/dyweb/gommon/log2/_examples/uselib/storage"
 )
 
 type Auth struct {

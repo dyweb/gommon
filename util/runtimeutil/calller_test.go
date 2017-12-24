@@ -1,8 +1,8 @@
 package runtimeutil
 
 import (
-	"testing"
 	asst "github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestSplitPackageFunc(t *testing.T) {
@@ -13,7 +13,7 @@ func TestSplitPackageFunc(t *testing.T) {
 		Package      string
 		RealFunction string
 	}{
-		//{"github.com/dyweb/gommon/log2/_examples/uselib/service.(*Auth).Check", "github.com/dyweb/gommon/log2/_examples/uselib/service", "(*Auth).Check"},
+		{"github.com/dyweb/gommon/log2/_examples/uselib/service.(*Auth).Check", "github.com/dyweb/gommon/log2/_examples/uselib/service", "(*Auth).Check"},
 		{"github.com/dyweb/gommon/log2.TestNewIdentityFromCaller", "github.com/dyweb/gommon/log2", "TestNewIdentityFromCaller"},
 	}
 

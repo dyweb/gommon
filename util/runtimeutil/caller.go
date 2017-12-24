@@ -3,7 +3,6 @@ package runtimeutil
 import (
 	"runtime"
 	"strings"
-	"fmt"
 )
 
 // GetCallerPackage is used by log package to get caller source code position
@@ -19,28 +18,25 @@ func GetCallerPackage(skip int) string {
 	return fnName[:lastDot]
 }
 
-// TODO: we can get file and line as well ...
-//func GetCallerPackageAndFunc(skip int) (string, string) {
-//
-//}
-
-// TODO: doc
+// SplitPackageFunc returns package (w/o GOPATH) and function (w/ struct if presented) based on runtime.Frame.Function
 // Copied from runtime.Frame struct documentation
 // Func may be nil for non-Go code or fully inlined functions
 // If Func is not nil then Function == Func.Name()
 // github.com/dyweb/gommon/log2/_examples/uselib/service.(*Auth).Check
 // github.com/dyweb/gommon/log2.TestNewIdentityFromCaller
 func SplitPackageFunc(f string) (pkg string, function string) {
-	// go from back of the string, the first dot splits package (w/ struct) and function
-	funcDot := strings.LastIndex(f, ".")
-	fmt.Println("funcDot", funcDot)
-	pkgWithStruct := f[:funcDot]
-	fmt.Println("pkgWithStruct", pkgWithStruct)
-	// the second dot splits package and struct (if there is any)
-	structDot := strings.LastIndex(pkgWithStruct, ".")
-	// FIXME: this won't work, it will find the dot in github.com ....
-	if structDot == -1 {
-		return pkgWithStruct, f[funcDot+1:]
+	dot := 0
+	// go from back of the string
+	// the first dot splits package (w/ struct) and function, the second dot split package and struct (if any)
+	// we put struct (if any) and function together, so we just need to dot closest to last /
+	for i := len(f) - 1; i >= 0; i-- {
+		// TODO: it might not work on windows
+		if f[i] == '/' {
+			break
+		}
+		if f[i] == '.' {
+			dot = i
+		}
 	}
-	return f[:structDot], f[structDot+1:]
+	return f[:dot], f[dot+1:]
 }
