@@ -31,8 +31,8 @@ type Identity struct {
 var UnknownIdentity = Identity{Package: "unk", Type: UnknownLogger}
 
 // see https://github.com/dyweb/gommon/issues/32
-// based on https://github.com/go-stack/stack/blob/master/stack.go#L38:39
-// TODO: does it work in other go version?
+// based on https://github.com/go-stack/stack/blob/master/stack.go#L29:51
+// TODO: not sure if calling two Next without checking the more value works for other go version
 func NewIdentityFromCaller(skip int) *Identity {
 	var pcs [3]uintptr
 	n := runtime.Callers(skip+1, pcs[:])
