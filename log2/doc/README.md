@@ -4,10 +4,11 @@
 
 https://github.com/avelino/awesome-go#logging
 
+- [solr](solr.md) the last straw that drive us to log v2
 - [std/log](std-log.md)
 - [sirupsen/logrus](logrus.md)
-- [uber-go/zap](zap.md)
 - [apex/log](apex-log.md)
+- [uber-go/zap](zap.md)
 - [log15](log15.md)
 - [gokit/log](gokit-log.md)
 - [nanolog](nanolog.md)
