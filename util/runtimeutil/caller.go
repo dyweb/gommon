@@ -53,6 +53,10 @@ func SplitPackageFunc(f string) (pkg string, function string) {
 	return f[:dot], f[dot+1:]
 }
 
+func IsMethod(f string) bool {
+	return strings.Contains(f, ".")
+}
+
 func SplitStructMethod(f string) (st string, function string) {
 	dot := strings.LastIndex(f, ".")
 	st, function = f[:dot], f[dot+1:]

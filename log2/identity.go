@@ -3,12 +3,13 @@ package log2
 import (
 	"fmt"
 	"runtime"
+	"github.com/dyweb/gommon/util/runtimeutil"
 )
 
 type LoggerType uint8
 
 const (
-	UnknownLogger LoggerType = iota
+	UnknownLogger     LoggerType = iota
 	ApplicationLogger
 	PackageLogger
 	FunctionLogger
@@ -51,6 +52,32 @@ func NewIdentityFromCaller(skip int) *Identity {
 	//	File:     f.File,
 	//	Line:     f.Line,
 	//}
+}
+
+func NewIdentityFromCaller2() *Identity {
+	// TODO: handle package level call where there is no function
+	frame := runtimeutil.GetCallerFrame(1)
+	var (
+		pkg      string
+		function string
+		st       string
+	)
+	tpe := UnknownLogger
+	pkg, function = runtimeutil.SplitPackageFunc(frame.Function)
+	tpe = FunctionLogger
+	// TODO: it seems we can't distinguish a struct logger and method logger ... unless user specify that...
+	if runtimeutil.IsMethod(function) {
+		st, function = runtimeutil.SplitStructMethod(function)
+		tpe = MethodLogger
+	}
+	return &Identity{
+		Package:  pkg,
+		Function: function,
+		Struct:   st,
+		File:     frame.File,
+		Line:     frame.Line,
+		Type:     tpe,
+	}
 }
 
 func (id *Identity) Diff(parent *Identity) string {

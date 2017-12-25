@@ -1,5 +1,10 @@
 # TODO
 
+## 2017-12-25
+
+- [ ] [#32](https://github.com/dyweb/gommon/issues/32) use runtime.CallersFrame instead of runtime.FuncForPc
+- [ ] [#33](https://github.com/dyweb/gommon/issues/33) maintain a tree of logger is harder than I think
+
 ## 2017-12-22
 
 - [ ] finish identity, so we can have advanced filtering and print hierarchy
