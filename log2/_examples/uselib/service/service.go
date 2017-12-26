@@ -18,7 +18,7 @@ func NewAuth(driver storage.Driver) *Auth {
 }
 
 func (a *Auth) Check(user string, password string) error {
-	log2.NewIdentityFromCaller(0)
+	log2.NewIdentityFromCallerOld(0)
 	p, err := a.s.Get(user)
 	if err != nil {
 		return err

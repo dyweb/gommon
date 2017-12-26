@@ -20,6 +20,7 @@ const (
 var loggerTypeStrings = []string{
 	UnknownLogger:     "unk",
 	ApplicationLogger: "app",
+	PackageLogger:     "pkg",
 	FunctionLogger:    "func",
 	StructLogger:      "struct",
 	MethodLogger:      "method",
@@ -50,29 +51,42 @@ type LoggableStruct interface {
 }
 
 func NewPackageLogger() *Logger {
-	// TODO: the identity should work just fine
-	return nil
+	// TODO: might set the default handler? put stdio in top level package instead of in handlers?
+	return &Logger{
+		id: NewIdentityFromCaller(1),
+	}
 }
 
 func NewFunctionLogger(packageLogger *Logger) *Logger {
-	// TODO: set the parent, runtime can handle the identity
-	return nil
+	// TODO: parent should know about children
+	return &Logger{
+		parent: packageLogger,
+		id:     NewIdentityFromCaller(1),
+	}
 }
 
 func NewStructLogger(packageLogger *Logger, loggable LoggableStruct) *Logger {
-	// TODO: pass a function to loggable
-	return nil
+	// TODO: parent should know about children
+	return &Logger{
+		parent: packageLogger,
+		id: loggable.LoggerIdentity(func() *Identity {
+			return NewIdentityFromCaller(1)
+		}),
+	}
 }
 
 func NewMethodLogger(structLogger *Logger) *Logger {
-	// TODO: set the parent, runtime can handle the identity
-	return nil
+	// TODO: parent should know about children
+	return &Logger{
+		parent: structLogger,
+		id: NewIdentityFromCaller(1),
+	}
 }
 
 // see https://github.com/dyweb/gommon/issues/32
 // based on https://github.com/go-stack/stack/blob/master/stack.go#L29:51
 // TODO: not sure if calling two Next without checking the more value works for other go version
-func NewIdentityFromCaller(skip int) *Identity {
+func NewIdentityFromCallerOld(skip int) *Identity {
 	var pcs [3]uintptr
 	n := runtime.Callers(skip+1, pcs[:])
 	frames := runtime.CallersFrames(pcs[:n])
@@ -92,9 +106,9 @@ func NewIdentityFromCaller(skip int) *Identity {
 	//}
 }
 
-func NewIdentityFromCaller2() *Identity {
+func NewIdentityFromCaller(skip int) *Identity {
 	// TODO: handle package level call where there is no function
-	frame := runtimeutil.GetCallerFrame(1)
+	frame := runtimeutil.GetCallerFrame(skip + 1)
 	var (
 		pkg      string
 		function string
@@ -112,7 +126,10 @@ func NewIdentityFromCaller2() *Identity {
 		if function == MagicStructLoggerMethod {
 			tpe = StructLogger
 		}
+	} else if "init" == function {
+		tpe = PackageLogger
 	}
+
 	return &Identity{
 		Package:  pkg,
 		Function: function,

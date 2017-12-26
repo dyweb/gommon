@@ -10,6 +10,7 @@ import (
 
 var _ log2.Handler = (*StdIO)(nil)
 
+// TODO: put StdIO handlers to top level package?
 type StdIO struct {
 	// TODO: does stdout/stderr has Close method?
 	w io.WriteCloser
