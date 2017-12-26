@@ -17,6 +17,18 @@ const (
 	MethodLogger
 )
 
+var loggerTypeStrings = []string{
+	UnknownLogger:     "unk",
+	ApplicationLogger: "app",
+	FunctionLogger:    "func",
+	StructLogger:      "struct",
+	MethodLogger:      "method",
+}
+
+func (tpe LoggerType) String() string {
+	return loggerTypeStrings[tpe]
+}
+
 // Identity is based where the logger is initialized, it is NOT exactly where the log happens.
 // It is used for applying filter rules and print logger hierarchy.
 // TODO: example
@@ -30,6 +42,32 @@ type Identity struct {
 }
 
 var UnknownIdentity = Identity{Package: "unk", Type: UnknownLogger}
+
+const MagicStructLoggerMethod = "LoggerIdentity"
+
+type LoggableStruct interface {
+	LoggerIdentity(justCallMe func() *Identity) *Identity
+}
+
+func NewPackageLogger() *Logger {
+	// TODO: the identity should work just fine
+	return nil
+}
+
+func NewFunctionLogger(packageLogger *Logger) *Logger {
+	// TODO: set the parent, runtime can handle the identity
+	return nil
+}
+
+func NewStructLogger(packageLogger *Logger, loggable LoggableStruct) *Logger {
+	// TODO: pass a function to loggable
+	return nil
+}
+
+func NewMethodLogger(structLogger *Logger) *Logger {
+	// TODO: set the parent, runtime can handle the identity
+	return nil
+}
 
 // see https://github.com/dyweb/gommon/issues/32
 // based on https://github.com/go-stack/stack/blob/master/stack.go#L29:51
@@ -65,10 +103,15 @@ func NewIdentityFromCaller2() *Identity {
 	tpe := UnknownLogger
 	pkg, function = runtimeutil.SplitPackageFunc(frame.Function)
 	tpe = FunctionLogger
-	// TODO: it seems we can't distinguish a struct logger and method logger ... unless user specify that...
+	// NOTE: we distinguish a struct logger and method logger using the magic name,
+	// which is normally the case as long as you are using the factory methods to create logger
+	// otherwise you have to manually update the type of logger
 	if runtimeutil.IsMethod(function) {
 		st, function = runtimeutil.SplitStructMethod(function)
 		tpe = MethodLogger
+		if function == MagicStructLoggerMethod {
+			tpe = StructLogger
+		}
 	}
 	return &Identity{
 		Package:  pkg,
