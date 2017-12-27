@@ -61,7 +61,7 @@ func SplitStructMethod(f string) (st string, function string) {
 	dot := strings.LastIndex(f, ".")
 	st, function = f[:dot], f[dot+1:]
 	if st[0] == '(' {
-		st = st[1:len(st)-1]
+		st = st[1 : len(st)-1]
 	}
 	if st[0] == '*' {
 		st = st[1:]

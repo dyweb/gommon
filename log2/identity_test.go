@@ -1,8 +1,8 @@
 package log2
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 
 	asst "github.com/stretchr/testify/assert"
 )
@@ -29,12 +29,6 @@ func (f *Foo) method() *Logger {
 
 var dummyFoo = &Foo{} // used for get struct logger identity
 
-func TestNewIdentityFromCaller(t *testing.T) {
-	NewIdentityFromCallerOld(0)
-	NewIdentityFromCallerOld(1)
-	NewIdentityFromCallerOld(2)
-}
-
 func TestNewPackageLogger(t *testing.T) {
 	assert := asst.New(t)
 	id := lg.id
@@ -59,7 +53,7 @@ func TestNewStructLogger(t *testing.T) {
 	assert.Equal(StructLogger, id.Type)
 	assert.Equal("struct", id.Type.String())
 	assert.Equal("Foo", id.Struct)
-	assert.Equal(MagicStructLoggerMethod, id.Function)
+	assert.Equal(MagicStructLoggerFunctionName, id.Function)
 	assert.Equal("/home/at15/workspace/src/github.com/dyweb/gommon/log2/identity_test.go:22",
 		fmt.Sprintf("%s:%d", id.File, id.Line))
 }

@@ -1,8 +1,8 @@
 package runtimeutil
 
 import (
-	"testing"
 	"runtime"
+	"testing"
 
 	asst "github.com/stretchr/testify/assert"
 )

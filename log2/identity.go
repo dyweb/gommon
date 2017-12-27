@@ -1,15 +1,13 @@
 package log2
 
 import (
-	"fmt"
-	"runtime"
 	"github.com/dyweb/gommon/util/runtimeutil"
 )
 
 type LoggerType uint8
 
 const (
-	UnknownLogger     LoggerType = iota
+	UnknownLogger LoggerType = iota
 	ApplicationLogger
 	PackageLogger
 	FunctionLogger
@@ -44,70 +42,60 @@ type Identity struct {
 
 var UnknownIdentity = Identity{Package: "unk", Type: UnknownLogger}
 
-const MagicStructLoggerMethod = "LoggerIdentity"
+const MagicStructLoggerFunctionName = "LoggerIdentity"
+const MagicPackageLoggerFunctionName = "init"
 
 type LoggableStruct interface {
 	LoggerIdentity(justCallMe func() *Identity) *Identity
 }
 
 func NewPackageLogger() *Logger {
-	// TODO: might set the default handler? put stdio in top level package instead of in handlers?
 	return &Logger{
 		id: NewIdentityFromCaller(1),
+		h:  DefaultHandler,
 	}
 }
 
 func NewFunctionLogger(packageLogger *Logger) *Logger {
-	// TODO: parent should know about children
-	return &Logger{
+	l := &Logger{
 		parent: packageLogger,
 		id:     NewIdentityFromCaller(1),
 	}
+	return newLogger(packageLogger, l)
 }
 
 func NewStructLogger(packageLogger *Logger, loggable LoggableStruct) *Logger {
-	// TODO: parent should know about children
-	return &Logger{
+	l := &Logger{
 		parent: packageLogger,
 		id: loggable.LoggerIdentity(func() *Identity {
 			return NewIdentityFromCaller(1)
 		}),
 	}
+	return newLogger(packageLogger, l)
 }
 
 func NewMethodLogger(structLogger *Logger) *Logger {
-	// TODO: parent should know about children
-	return &Logger{
+	l := &Logger{
 		parent: structLogger,
-		id: NewIdentityFromCaller(1),
+		id:     NewIdentityFromCaller(1),
 	}
+	return newLogger(structLogger, l)
 }
 
-// see https://github.com/dyweb/gommon/issues/32
-// based on https://github.com/go-stack/stack/blob/master/stack.go#L29:51
-// TODO: not sure if calling two Next without checking the more value works for other go version
-func NewIdentityFromCallerOld(skip int) *Identity {
-	var pcs [3]uintptr
-	n := runtime.Callers(skip+1, pcs[:])
-	frames := runtime.CallersFrames(pcs[:n])
-	f, _ := frames.Next()
-	f, _ = frames.Next()
-
-	fmt.Println("Function", f.Function)
-	fmt.Println("File", f.File)
-	fmt.Println("Line", f.Line)
-	fmt.Println("Func.Name()", f.Func.Name())
-
-	return nil
-	//return &Identity{
-	//	Function: f.Function,
-	//	File:     f.File,
-	//	Line:     f.Line,
-	//}
+func newLogger(parent *Logger, child *Logger) *Logger {
+	if parent != nil {
+		// TODO: might have a method called add children on Logger
+		parent.children = append(parent.children, child)
+		child.h = parent.h
+	} else {
+		child.h = DefaultHandler
+	}
+	return child
 }
 
+// TODO: document all the black magic here ...
+// https://github.com/dyweb/gommon/issues/32
 func NewIdentityFromCaller(skip int) *Identity {
-	// TODO: handle package level call where there is no function
 	frame := runtimeutil.GetCallerFrame(skip + 1)
 	var (
 		pkg      string
@@ -123,10 +111,10 @@ func NewIdentityFromCaller(skip int) *Identity {
 	if runtimeutil.IsMethod(function) {
 		st, function = runtimeutil.SplitStructMethod(function)
 		tpe = MethodLogger
-		if function == MagicStructLoggerMethod {
+		if function == MagicStructLoggerFunctionName {
 			tpe = StructLogger
 		}
-	} else if "init" == function {
+	} else if MagicPackageLoggerFunctionName == function {
 		tpe = PackageLogger
 	}
 
