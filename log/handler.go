@@ -1,4 +1,4 @@
-package log2
+package log
 
 type Handler interface {
 	HandleLog(level Level, msg string)

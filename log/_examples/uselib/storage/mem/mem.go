@@ -1,7 +1,7 @@
 package mem
 
 import (
-	"github.com/dyweb/gommon/log2/_examples/uselib/storage"
+	"github.com/dyweb/gommon/log/_examples/uselib/storage"
 )
 
 type Store struct {

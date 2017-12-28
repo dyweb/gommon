@@ -1,4 +1,4 @@
-package log2
+package log
 
 import (
 	"github.com/dyweb/gommon/util/runtimeutil"

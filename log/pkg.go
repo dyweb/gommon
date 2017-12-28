@@ -1,2 +1,2 @@
-// Package log2 should be renamed to log once the migration is finished
-package log2
+// Package log is not usable yet, see legacy/log
+package log

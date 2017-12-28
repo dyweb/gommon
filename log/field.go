@@ -1,4 +1,4 @@
-package log2
+package log
 
 type Fields struct {
 	Keys   []string

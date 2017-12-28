@@ -5,10 +5,10 @@ import (
 	"io"
 	"os"
 
-	"github.com/dyweb/gommon/log2"
+	"github.com/dyweb/gommon/log"
 )
 
-var _ log2.Handler = (*StdIO)(nil)
+var _ log.Handler = (*StdIO)(nil)
 
 // TODO: reuse code w/ default handler?
 type StdIO struct {
@@ -22,7 +22,7 @@ func NewStdout() *StdIO {
 	}
 }
 
-func (s *StdIO) HandleLog(level log2.Level, msg string) {
+func (s *StdIO) HandleLog(level log.Level, msg string) {
 	// TODO: there should be more efficient way of coverting level to string, not using fmt.Stringer
 	// TODO: might use a buffer, since we no longer need format of fmt
 	fmt.Fprintf(s.w, "%s %s\n", level, msg)
