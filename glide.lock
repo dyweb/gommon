@@ -1,5 +1,5 @@
-hash: 81cf32392334f945409ee097e195c625be6a972b39093ff19022fb62cd20ef25
-updated: 2017-07-15T00:45:42.574887406-07:00
+hash: ee2996db5b78313eadaeb56875b5ebefc2e6aeba666bc3080dc29ebfcc984876
+updated: 2017-09-16T15:58:45.391163291-07:00
 imports:
 - name: github.com/kballard/go-shellquote
   version: d8ec1a69a250a17bb0e419c386eac1f3711dc142
@@ -11,6 +11,10 @@ imports:
   version: 7dcfb8076726a3fdd9353b6b8a1f1b6be6811bd6
   subpackages:
   - proxy
+- name: golang.org/x/tools
+  version: 496819729719f9d07692195e0a94d6edd2251389
+  subpackages:
+  - benchmark/parse
 - name: gopkg.in/yaml.v2
   version: cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b
 testImports:

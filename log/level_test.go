@@ -1,28 +1,30 @@
 package log
 
 import (
+	"fmt"
 	"testing"
 
 	asst "github.com/stretchr/testify/assert"
 )
 
-func TestParseLevel(t *testing.T) {
+func TestLevel_String(t *testing.T) {
 	assert := asst.New(t)
-	// strict
-	for _, l := range AllLevels {
-		s := l.String()
-		l2, err := ParseLevel(s, true)
-		assert.Nil(err)
-		assert.Equal(l, l2)
+	cases := []struct {
+		Str string
+		Lvl Level
+		Num int
+	}{
+		{"fatal", FatalLevel, 0},
+		{"panic", PanicLevel, 1},
+		{"error", ErrorLevel, 2},
+		{"warn", WarnLevel, 3},
+		{"info", InfoLevel, 4},
+		{"debug", DebugLevel, 5},
+		{"trace", TraceLevel, 6},
 	}
-	// not strict
-	levels := []string{"FA", "Pa", "er", "Warn", "infooo", "debugggg", "Tracer"}
-	for i := 0; i < len(AllLevels); i++ {
-		l, err := ParseLevel(levels[i], false)
-		assert.Nil(err)
-		assert.Equal(AllLevels[i], l)
+
+	for _, c := range cases {
+		assert.Equal(c.Num, int(c.Lvl))
+		assert.Equal(c.Str, fmt.Sprint(c.Lvl))
 	}
-	// invalid
-	_, err := ParseLevel("haha", false)
-	assert.NotNil(err)
 }

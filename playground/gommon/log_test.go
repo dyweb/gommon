@@ -2,7 +2,8 @@ package gommon
 
 import (
 	"testing"
-	dlog "github.com/dyweb/gommon/log"
+
+	dlog "github.com/dyweb/gommon/legacy/log"
 )
 
 var Logger = dlog.NewLogger()
