@@ -1,7 +1,7 @@
 package config
 
 import (
-	dlog "github.com/dyweb/gommon/log"
+	dlog "github.com/dyweb/gommon/legacy/log"
 	"github.com/dyweb/gommon/util/logutil"
 )
 

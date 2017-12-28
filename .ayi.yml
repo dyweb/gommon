@@ -4,12 +4,12 @@ test:
     - sh -c "go test -v -cover $(glide novendor)"
 scripts:
   fmt:
-    - gofmt -d -l -w ./cast ./config ./log ./log2 ./requests ./runner ./structure ./util
+    - gofmt -d -l -w ./cast ./config ./log ./requests ./runner ./structure ./util
     - git status
   check:
     # TODO: didn't see any error so far ...
     # TODO: other checks, go vet, golint etc.
-    - errcheck ./config ./log2
+    - errcheck ./config ./log
   doc:
     - xdg-open http://localhost:6060/pkg/github.com/dyweb/gommon
     # NOTE: should start godoc first and then run xdg-open, but currently Ayi can't run command in parallel or background

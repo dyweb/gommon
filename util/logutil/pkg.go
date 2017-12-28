@@ -1,7 +1,7 @@
 package logutil
 
 import (
-	"github.com/dyweb/gommon/log"
+	"github.com/dyweb/gommon/legacy/log"
 )
 
 // Logger is the default logger with info level
