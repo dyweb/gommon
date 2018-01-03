@@ -8,7 +8,7 @@ import (
 )
 
 type Logger struct {
-	mu       sync.Mutex
+	mu       sync.RWMutex
 	h        Handler
 	level    Level
 	fields   Fields
@@ -29,22 +29,34 @@ func (l *Logger) SetHandler(h Handler) {
 	l.mu.Unlock()
 }
 
-func (l *Logger) Debug(args ...interface{}) {
-	if l.level >= DebugLevel {
-		l.h.HandleLog(DebugLevel, fmt.Sprint(args...))
-	}
+func (l *Logger) Panic(args ...interface{}) {
+	s := fmt.Sprint(args...)
+	l.h.HandleLog(PanicLevel, s)
+	l.h.Flush()
+	panic(s)
 }
 
-func (l *Logger) Info(args ...interface{}) {
-	if l.level >= InfoLevel {
-		l.h.HandleLog(InfoLevel, fmt.Sprint(args...))
-	}
+func (l *Logger) Panicf(format string, args ...interface{}) {
+	l.Panic(fmt.Sprintf(format, args))
+}
+
+func (l *Logger) Fatal(args ...interface{}) {
+	s := fmt.Sprint(args...)
+	l.h.HandleLog(FatalLevel, s)
+	l.h.Flush()
+	// TODO: allow user to register hook to do cleanup before exit directly
+	os.Exit(1)
+}
+
+func (l *Logger) Fatalf(format string, args ...interface{}) {
+	l.Fatal(fmt.Sprintf(format, args))
 }
 
 func (l *Logger) PrintTree() {
 	l.PrintTreeTo(os.Stdout)
 }
 
+// TODO: PrintTree is not implemented
 func (l *Logger) PrintTreeTo(w io.Writer) {
 	//root := &structure.StringTreeNode{Val: }
 }
