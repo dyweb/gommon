@@ -9,7 +9,8 @@ https://golang.org/src/log/log.go
 - getting caller info is expensive ... that's why it should be done at compile time ...
   - Java need to use runtime information, get stack to get file and line number as well
 - std logger goes to standard error
-
+  - 
+  
 ````go
 var std = New(os.Stderr, "", LstdFlags)
 

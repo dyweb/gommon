@@ -6,6 +6,10 @@ import (
 )
 
 {{ range .}}
+func (l *Logger) Is{{.}}Enabled() bool {
+    return l.level >= {{.}}Level
+}
+
 func (l *Logger) {{.}}(args ...interface{}) {
 	if l.level >= {{.}}Level {
 		l.h.HandleLog({{.}}Level, fmt.Sprint(args...))

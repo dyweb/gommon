@@ -58,15 +58,13 @@ func NewPackageLogger() *Logger {
 
 func NewFunctionLogger(packageLogger *Logger) *Logger {
 	l := &Logger{
-		parent: packageLogger,
-		id:     NewIdentityFromCaller(1),
+		id: NewIdentityFromCaller(1),
 	}
 	return newLogger(packageLogger, l)
 }
 
 func NewStructLogger(packageLogger *Logger, loggable LoggableStruct) *Logger {
 	l := &Logger{
-		parent: packageLogger,
 		id: loggable.LoggerIdentity(func() *Identity {
 			return NewIdentityFromCaller(1)
 		}),
@@ -76,19 +74,19 @@ func NewStructLogger(packageLogger *Logger, loggable LoggableStruct) *Logger {
 
 func NewMethodLogger(structLogger *Logger) *Logger {
 	l := &Logger{
-		parent: structLogger,
-		id:     NewIdentityFromCaller(1),
+		id: NewIdentityFromCaller(1),
 	}
 	return newLogger(structLogger, l)
 }
 
 func newLogger(parent *Logger, child *Logger) *Logger {
 	if parent != nil {
-		// TODO: might have a method called add children on Logger
-		parent.children = append(parent.children, child)
+		parent.AddChild(child)
 		child.h = parent.h
+		child.level = parent.level
 	} else {
 		child.h = DefaultHandler
+		child.level = InfoLevel
 	}
 	return child
 }
