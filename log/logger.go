@@ -12,8 +12,12 @@ type Logger struct {
 	h        Handler
 	level    Level
 	fields   Fields
-	children []*Logger
+	children []*Logger // TODO: change to map[string][]*Logger
 	id       *Identity
+}
+
+func (l *Logger) Level() Level {
+	return l.level
 }
 
 func (l *Logger) SetLevel(level Level) {
@@ -26,6 +30,10 @@ func (l *Logger) SetHandler(h Handler) {
 	l.mu.Lock()
 	l.h = h
 	l.mu.Unlock()
+}
+
+func (l *Logger) Identity() *Identity {
+	return l.id
 }
 
 func (l *Logger) AddChild(child *Logger) {

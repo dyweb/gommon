@@ -9,6 +9,7 @@ import (
 
 type EntryType uint8
 
+// deprecated
 type Entry struct {
 	Parent          *Entry
 	Children        []*Entry

@@ -1,6 +1,7 @@
 package log
 
 import (
+	"fmt"
 	"github.com/dyweb/gommon/util/runtimeutil"
 )
 
@@ -45,52 +46,6 @@ var UnknownIdentity = Identity{Package: "unk", Type: UnknownLogger}
 const MagicStructLoggerFunctionName = "LoggerIdentity"
 const MagicPackageLoggerFunctionName = "init"
 
-type LoggableStruct interface {
-	LoggerIdentity(justCallMe func() *Identity) *Identity
-}
-
-func NewPackageLogger() *Logger {
-	return &Logger{
-		id: NewIdentityFromCaller(1),
-		h:  DefaultHandler,
-	}
-}
-
-func NewFunctionLogger(packageLogger *Logger) *Logger {
-	l := &Logger{
-		id: NewIdentityFromCaller(1),
-	}
-	return newLogger(packageLogger, l)
-}
-
-func NewStructLogger(packageLogger *Logger, loggable LoggableStruct) *Logger {
-	l := &Logger{
-		id: loggable.LoggerIdentity(func() *Identity {
-			return NewIdentityFromCaller(1)
-		}),
-	}
-	return newLogger(packageLogger, l)
-}
-
-func NewMethodLogger(structLogger *Logger) *Logger {
-	l := &Logger{
-		id: NewIdentityFromCaller(1),
-	}
-	return newLogger(structLogger, l)
-}
-
-func newLogger(parent *Logger, child *Logger) *Logger {
-	if parent != nil {
-		parent.AddChild(child)
-		child.h = parent.h
-		child.level = parent.level
-	} else {
-		child.h = DefaultHandler
-		child.level = InfoLevel
-	}
-	return child
-}
-
 // TODO: document all the black magic here ...
 // https://github.com/dyweb/gommon/issues/32
 func NewIdentityFromCaller(skip int) *Identity {
@@ -112,7 +67,7 @@ func NewIdentityFromCaller(skip int) *Identity {
 		if function == MagicStructLoggerFunctionName {
 			tpe = StructLogger
 		}
-	} else if MagicPackageLoggerFunctionName == function {
+	} else if function == MagicPackageLoggerFunctionName {
 		tpe = PackageLogger
 	}
 
@@ -126,6 +81,12 @@ func NewIdentityFromCaller(skip int) *Identity {
 	}
 }
 
+func (id *Identity) String() string {
+	// TODO: might contain location
+	return fmt.Sprintf("%s:%d", id.File, id.Line)
+}
+
+// TODO: this is used for print tree like structure ... it's hard to maintain exact parent and child logger due to cycle import
 func (id *Identity) Diff(parent *Identity) string {
 	if parent == nil {
 		return id.Package

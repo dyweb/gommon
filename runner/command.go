@@ -9,6 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// TODO: possible using https://github.com/mvdan/sh a shell parser, formatter in go
 // commands that should be called using shell,
 // because mostly they would be expecting shell expansion on parameters
 var shellCommands = st.NewSet("echo", "rm", "cp", "mv", "mkdir", "tar")
