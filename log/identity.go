@@ -8,8 +8,9 @@ import (
 type LoggerType uint8
 
 const (
-	UnknownLogger LoggerType = iota
+	UnknownLogger     LoggerType = iota
 	ApplicationLogger
+	LibraryLogger
 	PackageLogger
 	FunctionLogger
 	StructLogger
@@ -19,6 +20,7 @@ const (
 var loggerTypeStrings = []string{
 	UnknownLogger:     "unk",
 	ApplicationLogger: "app",
+	LibraryLogger:     "lib",
 	PackageLogger:     "pkg",
 	FunctionLogger:    "func",
 	StructLogger:      "struct",

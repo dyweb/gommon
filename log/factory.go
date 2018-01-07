@@ -1,5 +1,17 @@
 package log
 
+func NewApplicationLogger() *Logger {
+	l := NewPackageLoggerWithSkip(1)
+	l.id.Type = ApplicationLogger
+	return l
+}
+
+func NewLibraryLogger() *Logger {
+	l := NewPackageLoggerWithSkip(1)
+	l.id.Type = LibraryLogger
+	return l
+}
+
 func NewPackageLogger() *Logger {
 	return NewPackageLoggerWithSkip(1)
 }

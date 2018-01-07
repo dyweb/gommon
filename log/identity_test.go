@@ -18,6 +18,14 @@ type Foo struct {
 	log *Logger
 }
 
+func (f *Foo) GetLogger() *Logger {
+	return f.log
+}
+
+func (f *Foo) SetLogger(logger *Logger) {
+	f.log = logger
+}
+
 func (f *Foo) LoggerIdentity(justCallMe func() *Identity) *Identity {
 	return justCallMe()
 }
@@ -54,7 +62,7 @@ func TestNewStructLogger(t *testing.T) {
 	assert.Equal("struct", id.Type.String())
 	assert.Equal("Foo", id.Struct)
 	assert.Equal(MagicStructLoggerFunctionName, id.Function)
-	assert.Equal("/home/at15/workspace/src/github.com/dyweb/gommon/log/identity_test.go:22",
+	assert.Equal("/home/at15/workspace/src/github.com/dyweb/gommon/log/identity_test.go:30",
 		fmt.Sprintf("%s:%d", id.File, id.Line))
 }
 
@@ -68,6 +76,6 @@ func TestNewMethodLogger(t *testing.T) {
 	assert.Equal("method", id.Type.String())
 	assert.Equal("Foo", id.Struct)
 	assert.Equal("method", id.Function)
-	assert.Equal("/home/at15/workspace/src/github.com/dyweb/gommon/log/identity_test.go:26",
+	assert.Equal("/home/at15/workspace/src/github.com/dyweb/gommon/log/identity_test.go:34",
 		fmt.Sprintf("%s:%d", id.File, id.Line))
 }
