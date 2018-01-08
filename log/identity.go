@@ -2,7 +2,9 @@ package log
 
 import (
 	"fmt"
+
 	"github.com/dyweb/gommon/util/runtimeutil"
+	"github.com/dyweb/gommon/util/hashutil"
 )
 
 type LoggerType uint8
@@ -83,9 +85,17 @@ func NewIdentityFromCaller(skip int) *Identity {
 	}
 }
 
-func (id *Identity) String() string {
-	// TODO: might contain location
+func (id *Identity) Hash() uint64 {
+	// assume no one create two logger in one line and no non ascii characters in file path
+	return hashutil.HashStringFnv64a(id.SourceLocation())
+}
+
+func (id *Identity) SourceLocation() string {
 	return fmt.Sprintf("%s:%d", id.File, id.Line)
+}
+
+func (id *Identity) String() string {
+	return fmt.Sprintf("%s logger %s:%d", id.Type, id.File, id.Line)
 }
 
 // TODO: this is used for print tree like structure ... it's hard to maintain exact parent and child logger due to cycle import

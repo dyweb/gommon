@@ -6,10 +6,12 @@ import (
 )
 
 // Both conversion has bytes alloc
-// I was thinking one of them should be free, but string is immutable in Go
+// I was thinking one of them should be free, but string is immutable in Go while []byte is mutable
 // Came across it both influxdb and uber/zap has custom fnv function to avoid the []byte(string) alloc
 // - https://github.com/uber-go/zap/blob/3216c4c73e8ebbafff73c456dd27143f4a7c1f94/zapcore/sampler.go#L51
 // - https://github.com/influxdata/influxdb/blob/master/models/inline_fnv.go
+// There are blog talking about it
+// - https://syslog.ravelin.com/byte-vs-string-in-go-d645b67ca7ff
 // TODO: it seems where I put the variable also matters, stack would be used for small strings https://stackoverflow.com/questions/38554773/when-golang-does-allocation-for-string-to-byte-conversion
 //
 //go test -bench=. -benchmem
