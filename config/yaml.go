@@ -14,6 +14,7 @@ import (
 	"github.com/dyweb/gommon/util"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
+	dlog "github.com/dyweb/gommon/log"
 )
 
 // YAMLConfig is a thread safe struct for parse YAML file and get value
@@ -22,6 +23,7 @@ type YAMLConfig struct {
 	data         map[string]interface{}
 	keyDelimiter string
 	mu           sync.RWMutex
+	log          *dlog.Logger
 }
 
 // LoadYAMLAsStruct is a convenient wrapper for loading a single YAML file into struct, you should pass a pointer to the
@@ -53,7 +55,8 @@ func SplitMultiDocument(data []byte) [][]byte {
 
 // NewYAMLConfig returns a config with internal map structure initialized
 func NewYAMLConfig() *YAMLConfig {
-	c := new(YAMLConfig)
+	c := &YAMLConfig{}
+	c.log = dlog.NewStructLogger(log, c)
 	c.clear()
 	c.keyDelimiter = defaultKeyDelimiter
 	return c
@@ -115,8 +118,8 @@ func (c *YAMLConfig) ParseSingleDocument(doc []byte) error {
 		return errors.Wrap(err, "can't render template with previous documents' vars")
 	}
 
-	log.Tracef("01-before\n%s", doc)
-	log.Tracef("01-after\n%s", rendered)
+	c.log.Tracef("01-before\n%s", doc)
+	c.log.Tracef("01-after\n%s", rendered)
 
 	tmpData := make(map[string]interface{})
 	err = yaml.Unmarshal(rendered, &tmpData)
@@ -142,8 +145,8 @@ func (c *YAMLConfig) ParseSingleDocument(doc []byte) error {
 			return errors.Wrap(err, "can't render template with vars in current document")
 		}
 
-		log.Tracef("02-before\n%s", doc)
-		log.Tracef("02-after\n%s", rendered)
+		c.log.Tracef("02-before\n%s", doc)
+		c.log.Tracef("02-after\n%s", rendered)
 
 		tmpData = make(map[string]interface{})
 		err = yaml.Unmarshal(rendered, &tmpData)
@@ -165,7 +168,7 @@ func (c *YAMLConfig) Get(key string) interface{} {
 	val, err := c.GetOrFail(key)
 	if err != nil {
 		// TODO: so Get does not do any error handling? what did viper do?
-		log.Debugf("can't get key %s due to %s", key, err.Error())
+		c.log.Debugf("can't get key %s due to %s", key, err.Error())
 	}
 	return val
 }
@@ -173,7 +176,7 @@ func (c *YAMLConfig) Get(key string) interface{} {
 func (c *YAMLConfig) GetOrDefault(key string, defaultVal interface{}) interface{} {
 	val, err := c.GetOrFail(key)
 	if err != nil {
-		log.Debugf("use default %v for key %s due to %s", defaultVal, key, err.Error())
+		c.log.Debugf("use default %v for key %s due to %s", defaultVal, key, err.Error())
 		return defaultVal
 	}
 	return val
@@ -238,8 +241,8 @@ func searchMap(src map[string]interface{}, path []string) (interface{}, error) {
 	previousPath := ""
 	for i := 0; i < len(path); i++ {
 		key := path[i]
-		//log.Debug(key)
-		//log.Debug(result)
+		//c.log.Debug(key)
+		//c.log.Debug(result)
 		if reflect.TypeOf(result).Kind() != reflect.Map {
 			return nil, errors.Errorf("%s is not a map but %s, %v", previousPath, reflect.TypeOf(result), result)
 		}
@@ -254,7 +257,7 @@ func searchMap(src map[string]interface{}, path []string) (interface{}, error) {
 		if !ok {
 			return result, errors.Errorf("key: %s does not exists in path: %s, val: %v", key, previousPath, m)
 		}
-		//log.Debug(result)
+		//c.log.Debug(result)
 		previousPath += key
 	}
 	return result, nil
@@ -271,4 +274,17 @@ func (c *YAMLConfig) renderDocument(tplBytes []byte) ([]byte, error) {
 		return nil, errors.Wrapf(err, "can't render template")
 	}
 	return b.Bytes(), nil
+}
+
+// TODO: these three methods should be generated ...
+func (c *YAMLConfig) SetLogger(logger *dlog.Logger) {
+	c.log = logger
+}
+
+func (c *YAMLConfig) GetLogger() *dlog.Logger {
+	return c.log
+}
+
+func (c *YAMLConfig) LoggerIdentity(justCallMe func() *dlog.Identity) *dlog.Identity {
+	return justCallMe()
 }

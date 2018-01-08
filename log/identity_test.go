@@ -43,6 +43,7 @@ func TestNewPackageLogger(t *testing.T) {
 	assert.Equal(PackageLogger, id.Type)
 	assert.Equal("pkg", id.Type.String())
 	assert.Equal("init", id.Function)
+	// FIXME: those hard coded line should break on Travis right?
 	assert.Equal("/home/at15/workspace/src/github.com/dyweb/gommon/log/identity_test.go:10",
 		fmt.Sprintf("%s:%d", id.File, id.Line))
 }

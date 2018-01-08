@@ -12,11 +12,11 @@ type Handler interface {
 }
 
 // HandlerFunc is an adapter to allow use of ordinary functions as log entry handlers
-type HandlerFunc func(entry *Entry)
+type HandlerFunc func(level Level, msg string)
 
 // TODO: why the receiver is value instead of pointer https://github.com/dyweb/gommon/issues/30
-func (f HandlerFunc) HandleLog(e *Entry) {
-	f(e)
+func (f HandlerFunc) HandleLog(level Level, msg string) {
+	f(level, msg)
 }
 
 type defaultHandler struct {

@@ -12,7 +12,7 @@ type Logger struct {
 	h        Handler
 	level    Level
 	fields   Fields
-	children map[uint64][]*Logger
+	children map[string][]*Logger
 	id       *Identity
 }
 
@@ -39,18 +39,19 @@ func (l *Logger) Identity() *Identity {
 func (l *Logger) AddChild(child *Logger) {
 	l.mu.Lock()
 	if l.children == nil {
-		l.children = make(map[uint64][]*Logger, 1)
+		l.children = make(map[string][]*Logger, 1)
 	}
 	// children are group by their identity, i.e a package logger may have many struct logger of same struct because
-	// that struct is used in multiple goroutines, we can use string as key, but we use uint64 because we wanted to add
-	// hashutil package ... TODO: maybe just change back to string to make people's life easier
-	k := child.id.Hash()
+	// that struct is used in multiple goroutines, those loggers have different pointer for identity, but they should
+	// have same source line, so we use SourceLocation as key
+	k := child.id.SourceLocation()
 	children := l.children[k]
-	// avoid putting same pointer twice, though it should never happen if used correctly
+	// avoid putting same pointer twice, though it should never happen if AddChild is called correctly
 	exists := false
 	for _, c := range children {
 		if c == child {
 			exists = true
+			break
 		}
 	}
 	if !exists {
