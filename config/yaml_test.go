@@ -4,9 +4,9 @@ import (
 	"os"
 	"testing"
 
-	asst "github.com/stretchr/testify/assert"
-	"github.com/dyweb/gommon/util"
 	dlog "github.com/dyweb/gommon/log"
+	"github.com/dyweb/gommon/util"
+	asst "github.com/stretchr/testify/assert"
 )
 
 type logConfig struct {

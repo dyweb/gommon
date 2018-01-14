@@ -4,6 +4,11 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"time"
+)
+
+const (
+	defaultTimeStampFormat = time.RFC3339
 )
 
 type Handler interface {
@@ -26,20 +31,23 @@ var DefaultHandler Handler = &defaultHandler{}
 
 func (h *defaultHandler) HandleLog(level Level, msg string) {
 	// TODO: might use a buffer, since we are just concat string, no special format is needed
-	// TODO: time, fields etc.
+	// TODO: fields etc.
+	// TODO: is calling level.String() faster than %s level
 	// TODO: it seems in go, both os.Stderr and os.Stdout are not (line) buffered
-	fmt.Fprintf(os.Stderr, "%s %s\n", level, msg)
+	fmt.Fprintf(os.Stderr, "%s %s %s\n", level.String(), time.Now().Format(defaultTimeStampFormat), msg)
 }
 
 func (h *defaultHandler) Flush() {
-	// TODO: don't know if is needed, will there be any different if stderr is redirected to a file
+	// TODO: don't know if is needed, will there be any different if stderr/stdout is redirected to a file
 	os.Stderr.Sync()
 }
 
 // unlike log v1 entry is only used for test, it is not passed around
 type entry struct {
 	level Level
+	time  time.Time
 	msg   string
+	// TODO: fields
 }
 
 type testHandler struct {
@@ -47,15 +55,13 @@ type testHandler struct {
 	entries []entry
 }
 
-var TestHandler Handler = &testHandler{}
-
 func NewTestHandler() *testHandler {
 	return &testHandler{}
 }
 
 func (h *testHandler) HandleLog(level Level, msg string) {
 	h.mu.Lock()
-	h.entries = append(h.entries, entry{level: level, msg: msg})
+	h.entries = append(h.entries, entry{level: level, time: time.Now(), msg: msg})
 	h.mu.Unlock()
 }
 

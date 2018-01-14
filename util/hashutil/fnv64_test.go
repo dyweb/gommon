@@ -1,8 +1,8 @@
 package hashutil
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 
 	asst "github.com/stretchr/testify/assert"
 )

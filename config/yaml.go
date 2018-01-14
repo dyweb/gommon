@@ -11,10 +11,10 @@ import (
 	"text/template"
 
 	"github.com/dyweb/gommon/cast"
+	dlog "github.com/dyweb/gommon/log"
 	"github.com/dyweb/gommon/util"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
-	dlog "github.com/dyweb/gommon/log"
 )
 
 // YAMLConfig is a thread safe struct for parse YAML file and get value

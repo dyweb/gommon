@@ -3,14 +3,14 @@ package log
 import (
 	"fmt"
 
-	"github.com/dyweb/gommon/util/runtimeutil"
 	"github.com/dyweb/gommon/util/hashutil"
+	"github.com/dyweb/gommon/util/runtimeutil"
 )
 
 type LoggerType uint8
 
 const (
-	UnknownLogger     LoggerType = iota
+	UnknownLogger LoggerType = iota
 	ApplicationLogger
 	LibraryLogger
 	PackageLogger

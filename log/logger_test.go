@@ -15,6 +15,7 @@ func TestLogger_SetHandler(t *testing.T) {
 	logger.SetHandler(th)
 	logger.Info("hello logger")
 	assert.True(th.HasLog(InfoLevel, "hello logger"))
+	// TODO: test time ...
 }
 
 func TestLogger_SetLevel(t *testing.T) {

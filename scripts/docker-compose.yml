@@ -1,6 +1,6 @@
 version: '2'
 services:
-# FIXME: there should be a way of reusing command, I am just copying stuff around
+# FIXME: there should be a way of reusing command, I am just copying stuff around, there is extend keyword, but removed in v3
   golang1.7:
     image: golang:1.7
     command: go test -v -cover ./cast/... ./config/... ./log/... ./playground/... ./requests/... ./structure/... ./util/...

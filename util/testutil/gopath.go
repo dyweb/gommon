@@ -7,4 +7,3 @@ import "go/build"
 func GOPATH() string {
 	return build.Default.GOPATH
 }
-

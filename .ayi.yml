@@ -16,9 +16,9 @@ scripts:
     - godoc -http=":6060"
   # FIXME: it seems docker-test1.8 is not a valid YAML key name
   docker-test18:
-    - docker-compose -f scripts/docker-compose.yml run golang1.8
+    - docker-compose -f scripts/docker-compose.yml run --rm golang1.8
   docker-test:
-    - docker-compose -f scripts/docker-compose.yml run golang1.7
-    - docker-compose -f scripts/docker-compose.yml run golang1.8
-    - docker-compose -f scripts/docker-compose.yml run golang1.9
-    - docker-compose -f scripts/docker-compose.yml run golanglatest
+    - docker-compose -f scripts/docker-compose.yml run --rm golang1.7
+    - docker-compose -f scripts/docker-compose.yml run --rm golang1.8
+    - docker-compose -f scripts/docker-compose.yml run --rm golang1.9
+    - docker-compose -f scripts/docker-compose.yml run --rm golanglatest
