@@ -11,11 +11,14 @@ import (
 	"github.com/dyweb/gommon/log"
 )
 
+// interface check
+var _ log.Handler = (*Handler)(nil)
+
 const (
 	defaultTimeStampFormat = time.RFC3339
 )
 
-// WriteSyncer is implemented by os.Stdout os.Stdout and os.File
+// WriteSyncer is implemented by os.File thus os.Stdout and os.Stdout
 // it is based on uber/zap/zapcore/write_syncer.go
 type WriteSyncer interface {
 	io.Writer

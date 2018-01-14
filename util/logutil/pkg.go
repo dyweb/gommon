@@ -4,14 +4,10 @@ import (
 	"github.com/dyweb/gommon/log"
 )
 
-var Logger = log.NewLibraryLogger()
+var Registry = log.NewLibraryLogger()
 
-func NewLogger() *log.Logger {
+func NewPackageLogger() *log.Logger {
 	l := log.NewPackageLoggerWithSkip(1)
-	Logger.AddChild(l)
+	Registry.AddChild(l)
 	return l
-}
-
-func init() {
-
 }

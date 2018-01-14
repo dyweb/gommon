@@ -20,6 +20,7 @@ func (l *Logger) Level() Level {
 	return l.level
 }
 
+// TODO: allow SetLevel and SetHandler Recursively
 func (l *Logger) SetLevel(level Level) {
 	l.mu.Lock()
 	l.level = level

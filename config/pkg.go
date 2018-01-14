@@ -5,7 +5,7 @@ import (
 	"github.com/dyweb/gommon/util/logutil"
 )
 
-var log = logutil.NewLogger()
+var log = logutil.NewPackageLogger()
 
 const (
 	yamlDocumentSeparator = "---"
