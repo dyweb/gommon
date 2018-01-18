@@ -13,6 +13,13 @@ const (
 	defaultKeyDelimiter   = "."
 )
 
+type Path string
+
+type Reader interface {
+	Path() Path
+	Content() string
+}
+
 type StructuredConfig interface {
 	Validate() error
 }

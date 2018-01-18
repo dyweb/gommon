@@ -10,6 +10,7 @@ import (
 	"golang.org/x/tools/benchmark/parse"
 )
 
+// deprecated due to benchboard
 func main() {
 	if len(os.Args) < 2 {
 		usage()

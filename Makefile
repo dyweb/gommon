@@ -1,3 +1,7 @@
+.PHONY: install
+install:
+	go install ./cmd/gommon
+
 .PHONY: test
 test:
 	go test -v -cover $(shell glide novendor)
@@ -8,7 +12,7 @@ test-log:
 
 .PHONY: fmt
 fmt:
-	gofmt -d -l -w ./cast ./config ./log ./requests ./runner ./structure ./util
+	gofmt -d -l -w ./cast ./config ./generator ./log ./requests ./runner ./structure ./util
 
 .PHONY: docker-test
 docker-test:
