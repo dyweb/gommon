@@ -19,26 +19,25 @@ func (is *ignores) isIgnored(s string) bool {
 	return false
 }
 
-// bfs to find all gommon files
+// dfs to find all gommon files
+// TODO: limit level
+// TODO: bfs using recursion?
 func Walk(root string, ignore ignores) []string {
 	files, err := ioutil.ReadDir(root)
 	if err != nil {
 		log.Warn(err)
 	}
-	var dirs []string
 	var gommonFiles []string
 	for _, file := range files {
 		name := file.Name()
+		//log.Info(join(root, name))
 		if file.IsDir() && !ignore.isIgnored(name) {
-			dirs = append(dirs, join(root, name))
+			gommonFiles = append(gommonFiles, Walk(join(root, name), ignore)...)
 			continue
 		}
 		if name == "gommon.yml" {
 			gommonFiles = append(gommonFiles, join(root, name))
 		}
-	}
-	for _, dir := range dirs {
-		gommonFiles = append(gommonFiles, Walk(dir, ignore)...)
 	}
 	return gommonFiles
 }
