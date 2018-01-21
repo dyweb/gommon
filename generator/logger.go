@@ -16,11 +16,11 @@ const structLoggerTmplName = "struct-logger"
 
 const structLoggerTmplStr = `
 func ({{.Receiver}} {{.Struct}}) SetLogger(logger *dlog.Logger) {
-	c.log = logger
+	{{.Receiver}}.log = logger
 }
 
 func ({{.Receiver}} {{.Struct}}) GetLogger() *dlog.Logger {
-	return c.log
+	return {{.Receiver}}.log
 }
 
 func ({{.Receiver}} {{.Struct}}) LoggerIdentity(justCallMe func() *dlog.Identity) *dlog.Identity {

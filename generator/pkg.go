@@ -20,7 +20,7 @@ func NewConfig(pkg string) *Config {
 // TODO: add error etc.
 func (c *Config) Render(w io.Writer) {
 	// TODO: should use go fmt, see Ayi gotmpl for example ...
-	fmt.Fprintf(w, "package %s\n", c.pkg)
+	fmt.Fprintf(w, "package %s\n\n", c.pkg)
 	fmt.Fprintln(w, "import dlog \"github.com/dyweb/gommon/log\"")
 	for _, l := range c.Loggers {
 		l.RenderTo(w)
