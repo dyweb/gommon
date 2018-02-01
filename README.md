@@ -6,8 +6,7 @@
 [![codebeat badge](https://codebeat.co/badges/8d42a846-f1dc-4a6b-8bd9-5862726ed35d)](https://codebeat.co/projects/github-com-dyweb-gommon-master)
 [![Sourcegraph](https://sourcegraph.com/github.com/dyweb/gommon/-/badge.svg)](https://sourcegraph.com/github.com/dyweb/gommon?badge)
 
-Gommon is a collection of common util libraries that was originally designed for [Ayi](https://github.com/dyweb/Ayi),
-and aims to provide a consistent and up to date API for building cli tools and server applications.
+Gommon is a collection of common util libraries written in Go.
 
 It has the following components:
 
@@ -21,17 +20,16 @@ It has the following components:
 
 ## Development
 
-- install go
-- install [Ayi](https://github.com/dyweb/Ayi)
-- install [glide](https://github.com/Masterminds/glide)
-- run `Ayi dep-install` or `glide install` to install dependencies.
-- run `Ayi test` for test.
-- run `Ayi run doc` to view godoc locally, you need to refresh browser and this only works on Linux with `xdg-open`
+- install go https://golang.org/
+- install dep https://github.com/golang/dep
+- `dep ensure`
+- `make test`
 
 ### Roadmap
 
-- [ ] finish issues transformed from Ayi
-- [ ] release 0.0.1
+- [ ] log v2 tree like, http logger, http handler for adjust logger
+- [ ] config v2, better multi document support, deep merge var etc.
+- [ ] runner, simplify usage
 
 ## License
 
@@ -46,6 +44,7 @@ Gommon is inspired and in some sense a simplified and unified version of the fol
 - [Viper](https://github.com/spf13/viper/)
 - [Requests](http://docs.python-requests.org/en/master/)
 
+It was part of [Ayi](https://github.com/dyweb/Ayi) and split out for wider use.
 The name Gommon is suggested by [@arrowrowe](https://github.com/arrowrowe).
 The original blog post can be found [here](http://blog.dongyueweb.com/ayi.html).
-Thanks all the fellows in [@dyweb](https://github.com/dyweb) for their support.
+Thanks all the fellows in [@dyweb](https://github.com/dyweb) especially [@gaocegege](https://github.com/gaocegege) for their support.
