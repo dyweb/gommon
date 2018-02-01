@@ -4,7 +4,7 @@ install:
 
 .PHONY: test
 test:
-	go test -v -cover $(shell glide novendor)
+	go test -v -cover ./...
 
 .PHONY: test-log
 test-log:
@@ -16,8 +16,6 @@ fmt:
 
 .PHONY: docker-test
 docker-test:
-	docker-compose -f scripts/docker-compose.yml run --rm golang1.7
-	docker-compose -f scripts/docker-compose.yml run --rm golang1.8
 	docker-compose -f scripts/docker-compose.yml run --rm golang1.9
 	docker-compose -f scripts/docker-compose.yml run --rm golanglatest
 

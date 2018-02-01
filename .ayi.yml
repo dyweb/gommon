@@ -1,7 +1,7 @@
 dep-install:
     - glide install
 test:
-    - sh -c "go test -v -cover $(glide novendor)"
+    - go test -v -cover ./...
 scripts:
   fmt:
     - gofmt -d -l -w ./cast ./config ./log ./requests ./runner ./structure ./util
@@ -14,11 +14,6 @@ scripts:
     - xdg-open http://localhost:6060/pkg/github.com/dyweb/gommon
     # NOTE: should start godoc first and then run xdg-open, but currently Ayi can't run command in parallel or background
     - godoc -http=":6060"
-  # FIXME: it seems docker-test1.8 is not a valid YAML key name
-  docker-test18:
-    - docker-compose -f scripts/docker-compose.yml run --rm golang1.8
   docker-test:
-    - docker-compose -f scripts/docker-compose.yml run --rm golang1.7
-    - docker-compose -f scripts/docker-compose.yml run --rm golang1.8
     - docker-compose -f scripts/docker-compose.yml run --rm golang1.9
     - docker-compose -f scripts/docker-compose.yml run --rm golanglatest

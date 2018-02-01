@@ -8,6 +8,8 @@ import (
 )
 
 func TestECharts_Render(t *testing.T) {
+	t.Skip("deprecated, benchgraph will be merged to https://github.com/benchhub/benchboard")
+
 	c1 := EChartOption{
 		Name:   "totalRequestChart",
 		Title:  "Total Success Request in 5 seconds",
