@@ -1,6 +1,9 @@
 package log
 
 import (
+	"fmt"
+
+	"github.com/dyweb/gommon/util/hashutil"
 	"github.com/dyweb/gommon/util/runtimeutil"
 )
 
@@ -9,6 +12,7 @@ type LoggerType uint8
 const (
 	UnknownLogger LoggerType = iota
 	ApplicationLogger
+	LibraryLogger
 	PackageLogger
 	FunctionLogger
 	StructLogger
@@ -18,6 +22,7 @@ const (
 var loggerTypeStrings = []string{
 	UnknownLogger:     "unk",
 	ApplicationLogger: "app",
+	LibraryLogger:     "lib",
 	PackageLogger:     "pkg",
 	FunctionLogger:    "func",
 	StructLogger:      "struct",
@@ -45,54 +50,6 @@ var UnknownIdentity = Identity{Package: "unk", Type: UnknownLogger}
 const MagicStructLoggerFunctionName = "LoggerIdentity"
 const MagicPackageLoggerFunctionName = "init"
 
-type LoggableStruct interface {
-	LoggerIdentity(justCallMe func() *Identity) *Identity
-}
-
-func NewPackageLogger() *Logger {
-	return &Logger{
-		id: NewIdentityFromCaller(1),
-		h:  DefaultHandler,
-	}
-}
-
-func NewFunctionLogger(packageLogger *Logger) *Logger {
-	l := &Logger{
-		parent: packageLogger,
-		id:     NewIdentityFromCaller(1),
-	}
-	return newLogger(packageLogger, l)
-}
-
-func NewStructLogger(packageLogger *Logger, loggable LoggableStruct) *Logger {
-	l := &Logger{
-		parent: packageLogger,
-		id: loggable.LoggerIdentity(func() *Identity {
-			return NewIdentityFromCaller(1)
-		}),
-	}
-	return newLogger(packageLogger, l)
-}
-
-func NewMethodLogger(structLogger *Logger) *Logger {
-	l := &Logger{
-		parent: structLogger,
-		id:     NewIdentityFromCaller(1),
-	}
-	return newLogger(structLogger, l)
-}
-
-func newLogger(parent *Logger, child *Logger) *Logger {
-	if parent != nil {
-		// TODO: might have a method called add children on Logger
-		parent.children = append(parent.children, child)
-		child.h = parent.h
-	} else {
-		child.h = DefaultHandler
-	}
-	return child
-}
-
 // TODO: document all the black magic here ...
 // https://github.com/dyweb/gommon/issues/32
 func NewIdentityFromCaller(skip int) *Identity {
@@ -114,7 +71,7 @@ func NewIdentityFromCaller(skip int) *Identity {
 		if function == MagicStructLoggerFunctionName {
 			tpe = StructLogger
 		}
-	} else if MagicPackageLoggerFunctionName == function {
+	} else if function == MagicPackageLoggerFunctionName {
 		tpe = PackageLogger
 	}
 
@@ -128,6 +85,20 @@ func NewIdentityFromCaller(skip int) *Identity {
 	}
 }
 
+func (id *Identity) Hash() uint64 {
+	// assume no one create two logger in one line and no non ascii characters in file path
+	return hashutil.HashStringFnv64a(id.SourceLocation())
+}
+
+func (id *Identity) SourceLocation() string {
+	return fmt.Sprintf("%s:%d", id.File, id.Line)
+}
+
+func (id *Identity) String() string {
+	return fmt.Sprintf("%s logger %s:%d", id.Type, id.File, id.Line)
+}
+
+// TODO: this is used for print tree like structure ... it's hard to maintain exact parent and child logger due to cycle import
 func (id *Identity) Diff(parent *Identity) string {
 	if parent == nil {
 		return id.Package

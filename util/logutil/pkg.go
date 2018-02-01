@@ -1,15 +1,13 @@
 package logutil
 
 import (
-	"github.com/dyweb/gommon/legacy/log"
+	"github.com/dyweb/gommon/log"
 )
 
-// Logger is the default logger with info level
-var Logger = log.NewLogger()
+var Registry = log.NewLibraryLogger()
 
-func init() {
-	f := log.NewTextFormatter()
-	f.EnableColor = true
-	Logger.Formatter = f
-	Logger.Level = log.InfoLevel
+func NewPackageLogger() *log.Logger {
+	l := log.NewPackageLoggerWithSkip(1)
+	Registry.AddChild(l)
+	return l
 }

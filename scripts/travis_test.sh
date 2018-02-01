@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# exit when there is error
+set -e
+
 # switch folder
 # get the script path http://stackoverflow.com/questions/4774054/reliable-way-for-a-bash-script-to-get-the-full-path-to-itself
 pushd `dirname $0` > /dev/null

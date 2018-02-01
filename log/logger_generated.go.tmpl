@@ -1,0 +1,24 @@
+package log
+
+// Ayi gotmpl --data '["Trace", "Debug", "Info", "Warn", "Error"]' logger_generated.go.tmpl
+import (
+    "fmt"
+)
+
+{{ range .}}
+func (l *Logger) Is{{.}}Enabled() bool {
+    return l.level >= {{.}}Level
+}
+
+func (l *Logger) {{.}}(args ...interface{}) {
+	if l.level >= {{.}}Level {
+		l.h.HandleLog({{.}}Level, fmt.Sprint(args...))
+	}
+}
+
+func (l *Logger) {{.}}f(format string, args ...interface{}) {
+	if l.level >= {{.}}Level {
+		l.h.HandleLog({{.}}Level, fmt.Sprintf(format, args...))
+	}
+}
+{{ end }}

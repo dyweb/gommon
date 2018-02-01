@@ -6,6 +6,9 @@ import (
 	"os"
 )
 
+// For #31 [log] extra square brackets when using fmt.Sprint
+// https://github.com/dyweb/gommon/issues/31
+
 func printArgs(args ...interface{}) {
 	fmt.Println(args) // WRONG, it will have [arg1 arg2 arg3]
 	fmt.Println(args...)

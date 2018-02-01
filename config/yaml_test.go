@@ -1,10 +1,12 @@
 package config
 
 import (
-	"github.com/dyweb/gommon/util"
-	asst "github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	dlog "github.com/dyweb/gommon/log"
+	"github.com/dyweb/gommon/util"
+	asst "github.com/stretchr/testify/assert"
 )
 
 type logConfig struct {
@@ -20,6 +22,15 @@ type structuredConfig struct {
 	Base2   string                 `yaml:"base2"`
 	Base3   string                 `yaml:"base3"`
 	XXX     map[string]interface{} `yaml:",inline"` // NOTE: this is used to catch unmatched fields
+}
+
+func TestNewYAMLConfig(t *testing.T) {
+	assert := asst.New(t)
+	c := NewYAMLConfig()
+	assert.Equal(c.GetLogger().Level(), dlog.InfoLevel)
+	assert.Equal(c.GetLogger().Identity().Type, dlog.StructLogger)
+	assert.Equal(c.GetLogger().Identity().Struct, "YAMLConfig")
+	assert.Equal(c.GetLogger().Identity().Package, "github.com/dyweb/gommon/config")
 }
 
 func TestYAMLConfig_ParseWithoutTemplate(t *testing.T) {
@@ -95,6 +106,7 @@ func TestYAMLConfig_ParseSingleDocument(t *testing.T) {
 		{"single_doc_vars"},
 	}
 	c := NewYAMLConfig()
+	//c.GetLogger().SetLevel(dlog.TraceLevel)
 	for _, tc := range cases {
 		t.Run(tc.file, func(t *testing.T) {
 			assert := asst.New(t)

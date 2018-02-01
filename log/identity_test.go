@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/dyweb/gommon/util/testutil"
 	asst "github.com/stretchr/testify/assert"
 )
 
@@ -16,6 +17,14 @@ func foo() *Logger {
 
 type Foo struct {
 	log *Logger
+}
+
+func (f *Foo) GetLogger() *Logger {
+	return f.log
+}
+
+func (f *Foo) SetLogger(logger *Logger) {
+	f.log = logger
 }
 
 func (f *Foo) LoggerIdentity(justCallMe func() *Identity) *Identity {
@@ -35,7 +44,7 @@ func TestNewPackageLogger(t *testing.T) {
 	assert.Equal(PackageLogger, id.Type)
 	assert.Equal("pkg", id.Type.String())
 	assert.Equal("init", id.Function)
-	assert.Equal("/home/at15/workspace/src/github.com/dyweb/gommon/log/identity_test.go:10",
+	assert.Equal(testutil.GOPATH()+"/src/github.com/dyweb/gommon/log/identity_test.go:11",
 		fmt.Sprintf("%s:%d", id.File, id.Line))
 }
 
@@ -54,7 +63,7 @@ func TestNewStructLogger(t *testing.T) {
 	assert.Equal("struct", id.Type.String())
 	assert.Equal("Foo", id.Struct)
 	assert.Equal(MagicStructLoggerFunctionName, id.Function)
-	assert.Equal("/home/at15/workspace/src/github.com/dyweb/gommon/log/identity_test.go:22",
+	assert.Equal(testutil.GOPATH()+"/src/github.com/dyweb/gommon/log/identity_test.go:31",
 		fmt.Sprintf("%s:%d", id.File, id.Line))
 }
 
@@ -68,6 +77,6 @@ func TestNewMethodLogger(t *testing.T) {
 	assert.Equal("method", id.Type.String())
 	assert.Equal("Foo", id.Struct)
 	assert.Equal("method", id.Function)
-	assert.Equal("/home/at15/workspace/src/github.com/dyweb/gommon/log/identity_test.go:26",
+	assert.Equal(testutil.GOPATH()+"/src/github.com/dyweb/gommon/log/identity_test.go:35",
 		fmt.Sprintf("%s:%d", id.File, id.Line))
 }
