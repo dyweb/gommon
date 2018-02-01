@@ -1,18 +1,6 @@
 version: '2'
 services:
 # FIXME: there should be a way of reusing command, I am just copying stuff around, there is extend keyword, but removed in v3
-  golang1.7:
-    image: golang:1.7
-    command: go test -v -cover ./cast/... ./config/... ./generator/... ./log/... ./playground/... ./requests/... ./structure/... ./util/...
-    working_dir: /go/src/github.com/dyweb/gommon
-    volumes:
-      - "..:/go/src/github.com/dyweb/gommon:rw"
-  golang1.8:
-    image: golang:1.8
-    command: go test -v -cover ./cast/... ./config/... ./generator/... ./log/... ./playground/... ./requests/... ./structure/... ./util/...
-    working_dir: /go/src/github.com/dyweb/gommon
-    volumes:
-      - "..:/go/src/github.com/dyweb/gommon:rw"
   golang1.9:
     image: golang:1.9
     command: go test -v -cover ./cast/... ./config/... ./generator/... ./log/... ./playground/... ./requests/... ./structure/... ./util/...
