@@ -47,7 +47,10 @@ func Walk(root string, ignore Ignores) []string {
 	return gommonFiles
 }
 
+// stat -c %a pkg.go
 func writeFile(f string, b []byte) error {
+	log.Debugf("write to %s with length %d", f, len(b))
+	log.Debugf(string(b))
 	if err := ioutil.WriteFile(f, b, 664); err != nil {
 		return errors.WithStack(err)
 	}

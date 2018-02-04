@@ -42,6 +42,7 @@ func GenerateSingle(file string) error {
 	if rendered, err = cfg.Render(); err != nil {
 		return errors.WithMessage(err, "can't render based on config")
 	}
+	log.Debugf("%s rendered length %d", file, len(rendered))
 	if err = writeFile(join(dir, generatedFile), rendered); err != nil {
 		return errors.WithMessage(err, "can't write rendered file")
 	}

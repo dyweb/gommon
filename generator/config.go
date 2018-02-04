@@ -34,10 +34,15 @@ func (c *Config) Render() ([]byte, error) {
 		}
 	}
 	header.Write(body.Bytes())
+	//log.Debug(string(header.Bytes()))
 	// format go code
 	if formatted, err := format.Source(header.Bytes()); err != nil {
 		return formatted, errors.Wrap(err, "can't format generated code")
 	} else {
+		log.Debugf("formatted len %d", len(formatted))
+		//if len(formatted) == 0 {
+		//	formatted = []byte(Header(generatorName, c.file))
+		//}
 		return formatted, nil
 	}
 }
