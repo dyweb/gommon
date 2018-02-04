@@ -39,10 +39,7 @@ func (c *Config) Render() ([]byte, error) {
 	if formatted, err := format.Source(header.Bytes()); err != nil {
 		return formatted, errors.Wrap(err, "can't format generated code")
 	} else {
-		log.Debugf("formatted len %d", len(formatted))
-		//if len(formatted) == 0 {
-		//	formatted = []byte(Header(generatorName, c.file))
-		//}
+		//log.Debugf("formatted len %d", len(formatted))
 		return formatted, nil
 	}
 }

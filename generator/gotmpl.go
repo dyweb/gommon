@@ -35,5 +35,5 @@ func (c *GoTemplateConfig) Render(root string) error {
 	if b, err = format.Source(buf.Bytes()); err != nil {
 		return errors.Wrap(err, "can't format as go code")
 	}
-	return writeFile(join(root, c.Dst), b)
+	return WriteFile(join(root, c.Dst), b)
 }

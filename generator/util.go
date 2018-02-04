@@ -48,10 +48,10 @@ func Walk(root string, ignore Ignores) []string {
 }
 
 // stat -c %a pkg.go
-func writeFile(f string, b []byte) error {
-	log.Debugf("write to %s with length %d", f, len(b))
-	log.Debugf(string(b))
-	if err := ioutil.WriteFile(f, b, 664); err != nil {
+func WriteFile(f string, b []byte) error {
+	// NOTE: 0664 is octal literal, the code would compile for 664, but the result file mode is incorrect
+	// learned this the hard way https://github.com/dyweb/gommon/issues/41
+	if err := ioutil.WriteFile(f, b, 0664); err != nil {
 		return errors.WithStack(err)
 	}
 	return nil
