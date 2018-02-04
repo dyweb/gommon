@@ -24,11 +24,11 @@ func (is *Ignores) isIgnored(s string) bool {
 	return false
 }
 
-// dfs to find all gommon files
+// Walk use dfs to find all gommon files
 // TODO: limit level
 // TODO: bfs using recursion?
 func Walk(root string, ignore Ignores) []string {
-	files, err := ioutil.ReadDir(root)
+	files, err := ioutil.ReadDir(root) // files are sorted by name
 	if err != nil {
 		log.Warn(err)
 	}
@@ -47,10 +47,12 @@ func Walk(root string, ignore Ignores) []string {
 	return gommonFiles
 }
 
+// WriteFile writes file using permission 0664
+// NOTE: 0664 is octal literal in Go, the code would compile for 664, but the result file mode is incorrect
+// learned this the hard way https://github.com/dyweb/gommon/issues/41
 // stat -c %a pkg.go
 func WriteFile(f string, b []byte) error {
-	// NOTE: 0664 is octal literal, the code would compile for 664, but the result file mode is incorrect
-	// learned this the hard way https://github.com/dyweb/gommon/issues/41
+
 	if err := ioutil.WriteFile(f, b, 0664); err != nil {
 		return errors.WithStack(err)
 	}
