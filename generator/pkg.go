@@ -1,42 +1,58 @@
 package generator
 
 import (
-	"fmt"
-	"go/format"
-
-	"bytes"
+	"github.com/dyweb/gommon/config"
 	"github.com/dyweb/gommon/util/logutil"
 	"github.com/pkg/errors"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 const generatorName = "gommon"
 
 var log = logutil.NewPackageLogger()
 
-type Config struct {
-	Loggers     []LoggerConfig     `yaml:"loggers"`
-	GoTemplates []GoTemplateConfig `yaml:"gotmpls"`
-	// set when traversing the folders
-	pkg  string
-	file string
-}
-
-func NewConfig(pkg string, file string) *Config {
-	return &Config{pkg: pkg, file: file}
-}
-
-func (c *Config) Render() ([]byte, error) {
-	b := &bytes.Buffer{}
-	fmt.Fprintf(b, Header(generatorName, c.file))
-	fmt.Fprintf(b, "package %s\n\n", c.pkg)
-	fmt.Fprintln(b, "import dlog \"github.com/dyweb/gommon/log\"")
-	for _, l := range c.Loggers {
-		l.RenderTo(b)
+func Generate(root string) error {
+	files := Walk(root, DefaultIgnores())
+	for _, file := range files {
+		if dst, err := GenerateSingle(file); err != nil {
+			return err
+		} else {
+			log.Infof("generated %s", dst)
+		}
 	}
-	// format go code
-	if formatted, err := format.Source(b.Bytes()); err != nil {
-		return formatted, errors.Wrap(err, "can't format generated code")
+	return nil
+}
+
+func GenerateSingle(file string) (string, error) {
+	var (
+		f        *os.File
+		err      error
+		rendered []byte
+		dst      string
+	)
+
+	dir := filepath.Dir(file)
+	segments := strings.Split(dir, string(os.PathSeparator))
+	pkg := segments[len(segments)-1]
+	cfg := NewConfig(pkg, file)
+	// TODO: config may replace LoadYAMLAsStruct
+	if err = config.LoadYAMLAsStruct(file, &cfg); err != nil {
+		return dst, errors.WithMessage(err, "can't read config file")
+	}
+	// TODO: this does not apply for gotmpl, which can specify their own src and destination
+	dst = filepath.Join(dir, "gommon_generated.go")
+	if f, err = os.OpenFile(dst, os.O_WRONLY|os.O_CREATE, 0666); err != nil {
+		return dst, errors.WithMessage(err, "can't create file for write")
+	}
+	defer f.Close()
+	if rendered, err = cfg.Render(); err != nil {
+		return dst, errors.WithMessage(err, "can't render based on config")
 	} else {
-		return formatted, nil
+		if _, err = f.Write(rendered); err != nil {
+			return dst, errors.Wrap(err, "can't write rendered data to file")
+		}
 	}
+	return dst, nil
 }

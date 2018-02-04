@@ -6,11 +6,15 @@ import (
 	"path/filepath"
 )
 
-var DefaultIgnores ignores = []string{"testdata", "vendor", ".idea"}
+var defaultIgnores Ignores = []string{"testdata", "vendor", ".idea"}
 
-type ignores []string
+type Ignores []string
 
-func (is *ignores) isIgnored(s string) bool {
+func DefaultIgnores() Ignores {
+	return defaultIgnores
+}
+
+func (is *Ignores) isIgnored(s string) bool {
 	for _, i := range *is {
 		if i == s {
 			return true
@@ -22,7 +26,7 @@ func (is *ignores) isIgnored(s string) bool {
 // dfs to find all gommon files
 // TODO: limit level
 // TODO: bfs using recursion?
-func Walk(root string, ignore ignores) []string {
+func Walk(root string, ignore Ignores) []string {
 	files, err := ioutil.ReadDir(root)
 	if err != nil {
 		log.Warn(err)
