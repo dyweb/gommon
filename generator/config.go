@@ -28,10 +28,11 @@ func (c *Config) Render() ([]byte, error) {
 	if len(c.Loggers) > 0 {
 		fmt.Fprintln(header, "import dlog \"github.com/dyweb/gommon/log\"")
 		for _, l := range c.Loggers {
-			l.RenderTo(body)
+			if err := l.RenderTo(body); err != nil {
+				return nil, err
+			}
 		}
 	}
-	// TODO: handle go template
 	header.Write(body.Bytes())
 	// format go code
 	if formatted, err := format.Source(header.Bytes()); err != nil {
@@ -39,4 +40,17 @@ func (c *Config) Render() ([]byte, error) {
 	} else {
 		return formatted, nil
 	}
+}
+
+func (c *Config) RenderGoTemplate(root string) error {
+	if len(c.GoTemplates) == 0 {
+		log.Debugf("no go template specified in file %s", c.file)
+		return nil
+	}
+	for _, t := range c.GoTemplates {
+		if err := t.Render(root); err != nil {
+			return err
+		}
+	}
+	return nil
 }

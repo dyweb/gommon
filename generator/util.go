@@ -3,10 +3,11 @@ package generator
 import (
 	"io/ioutil"
 
+	"github.com/pkg/errors"
 	"path/filepath"
 )
 
-var defaultIgnores Ignores = []string{"testdata", "vendor", ".idea"}
+var defaultIgnores Ignores = []string{"testdata", "vendor", ".idea", ".vscode"}
 
 type Ignores []string
 
@@ -44,6 +45,13 @@ func Walk(root string, ignore Ignores) []string {
 		}
 	}
 	return gommonFiles
+}
+
+func writeFile(f string, b []byte) error {
+	if err := ioutil.WriteFile(f, b, 664); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
 }
 
 func join(s ...string) string {

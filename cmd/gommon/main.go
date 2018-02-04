@@ -52,9 +52,9 @@ func main() {
 	if len(os.Args) < 2 {
 		help()
 	}
-	parseFlags(os.Args[1:])
+	parseFlags(os.Args[1:]) // gommon -h
+	parseFlags(os.Args[2:]) // gommon generate -h
 	if os.Args[1] == "generate" {
-		parseFlags(os.Args[2:])
 		generate()
 	}
 }

@@ -1,4 +1,4 @@
 # configuration for gommon
 loggers:
-  - struct: "*YAMLConfig"
+  - struct: "*Config"
     receiver: c
