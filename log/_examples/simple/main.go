@@ -23,4 +23,6 @@ func main() {
 	})
 	log.DisableSource()
 	log.Info("no more line number")
+
+	// TODO: panic and fatal
 }

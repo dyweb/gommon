@@ -1,6 +1,7 @@
 package log
 
 import (
+	"io"
 	"os"
 	"strconv"
 	"sync"
@@ -28,13 +29,22 @@ type Handler interface {
 //	f(level, msg)
 //}
 
-type stderrHandler struct {
+type ioSyncer interface {
+	Sync() error
 }
 
-var defaultHandler = &stderrHandler{}
+type ioHandler struct {
+	w io.Writer
+}
+
+var defaultHandler = &ioHandler{w: os.Stderr}
 
 func DefaultHandler() Handler {
 	return defaultHandler
+}
+
+func NewIOHandler(w io.Writer) Handler {
+	return &ioHandler{w: w}
 }
 
 // TODO: performance (which is not a major concern now ...)
@@ -44,84 +54,41 @@ func DefaultHandler() Handler {
 // TODO: correctness
 // - in go, both os.Stderr and os.Stdout are not (line) buffered
 // - what would happen if os.Stderr.Close()
+// - os.Stderr.Sync() will there be any different if stderr/stdout is redirected to a file
 
-// TODO: will it be inlined? (maybe not ...)
-func head(level Level, time time.Time, msg string) []byte {
-	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg))
-	b = append(b, level.String()...)
-	b = append(b, ' ')
-	b = time.AppendFormat(b, defaultTimeStampFormat)
-	b = append(b, ' ')
-	b = append(b, msg...)
-	return b
-}
-
-func headS(level Level, time time.Time, msg string, source string) []byte {
-	// FIXME: copied
-	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg)+len(source))
-	b = append(b, level.String()...)
-	b = append(b, ' ')
-	b = time.AppendFormat(b, defaultTimeStampFormat)
-	b = append(b, ' ')
-	b = append(b, source...)
-	b = append(b, ' ')
-	b = append(b, msg...)
-	return b
-}
-
-func (h *stderrHandler) HandleLog(level Level, time time.Time, msg string) {
-	// no need to use fmt.Printf since we don't need any format
-	b := head(level, time, msg)
+func (h *ioHandler) HandleLog(level Level, time time.Time, msg string) {
+	b := formatHead(level, time, msg)
 	b = append(b, '\n')
-	os.Stderr.Write(b)
+	h.w.Write(b)
 }
 
-func (h *stderrHandler) HandleLogWithSource(level Level, time time.Time, msg string, source string) {
-	b := headS(level, time, msg, source)
+func (h *ioHandler) HandleLogWithSource(level Level, time time.Time, msg string, source string) {
+	b := formatHeadWithSource(level, time, msg, source)
 	b = append(b, '\n')
-	os.Stderr.Write(b)
+	h.w.Write(b)
 }
 
-func (h *stderrHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
+func (h *ioHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
 	// we use raw slice instead of bytes buffer because we need to use strconv.Append*, which requires raw slice
-	b := head(level, time, msg)
+	b := formatHead(level, time, msg)
 	b = append(b, ' ')
-	for _, f := range fields {
-		b = append(b, f.Key...)
-		b = append(b, '=')
-		switch f.Type {
-		case IntType:
-			b = strconv.AppendInt(b, f.Int, 10)
-		case StringType:
-			b = append(b, f.Str...)
-		}
-		b = append(b, ' ')
-	}
+	b = formatFields(b, fields)
 	b[len(b)-1] = '\n'
-	os.Stderr.Write(b)
+	h.w.Write(b)
 }
 
-func (h *stderrHandler) HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields) {
-	b := headS(level, time, msg, source)
+func (h *ioHandler) HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields) {
+	b := formatHeadWithSource(level, time, msg, source)
 	b = append(b, ' ')
-	for _, f := range fields {
-		b = append(b, f.Key...)
-		b = append(b, '=')
-		switch f.Type {
-		case IntType:
-			b = strconv.AppendInt(b, f.Int, 10)
-		case StringType:
-			b = append(b, f.Str...)
-		}
-		b = append(b, ' ')
-	}
+	b = formatFields(b, fields)
 	b[len(b)-1] = '\n'
-	os.Stderr.Write(b)
+	h.w.Write(b)
 }
 
-func (h *stderrHandler) Flush() {
-	// TODO: don't know if is needed, will there be any different if stderr/stdout is redirected to a file
-	os.Stderr.Sync()
+func (h *ioHandler) Flush() {
+	if s, ok := h.w.(ioSyncer); ok {
+		s.Sync()
+	}
 }
 
 // unlike log v1 entry is only used for test, it is not passed around
@@ -181,4 +148,45 @@ func (h *testHandler) HasLog(level Level, msg string) bool {
 		}
 	}
 	return false
+}
+
+// no need to use fmt.Printf since we don't need any format
+func formatHead(level Level, time time.Time, msg string) []byte {
+	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg))
+	b = append(b, level.String()...)
+	b = append(b, ' ')
+	b = time.AppendFormat(b, defaultTimeStampFormat)
+	b = append(b, ' ')
+	b = append(b, msg...)
+	return b
+}
+
+// we have a new function because source sits between time and msg in output, instead of after msg
+// i.e. info 2018-02-04T21:03:20-08:00 main.go:18 show me the line
+func formatHeadWithSource(level Level, time time.Time, msg string, source string) []byte {
+	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg)+len(source))
+	b = append(b, level.String()...)
+	b = append(b, ' ')
+	b = time.AppendFormat(b, defaultTimeStampFormat)
+	b = append(b, ' ')
+	b = append(b, source...)
+	b = append(b, ' ')
+	b = append(b, msg...)
+	return b
+}
+
+// it has an extra tailing space, which can be updated inplace to a \n
+func formatFields(b []byte, fields Fields) []byte {
+	for _, f := range fields {
+		b = append(b, f.Key...)
+		b = append(b, '=')
+		switch f.Type {
+		case IntType:
+			b = strconv.AppendInt(b, f.Int, 10)
+		case StringType:
+			b = append(b, f.Str...)
+		}
+		b = append(b, ' ')
+	}
+	return b
 }
