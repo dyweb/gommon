@@ -1,7 +1,6 @@
 package log
 
 import (
-	"fmt"
 	"io"
 	"os"
 
@@ -37,7 +36,7 @@ func SetLevelRecursive(root *Logger, level Level) {
 	visited := make(map[*Logger]bool)
 	PreOrderDFS(root, visited, func(l *Logger) {
 		// TODO: remove it after we have tested it ....
-		fmt.Println(l.Identity().String())
+		//fmt.Println(l.Identity().String())
 		l.SetLevel(level)
 	})
 }
@@ -49,7 +48,7 @@ func SetHandlerRecursive(root *Logger, handler Handler) {
 	})
 }
 
-// TODO: test it ....
+// TODO: test it .... map traverse order is random, we need radix tree, it is need for pretty print as well
 func PreOrderDFS(root *Logger, visited map[*Logger]bool, cb func(l *Logger)) {
 	if visited[root] {
 		return

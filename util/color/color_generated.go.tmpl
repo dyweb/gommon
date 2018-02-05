@@ -1,0 +1,14 @@
+package color
+
+
+const (
+{{ range $color, $code := .}}
+    {{ $color }}Code = {{ $code }}
+{{ end }}
+)
+
+{{ range $color, $code := .}}
+func {{ $color }}(str string) string {
+    return "\x1b[{{ $code }}m" + str + "\x1b[0m"
+}
+{{ end }}

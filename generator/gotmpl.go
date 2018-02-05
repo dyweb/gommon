@@ -11,6 +11,7 @@ import (
 type GoTemplateConfig struct {
 	Src  string      `yaml:"src"`
 	Dst  string      `yaml:"dst"`
+	Go   bool        `yaml:"go"`
 	Data interface{} `yaml:"data"`
 }
 
@@ -31,9 +32,12 @@ func (c *GoTemplateConfig) Render(root string) error {
 	if err = t.Execute(&buf, c.Data); err != nil {
 		return errors.Wrap(err, "can't render template")
 	}
-	// TODO: support non go code using go template a.k.a no go format
-	if b, err = format.Source(buf.Bytes()); err != nil {
-		return errors.Wrap(err, "can't format as go code")
+	if c.Go {
+		if b, err = format.Source(buf.Bytes()); err != nil {
+			return errors.Wrap(err, "can't format as go code")
+		}
+	} else {
+		b = buf.Bytes()
 	}
 	if err = WriteFile(join(root, c.Dst), b); err != nil {
 		return err

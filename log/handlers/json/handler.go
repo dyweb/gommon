@@ -7,10 +7,6 @@ import (
 	"time"
 )
 
-const (
-	defaultTimeStampFormat = time.RFC3339
-)
-
 var _ log.Handler = (*Handler)(nil)
 
 type Handler struct {
@@ -62,7 +58,7 @@ func (h *Handler) Flush() {
 }
 
 func formatHead(level log.Level, time time.Time, msg string) []byte {
-	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg))
+	b := make([]byte, 0, 5+4+10+len(msg))
 	b = append(b, `{"l":"`...)
 	b = append(b, level.String()...)
 	b = append(b, `","t":`...)
