@@ -39,6 +39,7 @@ func (l *Logger) Identity() *Identity {
 	return l.id
 }
 
+// TODO: allow release a child logger
 func (l *Logger) AddChild(child *Logger) {
 	l.mu.Lock()
 	if l.children == nil {

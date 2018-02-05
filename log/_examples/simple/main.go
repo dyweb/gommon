@@ -1,17 +1,16 @@
 package main
 
 import (
-	"github.com/dyweb/gommon/log"
-	"github.com/dyweb/gommon/log/handlers"
+	dlog "github.com/dyweb/gommon/log"
 )
 
-// simply log to stdout
-// TODO: should run examples when test
+var log = dlog.NewApplicationLogger()
+
+// simply log to stderr
 func main() {
-	logger := log.Logger{}
-	logger.SetLevel(log.DebugLevel)
-	// FIXME: the examples are broken ...
-	logger.SetHandler(handlers.NewStdout())
-	logger.Debug("This is a debug message ", 1, " yeah")
-	logger.Info("This is a info message ", 2, " no")
+	log.Info("this is love!")
+	log.Infof("this is love %d", 2)
+	log.InfoF("this love", dlog.Fields{
+		dlog.Field{Key: "num", Value: 2},
+	})
 }

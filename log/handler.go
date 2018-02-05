@@ -1,6 +1,7 @@
 package log
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"sync"
@@ -28,35 +29,51 @@ type Handler interface {
 //	f(level, msg)
 //}
 
-type defaultHandler struct {
+type stderrHandler struct {
 }
 
-var DefaultHandler Handler = &defaultHandler{}
+var defaultHandler = &stderrHandler{}
 
-func (h *defaultHandler) HandleLog(level Level, time time.Time, msg string) {
+func DefaultHandler() Handler {
+	return defaultHandler
+}
+
+func (h *stderrHandler) HandleLog(level Level, time time.Time, msg string) {
 	// TODO: might use a buffer, since we are just concat string, no special format is needed
-	// TODO: fields etc.
 	// TODO: is calling level.String() faster than %s level
 	// TODO: it seems in go, both os.Stderr and os.Stdout are not (line) buffered
 	fmt.Fprintf(os.Stderr, "%s %s %s\n", level.String(), time.Format(defaultTimeStampFormat), msg)
 }
 
-func (h *defaultHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
-	// FIXME: deal with fields
-	fmt.Fprintf(os.Stderr, "%s %s %s\n", level.String(), time.Format(defaultTimeStampFormat), msg)
+func (h *stderrHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
+	b := &bytes.Buffer{}
+	b.WriteString(level.String())
+	b.WriteByte(' ')
+	b.WriteString(time.Format(defaultTimeStampFormat))
+	b.WriteByte(' ')
+	b.WriteString(msg)
+	b.WriteByte(' ')
+	for _, f := range fields {
+		b.WriteString(f.Key)
+		b.WriteByte('=')
+		fmt.Fprintf(b, "%v", f.Value)
+		b.WriteByte(' ') // TODO: there is an extra space at end of line ...
+	}
+	b.WriteByte('\n')
+	os.Stderr.Write(b.Bytes())
 }
 
-func (h *defaultHandler) Flush() {
+func (h *stderrHandler) Flush() {
 	// TODO: don't know if is needed, will there be any different if stderr/stdout is redirected to a file
 	os.Stderr.Sync()
 }
 
 // unlike log v1 entry is only used for test, it is not passed around
 type entry struct {
-	level Level
-	time  time.Time
-	msg   string
-	// TODO: fields
+	level  Level
+	time   time.Time
+	msg    string
+	fields Fields
 }
 
 type testHandler struct {
@@ -76,8 +93,7 @@ func (h *testHandler) HandleLog(level Level, time time.Time, msg string) {
 
 func (h *testHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
 	h.mu.Lock()
-	// FIXME: deal with fields
-	h.entries = append(h.entries, entry{level: level, time: time, msg: msg})
+	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, fields: fields})
 	h.mu.Unlock()
 }
 
