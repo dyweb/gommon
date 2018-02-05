@@ -8,7 +8,7 @@ import (
 	"github.com/dyweb/gommon/structure"
 )
 
-// TODO: allow release a child logger
+// TODO: allow release a child logger, this will be a trouble if we created 1,000 Client struct with its own logger...
 func (l *Logger) AddChild(child *Logger) {
 	l.mu.Lock()
 	if l.children == nil {
