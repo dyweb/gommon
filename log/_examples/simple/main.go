@@ -11,6 +11,7 @@ func main() {
 	log.Info("this is love!")
 	log.Infof("this is love %d", 2)
 	log.InfoF("this love", dlog.Fields{
-		dlog.Field{Key: "num", Value: 2},
+		dlog.Int("num", 2),
+		dlog.Str("foo", "bar"),
 	})
 }

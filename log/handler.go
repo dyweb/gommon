@@ -1,9 +1,8 @@
 package log
 
 import (
-	"bytes"
-	"fmt"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -13,9 +12,9 @@ const (
 )
 
 type Handler interface {
-	// TODO: pass pointer for fields?
 	HandleLog(level Level, time time.Time, msg string)
 	//HandleLogWithSource(source string, level Level, time time.Time, msg string)
+	// TODO: pass pointer for fields?
 	HandleLogWithFields(level Level, time time.Time, msg string, fields Fields)
 	//HandleLogWithSourceFields(source string, level Level, time time.Time, msg string, fields Fields)
 	Flush()
@@ -38,29 +37,46 @@ func DefaultHandler() Handler {
 	return defaultHandler
 }
 
+// TODO: performance (which is not a major concern now ...)
+// - when using raw byte slice, have a correct length, fields can also return length required
+// - is calling level.String() faster than %s level
+// - use buffer (pool)
+// TODO: correctness
+// - in go, both os.Stderr and os.Stdout are not (line) buffered
+
 func (h *stderrHandler) HandleLog(level Level, time time.Time, msg string) {
-	// TODO: might use a buffer, since we are just concat string, no special format is needed
-	// TODO: is calling level.String() faster than %s level
-	// TODO: it seems in go, both os.Stderr and os.Stdout are not (line) buffered
-	fmt.Fprintf(os.Stderr, "%s %s %s\n", level.String(), time.Format(defaultTimeStampFormat), msg)
+	// no need to use fmt.Printf since we don't need any format
+	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg))
+	b = append(b, level.String()...)
+	b = append(b, ' ')
+	b = time.AppendFormat(b, defaultTimeStampFormat)
+	b = append(b, ' ')
+	b = append(b, msg...)
+	b = append(b, '\n')
+	os.Stderr.Write(b)
 }
 
 func (h *stderrHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
-	b := &bytes.Buffer{}
-	b.WriteString(level.String())
-	b.WriteByte(' ')
-	b.WriteString(time.Format(defaultTimeStampFormat))
-	b.WriteByte(' ')
-	b.WriteString(msg)
-	b.WriteByte(' ')
+	// we use raw slice instead of bytes buffer because we need to use strconv.Append*, which requires raw slice
+	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg))
+	b = append(b, level.String()...)
+	b = append(b, ' ')
+	b = time.AppendFormat(b, defaultTimeStampFormat)
+	b = append(b, ' ')
+	b = append(b, msg...)
 	for _, f := range fields {
-		b.WriteString(f.Key)
-		b.WriteByte('=')
-		fmt.Fprintf(b, "%v", f.Value)
-		b.WriteByte(' ') // TODO: there is an extra space at end of line ...
+		b = append(b, f.Key...)
+		b = append(b, '=')
+		switch f.Type {
+		case IntType:
+			b = strconv.AppendInt(b, f.Int, 10)
+		case StringType:
+			b = append(b, f.Str...)
+		}
+		b = append(b, ' ')
 	}
-	b.WriteByte('\n')
-	os.Stderr.Write(b.Bytes())
+	b[len(b)-1] = '\n'
+	os.Stderr.Write(b)
 }
 
 func (h *stderrHandler) Flush() {
