@@ -14,4 +14,13 @@ func main() {
 		dlog.Int("num", 2),
 		dlog.Str("foo", "bar"),
 	})
+	log.EnableSource()
+	log.Info("show me the line")
+	log.Infof("show the line %d", 2)
+	log.InfoF("show the line", dlog.Fields{
+		dlog.Int("num", 2),
+		dlog.Str("foo", "bar"),
+	})
+	log.DisableSource()
+	log.Info("no more line number")
 }

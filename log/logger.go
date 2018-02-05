@@ -7,6 +7,8 @@ import (
 	"sync"
 
 	"github.com/dyweb/gommon/structure"
+	"runtime"
+	"strings"
 	"time"
 )
 
@@ -16,6 +18,7 @@ type Logger struct {
 	level    Level
 	fields   Fields
 	children map[string][]*Logger
+	source   bool
 	id       *Identity
 }
 
@@ -32,6 +35,18 @@ func (l *Logger) SetLevel(level Level) {
 func (l *Logger) SetHandler(h Handler) {
 	l.mu.Lock()
 	l.h = h
+	l.mu.Unlock()
+}
+
+func (l *Logger) EnableSource() {
+	l.mu.Lock()
+	l.source = true
+	l.mu.Unlock()
+}
+
+func (l *Logger) DisableSource() {
+	l.mu.Lock()
+	l.source = false
 	l.mu.Unlock()
 }
 
@@ -66,7 +81,11 @@ func (l *Logger) AddChild(child *Logger) {
 
 func (l *Logger) Panic(args ...interface{}) {
 	s := fmt.Sprint(args...)
-	l.h.HandleLog(PanicLevel, time.Now(), s)
+	if !l.source {
+		l.h.HandleLog(PanicLevel, time.Now(), s)
+	} else {
+		l.h.HandleLogWithSource(PanicLevel, time.Now(), s, caller())
+	}
 	l.h.Flush()
 	panic(s)
 }
@@ -75,9 +94,19 @@ func (l *Logger) Panicf(format string, args ...interface{}) {
 	l.Panic(fmt.Sprintf(format, args))
 }
 
+func (l *Logger) PanicF(msg string, fields Fields) {
+	l.h.HandleLogWithFields(PanicLevel, time.Now(), msg, fields)
+	l.h.Flush()
+	panic(msg)
+}
+
 func (l *Logger) Fatal(args ...interface{}) {
 	s := fmt.Sprint(args...)
-	l.h.HandleLog(FatalLevel, time.Now(), s)
+	if !l.source {
+		l.h.HandleLog(FatalLevel, time.Now(), s)
+	} else {
+		l.h.HandleLogWithSource(FatalLevel, time.Now(), s, caller())
+	}
 	l.h.Flush()
 	// TODO: allow user to register hook to do cleanup before exit directly
 	os.Exit(1)
@@ -85,6 +114,13 @@ func (l *Logger) Fatal(args ...interface{}) {
 
 func (l *Logger) Fatalf(format string, args ...interface{}) {
 	l.Fatal(fmt.Sprintf(format, args))
+}
+
+func (l *Logger) FatalF(msg string, fields Fields) {
+	l.h.HandleLogWithFields(FatalLevel, time.Now(), msg, fields)
+	l.h.Flush()
+	// TODO: allow user to register hook to do cleanup before exit directly
+	os.Exit(1)
 }
 
 func SetLevelRecursive(root *Logger, level Level) {
@@ -168,3 +204,15 @@ func (l *Logger) PrintTreeTo(w io.Writer) {
 //// TODO: deal w/ http access log later
 //type HttpAccessLogger struct {
 //}
+
+func caller() string {
+	_, file, line, ok := runtime.Caller(2)
+	if !ok {
+		file = "<?>"
+		line = 1
+	} else {
+		last := strings.LastIndex(file, "/")
+		file = file[last+1:]
+	}
+	return fmt.Sprintf("%s:%d", file, line)
+}

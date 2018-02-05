@@ -12,19 +12,31 @@ func (l *Logger) Is{{.}}Enabled() bool {
 
 func (l *Logger) {{.}}(args ...interface{}) {
 	if l.level >= {{.}}Level {
-		l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprint(args...))
+	    if !l.source {
+    		l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprint(args...))
+	    } else {
+	        l.h.HandleLogWithSource({{.}}Level, time.Now(), fmt.Sprint(args...), caller())
+	    }
 	}
 }
 
 func (l *Logger) {{.}}f(format string, args ...interface{}) {
 	if l.level >= {{.}}Level {
-		l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprintf(format, args...))
+	    if !l.source {
+            l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprintf(format, args...))
+	    } else {
+            l.h.HandleLogWithSource({{.}}Level, time.Now(), fmt.Sprintf(format, args...), caller())
+	    }
 	}
 }
 
 func (l *Logger) {{.}}F(msg string, fields Fields) {
     if l.level >= {{.}}Level {
-        l.h.HandleLogWithFields({{.}}Level, time.Now(), msg, fields)
+        if !l.source {
+            l.h.HandleLogWithFields({{.}}Level, time.Now(), msg, fields)
+        } else {
+            l.h.HandleLogWithSourceFields({{.}}Level, time.Now(), msg, caller(), fields)
+        }
     }
 }
 {{ end }}
