@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/dyweb/gommon/structure"
+	"time"
 )
 
 type Logger struct {
@@ -64,7 +65,7 @@ func (l *Logger) AddChild(child *Logger) {
 
 func (l *Logger) Panic(args ...interface{}) {
 	s := fmt.Sprint(args...)
-	l.h.HandleLog(PanicLevel, s)
+	l.h.HandleLog(PanicLevel, time.Now(), s)
 	l.h.Flush()
 	panic(s)
 }
@@ -75,7 +76,7 @@ func (l *Logger) Panicf(format string, args ...interface{}) {
 
 func (l *Logger) Fatal(args ...interface{}) {
 	s := fmt.Sprint(args...)
-	l.h.HandleLog(FatalLevel, s)
+	l.h.HandleLog(FatalLevel, time.Now(), s)
 	l.h.Flush()
 	// TODO: allow user to register hook to do cleanup before exit directly
 	os.Exit(1)

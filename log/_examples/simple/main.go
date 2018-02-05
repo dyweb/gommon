@@ -10,6 +10,7 @@ import (
 func main() {
 	logger := log.Logger{}
 	logger.SetLevel(log.DebugLevel)
+	// FIXME: the examples are broken ...
 	logger.SetHandler(handlers.NewStdout())
 	logger.Debug("This is a debug message ", 1, " yeah")
 	logger.Info("This is a info message ", 2, " no")

@@ -12,7 +12,8 @@ import (
 )
 
 // interface check
-var _ log.Handler = (*Handler)(nil)
+// FIXME: reuse code between stdio and default? might use gommon's go template ...
+//var _ log.Handler = (*Handler)(nil)
 
 const (
 	defaultTimeStampFormat = time.RFC3339

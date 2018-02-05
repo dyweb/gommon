@@ -2,6 +2,7 @@ package log
 
 import (
     "fmt"
+    "time"
 )
 
 {{ range .}}
@@ -11,13 +12,19 @@ func (l *Logger) Is{{.}}Enabled() bool {
 
 func (l *Logger) {{.}}(args ...interface{}) {
 	if l.level >= {{.}}Level {
-		l.h.HandleLog({{.}}Level, fmt.Sprint(args...))
+		l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprint(args...))
 	}
 }
 
 func (l *Logger) {{.}}f(format string, args ...interface{}) {
 	if l.level >= {{.}}Level {
-		l.h.HandleLog({{.}}Level, fmt.Sprintf(format, args...))
+		l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprintf(format, args...))
 	}
+}
+
+func (l *Logger) {{.}}F(msg string, fields Fields) {
+    if l.level >= {{.}}Level {
+        l.h.HandleLogWithFields({{.}}Level, time.Now(), msg, fields)
+    }
 }
 {{ end }}

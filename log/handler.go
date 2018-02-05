@@ -12,29 +12,38 @@ const (
 )
 
 type Handler interface {
-	HandleLog(level Level, msg string)
+	// TODO: pass pointer for fields?
+	HandleLog(level Level, time time.Time, msg string)
+	//HandleLogWithSource(source string, level Level, time time.Time, msg string)
+	HandleLogWithFields(level Level, time time.Time, msg string, fields Fields)
+	//HandleLogWithSourceFields(source string, level Level, time time.Time, msg string, fields Fields)
 	Flush()
 }
 
 // HandlerFunc is an adapter to allow use of ordinary functions as log entry handlers
-type HandlerFunc func(level Level, msg string)
+//type HandlerFunc func(level Level, msg string)
 
 // TODO: why the receiver is value instead of pointer https://github.com/dyweb/gommon/issues/30
-func (f HandlerFunc) HandleLog(level Level, msg string) {
-	f(level, msg)
-}
+//func (f HandlerFunc) HandleLog(level Level, msg string) {
+//	f(level, msg)
+//}
 
 type defaultHandler struct {
 }
 
 var DefaultHandler Handler = &defaultHandler{}
 
-func (h *defaultHandler) HandleLog(level Level, msg string) {
+func (h *defaultHandler) HandleLog(level Level, time time.Time, msg string) {
 	// TODO: might use a buffer, since we are just concat string, no special format is needed
 	// TODO: fields etc.
 	// TODO: is calling level.String() faster than %s level
 	// TODO: it seems in go, both os.Stderr and os.Stdout are not (line) buffered
-	fmt.Fprintf(os.Stderr, "%s %s %s\n", level.String(), time.Now().Format(defaultTimeStampFormat), msg)
+	fmt.Fprintf(os.Stderr, "%s %s %s\n", level.String(), time.Format(defaultTimeStampFormat), msg)
+}
+
+func (h *defaultHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
+	// FIXME: deal with fields
+	fmt.Fprintf(os.Stderr, "%s %s %s\n", level.String(), time.Format(defaultTimeStampFormat), msg)
 }
 
 func (h *defaultHandler) Flush() {
@@ -59,9 +68,16 @@ func NewTestHandler() *testHandler {
 	return &testHandler{}
 }
 
-func (h *testHandler) HandleLog(level Level, msg string) {
+func (h *testHandler) HandleLog(level Level, time time.Time, msg string) {
 	h.mu.Lock()
-	h.entries = append(h.entries, entry{level: level, time: time.Now(), msg: msg})
+	h.entries = append(h.entries, entry{level: level, time: time, msg: msg})
+	h.mu.Unlock()
+}
+
+func (h *testHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
+	h.mu.Lock()
+	// FIXME: deal with fields
+	h.entries = append(h.entries, entry{level: level, time: time, msg: msg})
 	h.mu.Unlock()
 }
 
