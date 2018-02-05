@@ -29,7 +29,7 @@ type Handler interface {
 //	f(level, msg)
 //}
 
-type ioSyncer interface {
+type Syncer interface {
 	Sync() error
 }
 
@@ -86,7 +86,7 @@ func (h *ioHandler) HandleLogWithSourceFields(level Level, time time.Time, msg s
 }
 
 func (h *ioHandler) Flush() {
-	if s, ok := h.w.(ioSyncer); ok {
+	if s, ok := h.w.(Syncer); ok {
 		s.Sync()
 	}
 }

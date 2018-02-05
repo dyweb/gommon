@@ -25,6 +25,11 @@
 #   unused-packages = true
 
 
+ignored = [
+    "github.com/dyweb/gommon/legacy",
+    "github.com/dyweb/gommon/playground",
+]
+
 [[constraint]]
   name = "github.com/pkg/errors"
   version = "0.8.0"

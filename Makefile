@@ -4,7 +4,7 @@ install:
 
 .PHONY: test
 test:
-	go test -v -cover ./...
+	go test -v -cover ./cast/... ./config/... ./generator/... ./log/... ./requests/... ./runner/... ./structure/... ./util/...
 
 .PHONY: test-log
 test-log:

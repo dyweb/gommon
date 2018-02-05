@@ -1,7 +1,7 @@
 dep-install:
-    - glide install
+    - dep ensure
 test:
-    - go test -v -cover ./...
+    - go test -v -cover ./cast/... ./config/... ./generator/... ./log/... ./requests/... ./runner/... ./structure/... ./util/...
 scripts:
   fmt:
     - gofmt -d -l -w ./cast ./config ./log ./requests ./runner ./structure ./util

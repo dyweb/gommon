@@ -1,13 +1,21 @@
 package main
 
 import (
+	"os"
+
 	dlog "github.com/dyweb/gommon/log"
+	"github.com/dyweb/gommon/log/handlers/json"
 )
 
 var log = dlog.NewApplicationLogger()
 
 // simply log to stderr
 func main() {
+	if len(os.Args) > 1 {
+		if os.Args[1] == "json" {
+			dlog.SetHandlerRecursive(log, json.New(os.Stderr))
+		}
+	}
 	log.Info("this is love!")
 	log.Infof("this is love %d", 2)
 	log.InfoF("this love", dlog.Fields{

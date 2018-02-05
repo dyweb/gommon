@@ -4,12 +4,14 @@
 [[projects]]
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
-  revision = "04cdfd42973bb9c8589fd6a731800cf222fde1a9"
+  revision = "346938d642f2ec3594ed81d874461961cd0faa76"
+  version = "v1.1.0"
 
 [[projects]]
+  branch = "master"
   name = "github.com/kballard/go-shellquote"
   packages = ["."]
-  revision = "d8ec1a69a250a17bb0e419c386eac1f3711dc142"
+  revision = "cd60e84ee657ff3dc51de0b4f55dd299a3e136f2"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -20,31 +22,30 @@
 [[projects]]
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
-  revision = "d8ed2627bdf02c080bf22230dbb337003b7aba2d"
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
 
 [[projects]]
   name = "github.com/stretchr/testify"
   packages = ["assert"]
-  revision = "2402e8e7a02fc811447d11f881aa9746cdc57983"
+  revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
+  version = "v1.2.1"
 
 [[projects]]
+  branch = "master"
   name = "golang.org/x/net"
   packages = ["proxy"]
-  revision = "7dcfb8076726a3fdd9353b6b8a1f1b6be6811bd6"
+  revision = "2fb46b16b8dda405028c50f7c7f0f9dd1fa6bfb1"
 
 [[projects]]
-  name = "golang.org/x/tools"
-  packages = ["benchmark/parse"]
-  revision = "496819729719f9d07692195e0a94d6edd2251389"
-
-[[projects]]
+  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b"
+  revision = "d670f9405373e636a5a2765eea47fac0c9bc91a4"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3316c670d659882df8dd668533e1f775fb852c7346bdd53fa0a21e9901dedf2a"
+  inputs-digest = "f3cd24d5f84b06d6778542731631e85ba94ebdad3a0e6b2ee28e5b75021aa98e"
   solver-name = "gps-cdcl"
   solver-version = 1
