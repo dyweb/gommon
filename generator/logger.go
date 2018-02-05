@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"github.com/pkg/errors"
 	"io"
 	"text/template"
 )
@@ -28,8 +29,11 @@ func ({{.Receiver}} {{.Struct}}) LoggerIdentity(justCallMe func() *dlog.Identity
 }
 `
 
-func (c *LoggerConfig) RenderTo(w io.Writer) {
-	structLoggerTmpl.Execute(w, *c)
+func (c *LoggerConfig) RenderTo(w io.Writer) error {
+	if err := structLoggerTmpl.Execute(w, *c); err != nil {
+		return errors.Wrap(err, "failed to render logger template")
+	}
+	return nil
 }
 
 func init() {

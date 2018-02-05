@@ -1,4 +1,4 @@
 # configuration for gommon
 loggers:
-  - struct: "*YAMLConfig"
-    receiver: c
+  - struct: "*Server"
+    receiver: srv

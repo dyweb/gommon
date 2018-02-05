@@ -1,10 +1,32 @@
 # Generator
 
-NOTE: remember to quote * in YAML, it means reference ... (the spec has too much ...)
 
-- logger
+## Usage
 
-TODO
+Put a `gommon.yml` in folder, gommon will traverse folders and generate go file based on instruction
+
+Supported generators
+
+- logger, generate methods to match `log.LoggableStruct` interface
+- go template, render template using `text/template`
+
+````yaml
+loggers:
+  - struct: "*Server"
+    receiver: srv
+gotmpls:
+    - src: abc.go.tmpl
+      dst: abc.go
+      data:
+        foo: bar
+````
+
+NOTE
+
+- remember to quote string with `*` in YAML, `*Foo` means reference while `"*Foo"` is a normal string
+
+
+## TODO
 
 logger
 
@@ -16,9 +38,3 @@ logger
 gotmpl
 
 - [ ] replace Ayi's gotmpl
-
-````yaml
-gotmpl:
-    - src: abc.go.tmpl
-      dst: abc.go
-````

@@ -1,0 +1,9 @@
+gotmpls:
+  - src: logger_generated.go.tmpl
+    dst: logger_generated.go
+    data:
+      - Trace
+      - Debug
+      - Info
+      - Warn
+      - Error
