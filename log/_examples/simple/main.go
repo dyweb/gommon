@@ -4,6 +4,7 @@ import (
 	"os"
 
 	dlog "github.com/dyweb/gommon/log"
+	"github.com/dyweb/gommon/log/handlers/cli"
 	"github.com/dyweb/gommon/log/handlers/json"
 )
 
@@ -15,9 +16,14 @@ func main() {
 		if os.Args[1] == "json" {
 			dlog.SetHandlerRecursive(log, json.New(os.Stderr))
 		}
+		if os.Args[1] == "cli" {
+			dlog.SetHandlerRecursive(log, cli.New(os.Stderr))
+		}
 	}
+	dlog.SetLevelRecursive(log, dlog.DebugLevel)
+	log.Debug("show me the meaning of being lonely")
 	log.Info("this is love!")
-	log.Infof("this is love %d", 2)
+	log.Warnf("this is love %d", 2)
 	log.InfoF("this love", dlog.Fields{
 		dlog.Int("num", 2),
 		dlog.Str("foo", "bar"),
