@@ -6,7 +6,7 @@ import (
 )
 
 func Test_Colors(t *testing.T) {
-	//t.Skip("only used for trying out color codes")
+	t.Skip("only used for trying out color codes")
 
 	//fmt.Printf("\x1b[%dm%s\x1b[0m\n", nocolor, "nocolor")
 	fmt.Printf("\x1b[%dm%s\x1b[0m\n", RedCode, "error")

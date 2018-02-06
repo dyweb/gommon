@@ -16,30 +16,32 @@ const (
 type Handler struct {
 	w     io.Writer
 	start time.Time
+	delta bool
 }
 
-func New(w io.Writer) *Handler {
+func New(w io.Writer, delta bool) *Handler {
 	return &Handler{
 		w:     w,
 		start: time.Now(),
+		delta: delta,
 	}
 }
 
 func (h *Handler) HandleLog(level log.Level, time time.Time, msg string) {
-	b := formatHead(level, time, msg)
+	b := h.formatHead(level, time, msg)
 	b = append(b, '\n')
 	h.w.Write(b)
 }
 
 func (h *Handler) HandleLogWithSource(level log.Level, time time.Time, msg string, source string) {
-	b := formatHeadWithSource(level, time, msg, source)
+	b := h.formatHeadWithSource(level, time, msg, source)
 	b = append(b, '\n')
 	h.w.Write(b)
 }
 
 func (h *Handler) HandleLogWithFields(level log.Level, time time.Time, msg string, fields log.Fields) {
 	// we use raw slice instead of bytes buffer because we need to use strconv.Append*, which requires raw slice
-	b := formatHead(level, time, msg)
+	b := h.formatHead(level, time, msg)
 	b = append(b, ' ')
 	b = formatFields(b, fields)
 	b[len(b)-1] = '\n'
@@ -47,7 +49,7 @@ func (h *Handler) HandleLogWithFields(level log.Level, time time.Time, msg strin
 }
 
 func (h *Handler) HandleLogWithSourceFields(level log.Level, time time.Time, msg string, source string, fields log.Fields) {
-	b := formatHeadWithSource(level, time, msg, source)
+	b := h.formatHeadWithSource(level, time, msg, source)
 	b = append(b, ' ')
 	b = formatFields(b, fields)
 	b[len(b)-1] = '\n'
@@ -62,12 +64,34 @@ func (h *Handler) Flush() {
 
 // NOTE: most of format functions are same as (copied from) default handler
 
+// based on fmt.fmt_integer, only support base 10 and prefix 0
+// https://golang.org/src/fmt/format.go#L194
+func formatNum(u uint, digits int) []byte {
+	i := digits
+	b := make([]byte, digits)
+	for u > 0 && i > 0 {
+		i--
+		next := u / 10
+		b[i] = byte('0' + u - next*10)
+		u = next
+	}
+	for i > 0 {
+		i--
+		b[i] = '0'
+	}
+	return b
+}
+
 // no need to use fmt.Printf since we don't need any format
-func formatHead(level log.Level, time time.Time, msg string) []byte {
+func (h *Handler) formatHead(level log.Level, tm time.Time, msg string) []byte {
 	b := make([]byte, 0, 18+4+len(defaultTimeStampFormat)+len(msg))
 	b = append(b, level.ColoredString()...)
 	b = append(b, ' ')
-	b = time.AppendFormat(b, defaultTimeStampFormat)
+	if h.delta {
+		b = append(b, formatNum(uint(tm.Sub(h.start)/time.Second), 4)...)
+	} else {
+		b = tm.AppendFormat(b, defaultTimeStampFormat)
+	}
 	b = append(b, ' ')
 	b = append(b, msg...)
 	return b
@@ -75,11 +99,15 @@ func formatHead(level log.Level, time time.Time, msg string) []byte {
 
 // we have a new function because source sits between time and msg in output, instead of after msg
 // i.e. info 2018-02-04T21:03:20-08:00 main.go:18 show me the line
-func formatHeadWithSource(level log.Level, time time.Time, msg string, source string) []byte {
+func (h *Handler) formatHeadWithSource(level log.Level, tm time.Time, msg string, source string) []byte {
 	b := make([]byte, 0, 18+4+len(defaultTimeStampFormat)+len(msg))
 	b = append(b, level.ColoredString()...)
 	b = append(b, ' ')
-	b = time.AppendFormat(b, defaultTimeStampFormat)
+	if h.delta {
+		b = append(b, formatNum(uint(tm.Sub(h.start)/time.Second), 4)...)
+	} else {
+		b = tm.AppendFormat(b, defaultTimeStampFormat)
+	}
 	b = append(b, ' ')
 	b = append(b, color.CyanStart...)
 	b = append(b, source...)

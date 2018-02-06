@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"time"
 
 	dlog "github.com/dyweb/gommon/log"
 	"github.com/dyweb/gommon/log/handlers/cli"
@@ -17,7 +18,10 @@ func main() {
 			dlog.SetHandlerRecursive(log, json.New(os.Stderr))
 		}
 		if os.Args[1] == "cli" {
-			dlog.SetHandlerRecursive(log, cli.New(os.Stderr))
+			dlog.SetHandlerRecursive(log, cli.New(os.Stderr, false))
+		}
+		if os.Args[1] == "cli-d" {
+			dlog.SetHandlerRecursive(log, cli.New(os.Stderr, true))
 		}
 	}
 	dlog.SetLevelRecursive(log, dlog.DebugLevel)
@@ -36,6 +40,10 @@ func main() {
 		dlog.Str("foo", "bar"),
 	})
 	log.DisableSource()
+	log.WarnF("I will sleep", dlog.Fields{
+		dlog.Int("duration", 1),
+	})
+	time.Sleep(time.Second)
 	log.Info("no more line number")
 
 	// TODO: panic and fatal
