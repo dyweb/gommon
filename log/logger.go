@@ -13,7 +13,7 @@ type Logger struct {
 	mu       sync.RWMutex
 	h        Handler
 	level    Level
-	fields   Fields
+	fields   Fields // TODO: the Fields in logger are never used, we are using DebugF to pass temporary fields
 	children map[string][]*Logger
 	source   bool
 	id       *Identity

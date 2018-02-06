@@ -53,6 +53,7 @@ func newLogger(parent *Logger, child *Logger) *Logger {
 		parent.AddChild(child)
 		child.h = parent.h
 		child.level = parent.level
+		child.source = parent.source
 	} else {
 		child.h = DefaultHandler()
 		child.level = InfoLevel
