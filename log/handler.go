@@ -1,8 +1,9 @@
 package log
 
 import (
-	"fmt"
+	"io"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -12,43 +13,94 @@ const (
 )
 
 type Handler interface {
-	HandleLog(level Level, msg string)
+	HandleLog(level Level, time time.Time, msg string)
+	HandleLogWithSource(level Level, time time.Time, msg string, source string)
+	// TODO: pass pointer for fields?
+	HandleLogWithFields(level Level, time time.Time, msg string, fields Fields)
+	HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields)
 	Flush()
 }
 
 // HandlerFunc is an adapter to allow use of ordinary functions as log entry handlers
-type HandlerFunc func(level Level, msg string)
+//type HandlerFunc func(level Level, msg string)
 
 // TODO: why the receiver is value instead of pointer https://github.com/dyweb/gommon/issues/30
-func (f HandlerFunc) HandleLog(level Level, msg string) {
-	f(level, msg)
+//func (f HandlerFunc) HandleLog(level Level, msg string) {
+//	f(level, msg)
+//}
+
+type Syncer interface {
+	Sync() error
 }
 
-type defaultHandler struct {
+type ioHandler struct {
+	w io.Writer
 }
 
-var DefaultHandler Handler = &defaultHandler{}
+var defaultHandler = &ioHandler{w: os.Stderr}
 
-func (h *defaultHandler) HandleLog(level Level, msg string) {
-	// TODO: might use a buffer, since we are just concat string, no special format is needed
-	// TODO: fields etc.
-	// TODO: is calling level.String() faster than %s level
-	// TODO: it seems in go, both os.Stderr and os.Stdout are not (line) buffered
-	fmt.Fprintf(os.Stderr, "%s %s %s\n", level.String(), time.Now().Format(defaultTimeStampFormat), msg)
+func DefaultHandler() Handler {
+	return defaultHandler
 }
 
-func (h *defaultHandler) Flush() {
-	// TODO: don't know if is needed, will there be any different if stderr/stdout is redirected to a file
-	os.Stderr.Sync()
+func NewIOHandler(w io.Writer) Handler {
+	return &ioHandler{w: w}
+}
+
+// TODO: performance (which is not a major concern now ...)
+// - when using raw byte slice, have a correct length, fields can also return length required
+// - is calling level.String() faster than %s level
+// - use buffer (pool)
+// TODO: correctness
+// - in go, both os.Stderr and os.Stdout are not (line) buffered
+// - what would happen if os.Stderr.Close()
+// - os.Stderr.Sync() will there be any different if stderr/stdout is redirected to a file
+
+func (h *ioHandler) HandleLog(level Level, time time.Time, msg string) {
+	b := formatHead(level, time, msg)
+	b = append(b, '\n')
+	h.w.Write(b)
+}
+
+func (h *ioHandler) HandleLogWithSource(level Level, time time.Time, msg string, source string) {
+	b := formatHeadWithSource(level, time, msg, source)
+	b = append(b, '\n')
+	h.w.Write(b)
+}
+
+func (h *ioHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
+	// we use raw slice instead of bytes buffer because we need to use strconv.Append*, which requires raw slice
+	b := formatHead(level, time, msg)
+	b = append(b, ' ')
+	b = formatFields(b, fields)
+	b[len(b)-1] = '\n'
+	h.w.Write(b)
+}
+
+func (h *ioHandler) HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields) {
+	b := formatHeadWithSource(level, time, msg, source)
+	b = append(b, ' ')
+	b = formatFields(b, fields)
+	b[len(b)-1] = '\n'
+	h.w.Write(b)
+}
+
+func (h *ioHandler) Flush() {
+	if s, ok := h.w.(Syncer); ok {
+		s.Sync()
+	}
 }
 
 // unlike log v1 entry is only used for test, it is not passed around
 type entry struct {
-	level Level
-	time  time.Time
-	msg   string
-	// TODO: fields
+	level  Level
+	time   time.Time
+	msg    string
+	fields Fields
+	source string
 }
+
+var _ Handler = (*testHandler)(nil)
 
 type testHandler struct {
 	mu      sync.RWMutex
@@ -59,9 +111,27 @@ func NewTestHandler() *testHandler {
 	return &testHandler{}
 }
 
-func (h *testHandler) HandleLog(level Level, msg string) {
+func (h *testHandler) HandleLog(level Level, time time.Time, msg string) {
 	h.mu.Lock()
-	h.entries = append(h.entries, entry{level: level, time: time.Now(), msg: msg})
+	h.entries = append(h.entries, entry{level: level, time: time, msg: msg})
+	h.mu.Unlock()
+}
+
+func (h *testHandler) HandleLogWithSource(level Level, time time.Time, msg string, source string) {
+	h.mu.Lock()
+	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, source: source})
+	h.mu.Unlock()
+}
+
+func (h *testHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
+	h.mu.Lock()
+	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, fields: fields})
+	h.mu.Unlock()
+}
+
+func (h *testHandler) HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields) {
+	h.mu.Lock()
+	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, source: source, fields: fields})
 	h.mu.Unlock()
 }
 
@@ -78,4 +148,45 @@ func (h *testHandler) HasLog(level Level, msg string) bool {
 		}
 	}
 	return false
+}
+
+// no need to use fmt.Printf since we don't need any format
+func formatHead(level Level, time time.Time, msg string) []byte {
+	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg))
+	b = append(b, level.String()...)
+	b = append(b, ' ')
+	b = time.AppendFormat(b, defaultTimeStampFormat)
+	b = append(b, ' ')
+	b = append(b, msg...)
+	return b
+}
+
+// we have a new function because source sits between time and msg in output, instead of after msg
+// i.e. info 2018-02-04T21:03:20-08:00 main.go:18 show me the line
+func formatHeadWithSource(level Level, time time.Time, msg string, source string) []byte {
+	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg)+len(source))
+	b = append(b, level.String()...)
+	b = append(b, ' ')
+	b = time.AppendFormat(b, defaultTimeStampFormat)
+	b = append(b, ' ')
+	b = append(b, source...)
+	b = append(b, ' ')
+	b = append(b, msg...)
+	return b
+}
+
+// it has an extra tailing space, which can be updated inplace to a \n
+func formatFields(b []byte, fields Fields) []byte {
+	for _, f := range fields {
+		b = append(b, f.Key...)
+		b = append(b, '=')
+		switch f.Type {
+		case IntType:
+			b = strconv.AppendInt(b, f.Int, 10)
+		case StringType:
+			b = append(b, f.Str...)
+		}
+		b = append(b, ' ')
+	}
+	return b
 }

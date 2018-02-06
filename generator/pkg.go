@@ -46,6 +46,7 @@ func GenerateSingle(file string) error {
 	if err = WriteFile(join(dir, generatedFile), rendered); err != nil {
 		return errors.WithMessage(err, "can't write rendered file")
 	}
+	log.Debugf("generated %s from %s", join(dir, generatedFile), file)
 	// gotmpl
 	if err = cfg.RenderGoTemplate(dir); err != nil {
 		return errors.WithMessage(err, "can't render go templates")

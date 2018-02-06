@@ -1,8 +1,13 @@
 # TODO
 
+## 2018-02-04
+
+- [ ] support fields
+- [ ] support source line, using `runtime` (slow, but requires much less time to implement)
+
 ## 2017-12-25
 
-- [ ] [#32](https://github.com/dyweb/gommon/issues/32) use runtime.CallersFrame instead of runtime.FuncForPc
+- [x] [#32](https://github.com/dyweb/gommon/issues/32) use runtime.CallersFrame instead of runtime.FuncForPc
 - [ ] [#33](https://github.com/dyweb/gommon/issues/33) maintain a tree of logger is harder than I think
 
 ## 2017-12-22

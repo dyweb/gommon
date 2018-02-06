@@ -52,7 +52,6 @@ func Walk(root string, ignore Ignores) []string {
 // learned this the hard way https://github.com/dyweb/gommon/issues/41
 // stat -c %a pkg.go
 func WriteFile(f string, b []byte) error {
-
 	if err := ioutil.WriteFile(f, b, 0664); err != nil {
 		return errors.WithStack(err)
 	}

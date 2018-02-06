@@ -1,5 +1,7 @@
 package log
 
+import "github.com/dyweb/gommon/util/color"
+
 // Level is log level
 type Level uint8
 
@@ -32,6 +34,20 @@ var levelStrings = []string{
 	TraceLevel: "trace",
 }
 
+var levelColoredStrings = []string{
+	FatalLevel: color.RedStart + "fatal" + color.End,
+	PanicLevel: color.RedStart + "panic" + color.End,
+	ErrorLevel: color.RedStart + "error" + color.End,
+	WarnLevel:  color.YellowStart + "warn" + color.End,
+	InfoLevel:  color.BlueStart + "info" + color.End,
+	DebugLevel: color.GrayStart + "debug" + color.End,
+	TraceLevel: color.GrayStart + "trace" + color.End,
+}
+
 func (level Level) String() string {
 	return levelStrings[level]
+}
+
+func (level Level) ColoredString() string {
+	return levelColoredStrings[level]
 }

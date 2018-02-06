@@ -1,6 +1,7 @@
 gotmpls:
   - src: logger_generated.go.tmpl
     dst: logger_generated.go
+    go: true
     data:
       - Trace
       - Debug

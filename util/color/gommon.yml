@@ -1,0 +1,14 @@
+gotmpls:
+  - src: color_generated.go.tmpl
+    dst: color_generated.go
+    go: true
+    # https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
+    # TODO: it seems when using `range` in go template, the map is not sorted by string key?
+    data:
+      Red: 31
+      Green: 32
+      Yellow: 33
+      Blue: 34
+      Purple: 35
+      Cyan: 36
+      Gray: 37
