@@ -1,7 +1,6 @@
 package config
 
 import (
-	dlog "github.com/dyweb/gommon/legacy/log"
 	"github.com/dyweb/gommon/util/logutil"
 )
 
@@ -23,7 +22,3 @@ type Reader interface {
 type StructuredConfig interface {
 	Validate() error
 }
-
-// FIXME: migrate the structured config for logger
-// NOTE: the interface check is here to avoid import cycle
-var _ StructuredConfig = (*dlog.Config)(nil)
