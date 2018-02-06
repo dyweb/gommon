@@ -2,6 +2,12 @@
 package color
 
 const (
+	GreenCode = 32
+
+	PurpleCode = 35
+
+	RedCode = 31
+
 	YellowCode = 33
 
 	BlueCode = 34
@@ -9,17 +15,9 @@ const (
 	CyanCode = 36
 
 	GrayCode = 37
-
-	GreenCode = 32
-
-	PurpleCode = 35
-
-	RedCode = 31
 )
 
 const (
-	BlueStart = "\x1b[34m"
-
 	CyanStart = "\x1b[36m"
 
 	GrayStart = "\x1b[37m"
@@ -32,8 +30,18 @@ const (
 
 	YellowStart = "\x1b[33m"
 
+	BlueStart = "\x1b[34m"
+
 	End = "\x1b[0m"
 )
+
+func Red(str string) string {
+	return "\x1b[31m" + str + "\x1b[0m"
+}
+
+func Yellow(str string) string {
+	return "\x1b[33m" + str + "\x1b[0m"
+}
 
 func Blue(str string) string {
 	return "\x1b[34m" + str + "\x1b[0m"
@@ -53,12 +61,4 @@ func Green(str string) string {
 
 func Purple(str string) string {
 	return "\x1b[35m" + str + "\x1b[0m"
-}
-
-func Red(str string) string {
-	return "\x1b[31m" + str + "\x1b[0m"
-}
-
-func Yellow(str string) string {
-	return "\x1b[33m" + str + "\x1b[0m"
 }

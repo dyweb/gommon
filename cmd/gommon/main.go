@@ -8,6 +8,7 @@ import (
 	dlog "github.com/dyweb/gommon/log"
 	"github.com/dyweb/gommon/generator"
 	"github.com/dyweb/gommon/util/logutil"
+	"github.com/dyweb/gommon/log/handlers/cli"
 )
 
 var log = dlog.NewApplicationLogger()
@@ -61,4 +62,5 @@ func main() {
 
 func init() {
 	log.AddChild(logutil.Registry)
+	dlog.SetHandlerRecursive(log, cli.New(os.Stderr, true))
 }
