@@ -48,6 +48,20 @@ func SetHandlerRecursive(root *Logger, handler Handler) {
 	})
 }
 
+func EnableSourceRecusrive(root *Logger) {
+	visited := make(map[*Logger]bool)
+	PreOrderDFS(root, visited, func(l *Logger) {
+		l.EnableSource()
+	})
+}
+
+func DisableSourceRecursive(root *Logger) {
+	visited := make(map[*Logger]bool)
+	PreOrderDFS(root, visited, func(l *Logger) {
+		l.DisableSource()
+	})
+}
+
 // TODO: test it .... map traverse order is random, we need radix tree, it is need for pretty print as well
 func PreOrderDFS(root *Logger, visited map[*Logger]bool, cb func(l *Logger)) {
 	if visited[root] {
