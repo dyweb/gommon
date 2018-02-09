@@ -2,8 +2,8 @@
 
 ## 2018-02-04
 
-- [ ] support fields
-- [ ] support source line, using `runtime` (slow, but requires much less time to implement)
+- [x] support fields
+- [x] support source line, using `runtime` (slow, but requires much less time to implement)
 
 ## 2017-12-25
 

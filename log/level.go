@@ -44,10 +44,24 @@ var levelColoredStrings = []string{
 	TraceLevel: color.GrayStart + "trace" + color.End,
 }
 
+var levelColoredAlignedUpperStrings = []string{
+	FatalLevel: color.RedStart + "FATA" + color.End,
+	PanicLevel: color.RedStart + "PANI" + color.End,
+	ErrorLevel: color.RedStart + "ERRO" + color.End,
+	WarnLevel:  color.YellowStart + "WARN" + color.End,
+	InfoLevel:  color.BlueStart + "INFO" + color.End,
+	DebugLevel: color.GrayStart + "DEBU" + color.End,
+	TraceLevel: color.GrayStart + "TRAC" + color.End,
+}
+
 func (level Level) String() string {
 	return levelStrings[level]
 }
 
 func (level Level) ColoredString() string {
 	return levelColoredStrings[level]
+}
+
+func (level Level) ColoredAlignedUpperString() string {
+	return levelColoredAlignedUpperStrings[level]
 }

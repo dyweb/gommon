@@ -85,7 +85,7 @@ func formatNum(u uint, digits int) []byte {
 // no need to use fmt.Printf since we don't need any format
 func (h *Handler) formatHead(level log.Level, tm time.Time, msg string) []byte {
 	b := make([]byte, 0, 18+4+len(defaultTimeStampFormat)+len(msg))
-	b = append(b, level.ColoredString()...)
+	b = append(b, level.ColoredAlignedUpperString()...)
 	b = append(b, ' ')
 	if h.delta {
 		b = append(b, formatNum(uint(tm.Sub(h.start)/time.Second), 4)...)
