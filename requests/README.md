@@ -6,6 +6,8 @@ Originally from [xephon-b](https://github.com/xephonhq/xephon-b)
 
 ## Usage
 
+TODO: it is mainly used for building config for http client to use socks5 proxy
+
 ## Changelog
 
 - add client struct and default client which wraps `http.Client`
