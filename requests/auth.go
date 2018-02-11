@@ -8,6 +8,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// TODO: it is already in net/http https://golang.org/pkg/net/http/#Request.BasicAuth
+
 const AuthorizationHeader = "Authorization"
 
 func GenerateBasicAuth(username string, password string) string {

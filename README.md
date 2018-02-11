@@ -13,7 +13,7 @@ It has the following components:
 - [Config](config) A YAML config reader with template support
 - [Log](log) A Javaish logger for Go, application can control library and set level for different pkg via config or flag
 - [Generator](generator) Render go template, generate methods for logger interface based on `gommon.yml`
-- [Rice](rice) Embed static assets for web application with `.riceignore` support
+- [Noodle](noodle) Embed static assets for web application with `.riceignore` support
 - [Requests](requests) A pythonic wrapper for `net/http`, HTTP for Gopher.
 - [Cast](cast) Convert Golang types
 - [Data structure](structure) Bring Set etc. to Golang.
@@ -77,7 +77,7 @@ compared to packages it modeled after.
 - [benbjohnson/tmpl](https://github.com/benbjohnson/tmpl) for go template generator
   - first saw it in [influxdata/influxdb](https://github.com/influxdata/influxdb/blob/master/tsdb/engine/tsm1/encoding.gen.go.tmpl)
   - we put template data in `gommon.yml`, so we don't need to pass it via cli
-- [GeertJohan/go.rice](https://github.com/GeertJohan/go.rice) for rice
+- [GeertJohan/go.rice](https://github.com/GeertJohan/go.rice) for ~~rice~~ noodle
   - we implemented `.gitignore` like [feature](https://github.com/at15/go.rice/issues/1) but the upstream didn't respond for the [feature request #83](https://github.com/GeertJohan/go.rice/issues/83)
 
 ## About
