@@ -22,6 +22,7 @@ func (c *GoTemplateConfig) Render(root string) error {
 		err error
 		t   *template.Template
 	)
+	//log.Infof("data is %v", c.Data)
 	if b, err = ioutil.ReadFile(join(root, c.Src)); err != nil {
 		return errors.Wrap(err, "can't read template file")
 	}

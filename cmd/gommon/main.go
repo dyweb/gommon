@@ -49,7 +49,6 @@ func parseFlags(args []string) {
 	}
 	if *verbose {
 		dlog.SetLevelRecursive(log, dlog.DebugLevel)
-		// FIXME: after this is called ... the level string becomes smaller case ...
 		dlog.EnableSourceRecusrive(log)
 	}
 }

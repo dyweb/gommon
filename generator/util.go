@@ -11,8 +11,9 @@ import (
 func DefaultIgnores() *fsutil.Ignores {
 	return fsutil.NewIgnores(
 		[]fsutil.IgnorePattern{
+			fsutil.ExactPattern(".git"),
 			fsutil.ExactPattern("testdata"),
-			fsutil.ExactPattern("vendoer"),
+			fsutil.ExactPattern("vendor"),
 			fsutil.ExactPattern(".idea"),
 			fsutil.ExactPattern(".vscode"),
 		},
