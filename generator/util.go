@@ -2,49 +2,22 @@ package generator
 
 import (
 	"io/ioutil"
-
-	"github.com/pkg/errors"
 	"path/filepath"
+
+	"github.com/dyweb/gommon/util/fsutil"
+	"github.com/pkg/errors"
 )
 
-var defaultIgnores Ignores = []string{"testdata", "vendor", ".idea", ".vscode"}
-
-type Ignores []string
-
-func DefaultIgnores() Ignores {
-	return defaultIgnores
-}
-
-func (is *Ignores) isIgnored(s string) bool {
-	for _, i := range *is {
-		if i == s {
-			return true
-		}
-	}
-	return false
-}
-
-// Walk use dfs to find all gommon files
-// TODO: limit level
-// TODO: bfs using recursion?
-func Walk(root string, ignore Ignores) []string {
-	files, err := ioutil.ReadDir(root) // files are sorted by name
-	if err != nil {
-		log.Warn(err)
-	}
-	var gommonFiles []string
-	for _, file := range files {
-		name := file.Name()
-		//log.Info(join(root, name))
-		if file.IsDir() && !ignore.isIgnored(name) {
-			gommonFiles = append(gommonFiles, Walk(join(root, name), ignore)...)
-			continue
-		}
-		if name == "gommon.yml" {
-			gommonFiles = append(gommonFiles, join(root, name))
-		}
-	}
-	return gommonFiles
+func DefaultIgnores() *fsutil.Ignores {
+	return fsutil.NewIgnores(
+		[]fsutil.IgnorePattern{
+			fsutil.ExactPattern("testdata"),
+			fsutil.ExactPattern("vendoer"),
+			fsutil.ExactPattern(".idea"),
+			fsutil.ExactPattern(".vscode"),
+		},
+		nil,
+	)
 }
 
 // WriteFile writes file using permission 0664

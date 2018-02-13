@@ -18,6 +18,10 @@ const (
 )
 
 const (
+	YellowStart = "\x1b[33m"
+
+	BlueStart = "\x1b[34m"
+
 	CyanStart = "\x1b[36m"
 
 	GrayStart = "\x1b[37m"
@@ -28,12 +32,12 @@ const (
 
 	RedStart = "\x1b[31m"
 
-	YellowStart = "\x1b[33m"
-
-	BlueStart = "\x1b[34m"
-
 	End = "\x1b[0m"
 )
+
+func Purple(str string) string {
+	return "\x1b[35m" + str + "\x1b[0m"
+}
 
 func Red(str string) string {
 	return "\x1b[31m" + str + "\x1b[0m"
@@ -57,8 +61,4 @@ func Gray(str string) string {
 
 func Green(str string) string {
 	return "\x1b[32m" + str + "\x1b[0m"
-}
-
-func Purple(str string) string {
-	return "\x1b[35m" + str + "\x1b[0m"
 }

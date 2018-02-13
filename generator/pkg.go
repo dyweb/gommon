@@ -6,17 +6,28 @@ import (
 	"strings"
 
 	"github.com/dyweb/gommon/config"
+	"github.com/dyweb/gommon/util/fsutil"
 	"github.com/dyweb/gommon/util/logutil"
 	"github.com/pkg/errors"
 )
 
-const generatorName = "gommon"
-const generatedFile = "gommon_generated.go"
+const (
+	configFile    = "gommon.yml"
+	generatorName = "gommon"
+	generatedFile = "gommon_generated.go"
+)
 
 var log = logutil.NewPackageLogger()
 
 func Generate(root string) error {
-	files := Walk(root, DefaultIgnores())
+	var files []string
+	// TODO: limit level
+	fsutil.Walk(root, DefaultIgnores(), func(path string, info os.FileInfo) {
+		log.Debug(path + "/" + info.Name())
+		if info.Name() == configFile {
+			files = append(files, join(path, info.Name()))
+		}
+	})
 	for _, file := range files {
 		if err := GenerateSingle(file); err != nil {
 			return err

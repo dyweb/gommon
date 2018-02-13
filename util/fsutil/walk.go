@@ -1,9 +1,9 @@
 package fsutil
 
 import (
-	"os"
-	"io/ioutil"
 	"github.com/pkg/errors"
+	"io/ioutil"
+	"os"
 )
 
 type WalkFunc func(path string, info os.FileInfo)

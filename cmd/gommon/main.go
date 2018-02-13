@@ -16,10 +16,14 @@ var log = dlog.NewApplicationLogger()
 var flags = flag.NewFlagSet("gommon", flag.ExitOnError)
 var showHelp = flags.Bool("h", false, "display help")
 var verbose = flags.Bool("v", false, "verbose output")
-var commands = `fi
+var commands = `
 Available Commands:
 
 generate  generate logger methods for struct based on gommon.yml
+
+Examples:
+
+gommon generate -v
 `
 
 func generate() {
@@ -45,6 +49,8 @@ func parseFlags(args []string) {
 	}
 	if *verbose {
 		dlog.SetLevelRecursive(log, dlog.DebugLevel)
+		// FIXME: after this is called ... the level string becomes smaller case ...
+		dlog.EnableSourceRecusrive(log)
 	}
 }
 

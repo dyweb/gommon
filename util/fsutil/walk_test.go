@@ -1,8 +1,8 @@
 package fsutil
 
 import (
-	"testing"
 	"os"
+	"testing"
 
 	asst "github.com/stretchr/testify/assert"
 )
