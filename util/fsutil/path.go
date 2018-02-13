@@ -1,6 +1,9 @@
 package fsutil
 
-import "os"
+import (
+	"os"
+	"path/filepath"
+)
 
 func Cwd() string {
 	if cur, err := os.Getwd(); err != nil {
@@ -36,4 +39,8 @@ func DirExists(path string) bool {
 	} else {
 		return i.IsDir()
 	}
+}
+
+func join(s ...string) string {
+	return filepath.Join(s...)
 }

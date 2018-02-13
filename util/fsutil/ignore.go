@@ -4,10 +4,35 @@ import (
 	"path/filepath"
 )
 
-type Ignores []IgnorePattern
+type Ignores struct {
+	names []IgnorePattern
+	paths []IgnorePattern
+}
 
-func (is *Ignores) ShouldIgnore(path string) bool {
-	for _, p := range *is {
+func NewIgnores(names []IgnorePattern, paths []IgnorePattern) *Ignores {
+	return &Ignores{
+		names: names,
+		paths: paths,
+	}
+}
+
+func (is *Ignores) IgnoreName(name string) bool {
+	if is == nil {
+		return false
+	}
+	for _, p := range is.names {
+		if p.ShouldIgnore(name) {
+			return true
+		}
+	}
+	return false
+}
+
+func (is *Ignores) IgnorePath(path string) bool {
+	if is == nil {
+		return false
+	}
+	for _, p := range is.paths {
 		if p.ShouldIgnore(path) {
 			return true
 		}

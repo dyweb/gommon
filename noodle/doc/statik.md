@@ -44,3 +44,5 @@ func (f *httpFile) Readdir(count int) ([]os.FileInfo, error) {
 	return make([]os.FileInfo, 0), nil
 }
 ````
+
+- `statik.go` is the command, which walk the directory and write to zip file during the traverse

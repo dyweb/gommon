@@ -1,17 +1,33 @@
 package fsutil
 
 import (
-	"path/filepath"
-	//"os"
+	"os"
+	"io/ioutil"
+	"github.com/pkg/errors"
 )
 
-// TODO: we may want to have the dir know its subdir, which works for Readdir
+type WalkFunc func(path string, info os.FileInfo)
 
-// I am walking in the sun in around and around (there could be a cycle)
-func Walk(root string, ignores Ignores, walkFunc filepath.WalkFunc) []string {
-	//filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-	//
-	//})
-	// TODO: filepath.Walk use Lstat instead of stat, which does not follow symbolic link
+// Walk traverse the directory with ignore patterns in Pre-Order DFS
+func Walk(root string, ignores *Ignores, walkFunc WalkFunc) error {
+	files, err := ioutil.ReadDir(root)
+	if err != nil {
+		return errors.Wrapf(err, "can't read dir %s", root)
+	}
+	for _, file := range files {
+		if ignores.IgnoreName(file.Name()) {
+			continue
+		}
+		path := join(root, file.Name())
+		if ignores.IgnorePath(path) {
+			continue
+		}
+		walkFunc(root, file)
+		if file.IsDir() {
+			if err := Walk(path, ignores, walkFunc); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
