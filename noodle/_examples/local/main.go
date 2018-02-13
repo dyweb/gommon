@@ -22,6 +22,8 @@ func main() {
 		root = http.Dir("./assets")
 	case "local":
 		root = noodle.NewLocal("./assets")
+	case "local-unsafe":
+		root = noodle.NewLocalUnsafe("./assets")
 	default:
 		panic("unknown fs")
 	}
