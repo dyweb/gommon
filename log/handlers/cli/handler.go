@@ -101,7 +101,7 @@ func (h *Handler) formatHead(level log.Level, tm time.Time, msg string) []byte {
 // i.e. info 2018-02-04T21:03:20-08:00 main.go:18 show me the line
 func (h *Handler) formatHeadWithSource(level log.Level, tm time.Time, msg string, source string) []byte {
 	b := make([]byte, 0, 18+4+len(defaultTimeStampFormat)+len(msg))
-	b = append(b, level.ColoredString()...)
+	b = append(b, level.ColoredAlignedUpperString()...)
 	b = append(b, ' ')
 	if h.delta {
 		b = append(b, formatNum(uint(tm.Sub(h.start)/time.Second), 4)...)

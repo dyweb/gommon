@@ -8,22 +8,6 @@ import (
 	asst "github.com/stretchr/testify/assert"
 )
 
-func Test_Walk(t *testing.T) {
-	assert := asst.New(t)
-	if testing.Short() {
-		t.Skip()
-		return
-	}
-	//files := walk("../config", defaultIgnores)
-	files := Walk("testdata", DefaultIgnores())
-	//t.Log(files)
-	assert.Equal([]string{
-		"testdata/pkg/client/gommon.yml",
-		"testdata/pkg/gommon.yml",
-		"testdata/pkg/server/gommon.yml",
-	}, files)
-}
-
 // https://github.com/dyweb/gommon/issues/41
 // NOTE: octal literal is needed for file permission, and it starts with 0 ...
 func Test_WriteFile(t *testing.T) {

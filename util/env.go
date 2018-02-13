@@ -7,6 +7,7 @@ import (
 	"testing"
 )
 
+// TODO: it seems it was designed for test only, but now I need to use it in normal application as well ...
 // LoadDotEnv load .env in current directory into environment variable, line start with # are comments
 // It is modeled after https://github.com/motdotla/dotenv
 func LoadDotEnv(t *testing.T) {

@@ -1,4 +1,4 @@
-package util
+package testutil
 
 import (
 	"encoding/json"
@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// TODO: migrate its usage to util/testutil
 func ReadFixture(t *testing.T, path string) []byte {
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -15,7 +14,7 @@ func ReadFixture(t *testing.T, path string) []byte {
 	return b
 }
 
-func ReadJson(t *testing.T, path string, v interface{}) {
+func ReadJsonTo(t *testing.T, path string, v interface{}) {
 	b := ReadFixture(t, path)
 	if err := json.Unmarshal(b, v); err != nil {
 		t.Fatalf("can't unmarshal fixture %v", err)

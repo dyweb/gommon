@@ -11,5 +11,6 @@ install:
   - dep ensure
 
 script:
-  - go test -v -cover ./...
+  - make install
+  - go test -v -cover ./cast/... ./config/... ./generator/... ./log/... ./requests/... ./runner/... ./structure/... ./util/...
   # TODO: gommon doesn't have coverage ... amazing ..
