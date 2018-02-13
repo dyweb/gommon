@@ -14,7 +14,14 @@
 # example of .noodleignore
 # support comment, also blank line should be ignored
 
-vendor # this ignore the vendor directory, relative to the path of ignore file
-node_modules
-assets/*.partial.html # ignore assets/a.partial.html etc.
+vendor # ignore any file or directory whose name is vendor
+
+# ignore all the files and directory under test,
+# since it also applies to walk, test/sub/example.txt will be ignored as well
+# however it is not ignored because match test/* pattern, * does not match separator
+# TODO: this is just my assumption ... not tested ...
+test/*
+
+# ignore assets/a.partial.html etc.
+assets/*.partial.html
 ````
