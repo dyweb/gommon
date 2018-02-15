@@ -12,5 +12,5 @@ install:
 
 script:
   - make install
-  - go test -v -cover ./cast/... ./config/... ./generator/... ./log/... ./requests/... ./runner/... ./structure/... ./util/...
+  - go test -v -cover ./cast/... ./config/... ./generator/... ./log/... ./noodle/... ./requests/... ./runner/... ./structure/... ./util/...
   # TODO: gommon doesn't have coverage ... amazing ..

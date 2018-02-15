@@ -40,6 +40,31 @@ func (is *Ignores) IgnorePath(path string) bool {
 	return false
 }
 
+func (is *Ignores) AddName(name IgnorePattern) {
+	is.names = append(is.names, name)
+}
+
+func (is *Ignores) AddPath(path IgnorePattern) {
+	is.paths = append(is.paths, path)
+}
+
+func (is *Ignores) Len() int {
+	if is == nil {
+		return 0
+	}
+	return len(is.names) + len(is.paths)
+}
+
+func (is *Ignores) Patterns() []IgnorePattern {
+	if is == nil {
+		return nil
+	}
+	var p []IgnorePattern
+	p = append(p, is.names...)
+	p = append(p, is.paths...)
+	return p
+}
+
 type IgnorePattern interface {
 	ShouldIgnore(path string) bool
 }

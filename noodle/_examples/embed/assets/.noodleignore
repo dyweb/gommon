@@ -1,0 +1,5 @@
+# this a comment
+node_modules # ignore name
+
+404/* # ignore all the files under a folder
+idx/*.txt # ignore .txt
