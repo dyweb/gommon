@@ -23,7 +23,7 @@ func Generate(root string) error {
 	var files []string
 	// TODO: limit level
 	fsutil.Walk(root, DefaultIgnores(), func(path string, info os.FileInfo) {
-		log.Debug(path + "/" + info.Name())
+		//log.Trace(path + "/" + info.Name())
 		if info.Name() == configFile {
 			files = append(files, join(path, info.Name()))
 		}
