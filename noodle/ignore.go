@@ -5,9 +5,20 @@ import (
 	"bufio"
 	"strings"
 	"path/filepath"
+	"os"
+
 	"github.com/dyweb/gommon/util/fsutil"
 	"github.com/pkg/errors"
 )
+
+func ReadIgnoreFile(path string) (*fsutil.Ignores, error) {
+	if f, err := os.Open(path); err != nil {
+		return nil, errors.Wrap(err, "can't open ignore file")
+	} else {
+		defer f.Close()
+		return ReadIgnore(f)
+	}
+}
 
 // ReadIgnore reads ignore file and change to patterns
 // reading is based on https://github.com/codeskyblue/dockerignore/blob/HEAD/ignore.go#L40
