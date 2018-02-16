@@ -8,6 +8,7 @@ import (
 const (
 	ignoreFile = ".noodleignore"
 )
+
 var log = logutil.NewPackageLogger()
 
 func join(elem ...string) string {

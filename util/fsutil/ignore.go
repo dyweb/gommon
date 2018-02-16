@@ -2,11 +2,13 @@ package fsutil
 
 import (
 	"path/filepath"
+	"strings"
 )
 
 type Ignores struct {
-	names []IgnorePattern
-	paths []IgnorePattern
+	names  []IgnorePattern
+	paths  []IgnorePattern
+	prefix string
 }
 
 func NewIgnores(names []IgnorePattern, paths []IgnorePattern) *Ignores {
@@ -32,6 +34,9 @@ func (is *Ignores) IgnorePath(path string) bool {
 	if is == nil {
 		return false
 	}
+	if is.prefix != "" {
+		path = strings.TrimLeft(path, is.prefix)
+	}
 	for _, p := range is.paths {
 		if p.ShouldIgnore(path) {
 			return true
@@ -46,6 +51,10 @@ func (is *Ignores) AddName(name IgnorePattern) {
 
 func (is *Ignores) AddPath(path IgnorePattern) {
 	is.paths = append(is.paths, path)
+}
+
+func (is *Ignores) SetPathPrefix(prefix string) {
+	is.prefix = prefix
 }
 
 func (is *Ignores) Len() int {

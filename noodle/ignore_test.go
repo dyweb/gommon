@@ -1,11 +1,11 @@
 package noodle
 
 import (
-	"testing"
 	"bytes"
+	"testing"
 
-	asst "github.com/stretchr/testify/assert"
 	"github.com/dyweb/gommon/util/fsutil"
+	asst "github.com/stretchr/testify/assert"
 )
 
 var exampleIgnore = `

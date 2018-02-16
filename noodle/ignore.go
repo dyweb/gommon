@@ -1,11 +1,11 @@
 package noodle
 
 import (
-	"io"
 	"bufio"
-	"strings"
-	"path/filepath"
+	"io"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/dyweb/gommon/util/fsutil"
 	"github.com/pkg/errors"

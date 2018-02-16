@@ -19,7 +19,8 @@ func GenerateEmbed(root string) error {
 		if ignores, err = ReadIgnoreFile(join(root, ignoreFile)); err != nil {
 			return err
 		}
-		// FIXME: ignore path does not work because we didn't trim the common prefix
+		// set common prefix so ignore path would work
+		ignores.SetPathPrefix(root)
 		log.Info(ignores.Patterns())
 	}
 	fsutil.Walk(root, ignores, func(path string, info os.FileInfo) {

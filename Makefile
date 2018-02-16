@@ -12,7 +12,7 @@ test-log:
 
 .PHONY: fmt
 fmt:
-	gofmt -d -l -w ./cast ./config ./generator ./log ./requests ./runner ./structure ./util
+	gofmt -d -l -w ./cast ./config ./generator ./log ./noodle ./requests ./runner ./structure ./util
 
 .PHONY: docker-test
 docker-test:
