@@ -35,13 +35,26 @@ func GenerateEmbed(root string) error {
 		files   = make(map[string][]*embedFile)
 		lastErr error
 	)
+	if rootStat, err := os.Stat(root); err != nil {
+		return errors.Wrap(err, "can't get stat of root folder")
+	} else {
+		log.Infof("root %s rootStat name %s", root, rootStat.Name())
+		if file, err := newEmbedFile(root, rootStat); err != nil {
+			return err
+		} else {
+			files[root] = append(files[root], file)
+		}
+	}
 	if ignores, err = readIgnoreFile(root); err != nil {
 		return err
 	}
 	fsutil.Walk(root, ignores, func(path string, info os.FileInfo) {
-		// TODO: aggregate the error, errors group?
 		//log.Info(path)
+		if info.Name() == ignoreFileName {
+			return
+		}
 		if file, err := newEmbedFile(path, info); err != nil {
+			// TODO: aggregate the error, errors group?
 			log.Warn(err)
 			lastErr = err
 		} else {
@@ -92,13 +105,19 @@ func newEmbedFile(path string, info os.FileInfo) (*embedFile, error) {
 }
 
 func updateDirectoryInfo(flatFiles map[string][]*embedFile) {
+	// first pass, filter out all the folders
+	//folders := make(map[string][]FileInfo, len(flatFiles) + 1)
 	for path, files := range flatFiles {
-		for _, f := range files {
-			//flatFiles[path]
-			// dir size is 4096 4KB ...
-			log.Info(f.info.name, " ", f.info.size, f.info.isDir)
-		}
-		log.Info(path, " ", len(files))
+		log.Infof("path %s files %d", path, len(files))
+		//for _, f := range files {
+		//	//flatFiles[path]
+		//	// dir size is 4096 4KB ...
+		//	log.Info(f.info.name, " ", f.info.size, f.info.isDir)
+		//	if f.info.isDir {
+		//		folders[join(path, f.info.name)]
+		//	}
+		//}
+		//log.Info(path, " ", len(files))
 	}
 }
 
