@@ -2,10 +2,10 @@ package noodle
 
 import (
 	"archive/zip"
-	"bytes"
 	"io/ioutil"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/dyweb/gommon/util/fsutil"
 	"github.com/pkg/errors"
@@ -13,46 +13,93 @@ import (
 
 // TODO
 // walk the folder, keep track of folders
-type embedData struct {
-	info os.FileInfo
+type embedFile struct {
+	info FileInfo
 	data []byte
+}
+
+// TODO: maybe we can just keep the bytes inside FileInfo, instead of write it to zip along the way ...
+type FileInfo struct {
+	name    string
+	size    int64
+	mode    os.FileMode
+	modTime time.Time
+	isDir   bool
+	//entries []FileInfo
 }
 
 func GenerateEmbed(root string) error {
 	var (
 		err     error
 		ignores *fsutil.Ignores
+		files   = make(map[string][]*embedFile)
+		lastErr error
 	)
+	if ignores, err = readIgnoreFile(root); err != nil {
+		return err
+	}
+	fsutil.Walk(root, ignores, func(path string, info os.FileInfo) {
+		// TODO: aggregate the error, errors group?
+		//log.Info(path)
+		if file, err := newEmbedFile(path, info); err != nil {
+			log.Warn(err)
+			lastErr = err
+		} else {
+			files[path] = append(files[path], file)
+		}
+	})
+	log.Info(len(files))
+	updateDirectoryInfo(files)
+	return lastErr
+}
+
+func readIgnoreFile(root string) (*fsutil.Ignores, error) {
+	var err error
+	ignores := fsutil.NewIgnores(nil, nil)
 	ignoreFile := join(root, ignoreFileName)
 	if fsutil.FileExists(ignoreFile) {
 		log.Debugf("found ignore file %s", ignoreFile)
 		if ignores, err = ReadIgnoreFile(ignoreFile); err != nil {
-			return err
+			return ignores, err
 		}
 		// set common prefix so ignore path would work
 		ignores.SetPathPrefix(root)
-		log.Debug(ignores.Patterns())
+		log.Debugf("ignore patterns %v", ignores.Patterns())
 	}
-	buf := &bytes.Buffer{}
-	w := zip.NewWriter(buf)
-	fsutil.Walk(root, ignores, func(path string, info os.FileInfo) {
-		// TODO: register meta, we need this when read dir, which is not supported by statik
-		if info.IsDir() {
-			return
+	return ignores, nil
+}
+
+func newEmbedFile(path string, info os.FileInfo) (*embedFile, error) {
+	var (
+		b   []byte
+		err error
+	)
+	if !info.IsDir() {
+		b, err = ioutil.ReadFile(join(path, info.Name()))
+		if err != nil {
+			return nil, errors.Wrap(err, "can't read file from disk")
 		}
-		log.Info(join(path, info.Name()))
-		// TODO: read file and render template, could put it into a single go file with a large byte slice
-		// TODO: aggregate the error, errors group?
-		if err := writeZipFile(w, root, path, info); err != nil {
-			log.Warnf("can't create %v", err)
-		}
-	})
-	w.Close()
-	log.Info(buf.Len())
-	if err := ioutil.WriteFile("t.zip", buf.Bytes(), 0666); err != nil {
-		log.Warnf("can't write zip %v", err)
 	}
-	return nil
+	return &embedFile{
+		info: FileInfo{
+			name:  info.Name(),
+			size:  info.Size(),
+			mode:  info.Mode(),
+			isDir: info.IsDir(),
+		},
+		data: b,
+	}, nil
+}
+
+func updateDirectoryInfo(flatFiles map[string][]*embedFile) {
+	for path, files := range flatFiles {
+		for _, f := range files {
+			//flatFiles[path]
+			// dir size is 4096 4KB ...
+			log.Info(f.info.name, " ", f.info.size, f.info.isDir)
+		}
+		log.Info(path, " ", len(files))
+	}
 }
 
 func writeZipFile(w *zip.Writer, root string, path string, info os.FileInfo) error {

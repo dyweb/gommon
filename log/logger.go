@@ -67,6 +67,7 @@ func (l *Logger) Panicf(format string, args ...interface{}) {
 }
 
 func (l *Logger) PanicF(msg string, fields Fields) {
+	// TODO: handle log with fields source
 	l.h.HandleLogWithFields(PanicLevel, time.Now(), msg, fields)
 	l.h.Flush()
 	panic(msg)
@@ -84,6 +85,7 @@ func (l *Logger) Fatal(args ...interface{}) {
 	os.Exit(1)
 }
 
+// FIXME: source line is in correct because we call Fatal in Fatalf
 func (l *Logger) Fatalf(format string, args ...interface{}) {
 	l.Fatal(fmt.Sprintf(format, args...))
 }
