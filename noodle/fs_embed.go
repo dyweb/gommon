@@ -2,6 +2,7 @@ package noodle
 
 import (
 	"archive/zip"
+	"bytes"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -14,24 +15,28 @@ import (
 // TODO
 // walk the folder, keep track of folders
 type embedFile struct {
-	info FileInfo
+	FileInfo
 	data []byte
 }
 
-// TODO: maybe we can just keep the bytes inside FileInfo, instead of write it to zip along the way ...
+type embedDir struct {
+	FileInfo
+	entries []FileInfo
+}
+
 type FileInfo struct {
 	name    string
 	size    int64
 	mode    os.FileMode
 	modTime time.Time
 	isDir   bool
-	//entries []FileInfo
 }
 
 func GenerateEmbed(root string) error {
 	var (
 		err     error
 		ignores *fsutil.Ignores
+		dirs    = make(map[string]*embedDir)
 		files   = make(map[string][]*embedFile)
 		lastErr error
 	)
@@ -39,18 +44,21 @@ func GenerateEmbed(root string) error {
 		return errors.Wrap(err, "can't get stat of root folder")
 	} else {
 		log.Infof("root %s rootStat name %s", root, rootStat.Name())
-		if file, err := newEmbedFile(root, rootStat); err != nil {
-			return err
-		} else {
-			files[root] = append(files[root], file)
-		}
+		dirs[root] = newEmbedDir(rootStat)
 	}
 	if ignores, err = readIgnoreFile(root); err != nil {
 		return err
 	}
 	fsutil.Walk(root, ignores, func(path string, info os.FileInfo) {
 		//log.Info(path)
-		if info.Name() == ignoreFileName {
+		// TODO: allow config if ignore file should be included
+		//if info.Name() == ignoreFileName {
+		//	return
+		//}
+		if info.IsDir() {
+			dirInfo := newEmbedDir(info)
+			dirs[join(path, info.Name())] = dirInfo
+			dirs[path].entries = append(dirs[path].entries, dirInfo.FileInfo)
 			return
 		}
 		if file, err := newEmbedFile(path, info); err != nil {
@@ -61,8 +69,11 @@ func GenerateEmbed(root string) error {
 			files[path] = append(files[path], file)
 		}
 	})
-	log.Info(len(files))
-	updateDirectoryInfo(files)
+	log.Infof("total dirs (including root) %d", len(dirs))
+	log.Infof("dirs %d", len(files))
+	updateDirectoryInfo(dirs, files)
+	err = writeZipFiles("t.zip", root, files)
+	log.Warn(err)
 	return lastErr
 }
 
@@ -82,62 +93,103 @@ func readIgnoreFile(root string) (*fsutil.Ignores, error) {
 	return ignores, nil
 }
 
-func newEmbedFile(path string, info os.FileInfo) (*embedFile, error) {
-	var (
-		b   []byte
-		err error
-	)
-	if !info.IsDir() {
-		b, err = ioutil.ReadFile(join(path, info.Name()))
-		if err != nil {
-			return nil, errors.Wrap(err, "can't read file from disk")
-		}
-	}
-	return &embedFile{
-		info: FileInfo{
+func newEmbedDir(info os.FileInfo) *embedDir {
+	return &embedDir{
+		FileInfo: FileInfo{
 			name:  info.Name(),
 			size:  info.Size(),
 			mode:  info.Mode(),
 			isDir: info.IsDir(),
 		},
-		data: b,
-	}, nil
-}
-
-func updateDirectoryInfo(flatFiles map[string][]*embedFile) {
-	// first pass, filter out all the folders
-	//folders := make(map[string][]FileInfo, len(flatFiles) + 1)
-	for path, files := range flatFiles {
-		log.Infof("path %s files %d", path, len(files))
-		//for _, f := range files {
-		//	//flatFiles[path]
-		//	// dir size is 4096 4KB ...
-		//	log.Info(f.info.name, " ", f.info.size, f.info.isDir)
-		//	if f.info.isDir {
-		//		folders[join(path, f.info.name)]
-		//	}
-		//}
-		//log.Info(path, " ", len(files))
 	}
 }
 
-func writeZipFile(w *zip.Writer, root string, path string, info os.FileInfo) error {
-	header, err := zip.FileInfoHeader(info)
+func newEmbedFile(path string, info os.FileInfo) (*embedFile, error) {
+	if b, err := ioutil.ReadFile(join(path, info.Name())); err != nil {
+		return nil, errors.Wrap(err, "can't read file from disk")
+	} else {
+		return &embedFile{
+			FileInfo: FileInfo{
+				name:  info.Name(),
+				size:  info.Size(),
+				mode:  info.Mode(),
+				isDir: info.IsDir(),
+			},
+			data: b,
+		}, nil
+	}
+}
+
+func updateDirectoryInfo(dirs map[string]*embedDir, flatFiles map[string][]*embedFile) {
+	//folders := make(map[string][]FileInfo, len(flatFiles) + 1)
+	for path, files := range flatFiles {
+		log.Infof("path %s files %d", path, len(files))
+		for _, f := range files {
+			dirs[path].entries = append(dirs[path].entries, f.FileInfo)
+		}
+	}
+}
+
+func writeZipFiles(dst string, root string, flatFiles map[string][]*embedFile) error {
+	var lastErr error
+	buf := &bytes.Buffer{}
+	w := zip.NewWriter(buf)
+	for path, files := range flatFiles {
+		for _, f := range files {
+			log.Infof("write file %s size %d", f.name, len(f.data))
+			lastErr = writeZipFile(w, root, path, f)
+		}
+	}
+
+	if lastErr != nil {
+		return lastErr
+	}
+	if err := w.Close(); err != nil {
+		return errors.Wrap(err, "can't close zip writer")
+	}
+	if err := ioutil.WriteFile(dst, buf.Bytes(), 0666); err != nil {
+		return errors.Wrap(err, "can't write zip file")
+	}
+	return nil
+}
+
+func writeZipFile(w *zip.Writer, root string, path string, file *embedFile) error {
+	header, err := zip.FileInfoHeader(&file.FileInfo)
 	if err != nil {
 		return errors.Wrap(err, "can't create file header")
 	}
 	header.Method = zip.Deflate
-	header.Name = strings.TrimLeft(join(path, info.Name()), root)
+	header.Name = strings.TrimLeft(join(path, file.FileInfo.Name()), root)
 	f, err := w.CreateHeader(header)
 	if err != nil {
 		return errors.Wrap(err, "can't add file to zip")
 	}
-	b, err := ioutil.ReadFile(join(path, info.Name()))
-	if err != nil {
-		return errors.Wrap(err, "can't read file from disk")
-	}
-	if _, err := f.Write(b); err != nil {
+	if _, err := f.Write(file.data); err != nil {
 		return errors.Wrap(err, "can't write zip file content")
 	}
+	return nil
+}
+
+func (i *FileInfo) Name() string {
+	return i.name
+}
+
+func (i *FileInfo) Size() int64 {
+	return i.size
+}
+
+func (i *FileInfo) Mode() os.FileMode {
+	return i.mode
+}
+
+func (i *FileInfo) ModTime() time.Time {
+	return i.modTime
+}
+
+func (i *FileInfo) IsDir() bool {
+	return i.isDir
+}
+
+func (i *FileInfo) Sys() interface{} {
 	return nil
 }

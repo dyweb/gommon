@@ -13,7 +13,7 @@ It has the following components:
 - [Config](config) A YAML config reader with template support
 - [Log](log) A Javaish logger for Go, application can control library and set level for different pkg via config or flag
 - [Generator](generator) Render go template, generate methods for logger interface based on `gommon.yml`
-- [Noodle](noodle) Embed static assets for web application with `.riceignore` support
+- [Noodle](noodle) Embed static assets for web application with `.noodleignore` support
 - [Requests](requests) A pythonic wrapper for `net/http`, HTTP for Gopher.
 - [Cast](cast) Convert Golang types
 - [Data structure](structure) Bring Set etc. to Golang.
@@ -67,12 +67,12 @@ compared to packages it modeled after.
   - log v1 is entirely modeled after logrus, entry contains log information with methods like `Info`, `Infof`
 - [apex/log](https://github.com/apex/log) for log handlers
   - log v2's handler is inspired by apex/log, but we didn't use entry and chose to pass multiple parameters to explicitly state what a handler should handle
-- [uber-go/zap](https://github.com/uber-go/zap) for serialize log fields without using `fmt.Sprintf`
-  - we didn't go that extreme as Zap or ZeroLog for zero allocation, performance is not optimized for now
+- [uber-go/zap](https://github.com/uber-go/zap) for serialize log fields without using `fmt.Sprintf` and use `strconv` directly
+  - we didn't go that extreme as Zap or ZeroLog for zero allocation, performance is not our goal for now
 - [spf13/cast](https://github.com/spf13/cast) for cast, it is used by Viper
 - [spf13/viper](https://github.com/spf13/viper/) for config
   - looking up config via string key makes type system useless, so we always marshal entire config file to a single struct
-    - it also make refactor easier
+    - it also makes refactor easier
 - [Requests](http://docs.python-requests.org/en/master/) for requests
 - [benbjohnson/tmpl](https://github.com/benbjohnson/tmpl) for go template generator
   - first saw it in [influxdata/influxdb](https://github.com/influxdata/influxdb/blob/master/tsdb/engine/tsm1/encoding.gen.go.tmpl)
