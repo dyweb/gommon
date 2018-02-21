@@ -11,8 +11,6 @@ import (
 	_ "github.com/dyweb/gommon/noodle/_examples/embed/gen"
 )
 
-// need to include t.go
-// go run main.go t.go
 func main() {
 	box, err := noodle.GetEmbedBox("test")
 	if err != nil {
@@ -26,7 +24,9 @@ func main() {
 	for _, f := range zipReader.File {
 		log.Println(f.Name)
 	}
-
+	if err := box.ExtractFiles(); err != nil {
+		log.Fatal(err)
+	}
 	addr := ":8080"
 	var root http.FileSystem
 	root = &box

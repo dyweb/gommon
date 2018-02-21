@@ -5,7 +5,10 @@ import (
 	"os"
 	"time"
 
+	"archive/zip"
+	"bytes"
 	"github.com/pkg/errors"
+	"io/ioutil"
 )
 
 var registeredBoxes map[string]EmbedBox
@@ -14,13 +17,15 @@ var _ http.FileSystem = (*EmbedBox)(nil)
 var _ http.File = (*EmbedDir)(nil)
 
 type EmbedBox struct {
-	Dirs map[string]EmbedDir
-	Data []byte
+	Dirs  map[string]EmbedDir
+	Data  []byte
+	files map[string]EmbedFile
 }
 
 type EmbedFile struct {
 	FileInfo
-	Data []byte
+	Data   []byte
+	reader *bytes.Reader
 }
 
 type EmbedDir struct {
@@ -64,12 +69,66 @@ func (d *EmbedDir) Readdir(count int) ([]os.FileInfo, error) {
 func (b *EmbedBox) Open(name string) (http.File, error) {
 	// check dir first
 	log.Infof("open %s", name)
+	// trim /
 	name = name[1:]
 	if d, exists := b.Dirs[name]; exists {
 		log.Infof("%s entries %d", name, len(d.Entries))
 		return &d, nil
 	}
+	// check file
+	if f, exists := b.files[name]; exists {
+		return &f, nil
+	}
 	return nil, os.ErrNotExist
+}
+
+func (b *EmbedBox) ExtractFiles() error {
+	r, err := zip.NewReader(bytes.NewReader(b.Data), int64(len(b.Data)))
+	if err != nil {
+		errors.Wrap(err, "can't read zipped data")
+	}
+	b.files = make(map[string]EmbedFile)
+	for _, f := range r.File {
+		if bs, err := unzip(f); err != nil {
+			return err
+		} else {
+			b.files[f.Name] = EmbedFile{
+				FileInfo: *NewFileInfo(f.FileInfo()),
+				Data:     bs,
+			}
+		}
+	}
+	return nil
+}
+
+func (f *EmbedFile) Read(p []byte) (int, error) {
+	if f.reader == nil {
+		f.reader = bytes.NewReader(f.Data)
+	}
+	return f.reader.Read(p)
+}
+
+func (f *EmbedFile) Seek(offset int64, whence int) (int64, error) {
+	if f.reader == nil {
+		f.reader = bytes.NewReader(f.Data)
+	}
+	return f.reader.Seek(offset, whence)
+}
+
+func (f *EmbedFile) Stat() (os.FileInfo, error) {
+	return &f.FileInfo, nil
+}
+
+func (f *EmbedFile) Readdir(count int) ([]os.FileInfo, error) {
+	return nil, os.ErrNotExist
+}
+
+func (f *EmbedFile) Close() error {
+	// TODO: I think we can do nothing?
+	//if f.reader != nil {
+	//	f.reader = nil
+	//}
+	return nil
 }
 
 var _ os.FileInfo = (*FileInfo)(nil)
@@ -99,6 +158,16 @@ func GetEmbedBox(name string) (EmbedBox, error) {
 	}
 }
 
+func NewFileInfo(info os.FileInfo) *FileInfo {
+	return &FileInfo{
+		FileName:    info.Name(),
+		FileSize:    info.Size(),
+		FileMode:    info.Mode(),
+		FileModTime: info.ModTime(),
+		FileIsDir:   info.IsDir(),
+	}
+}
+
 func (i *FileInfo) Name() string {
 	return i.FileName
 }
@@ -121,6 +190,19 @@ func (i *FileInfo) IsDir() bool {
 
 func (i *FileInfo) Sys() interface{} {
 	return nil
+}
+
+func unzip(f *zip.File) ([]byte, error) {
+	r, err := f.Open()
+	if err != nil {
+		return nil, errors.Wrap(err, "can't open file inside zip")
+	}
+	if b, err := ioutil.ReadAll(r); err != nil {
+		return nil, errors.Wrap(err, "can't read file content")
+	} else {
+		r.Close()
+		return b, nil
+	}
 }
 
 func init() {
