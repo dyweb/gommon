@@ -3,6 +3,7 @@ package noodle
 import (
 	"archive/zip"
 	"bytes"
+	"go/format"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -183,12 +184,17 @@ func renderTemplate(dirs map[string]*embedDir) error {
 	}
 	buf := &bytes.Buffer{}
 	if err := t.Execute(buf, map[string]interface{}{
+		"pkg": "embed", // TODO: allow config package name
 		"dir": dirs,
 	}); err != nil {
 		return errors.Wrap(err, "can't execute template")
 	}
 	log.Info(buf.String())
-	ioutil.WriteFile("t.go", buf.Bytes(), 0666)
+	if b, err := format.Source(buf.Bytes()); err != nil {
+		return errors.Wrap(err, "can't format go code")
+	} else {
+		ioutil.WriteFile("_examples/embed/t.go", b, 0666)
+	}
 	return nil
 }
 

@@ -2,10 +2,11 @@ package generator
 
 import (
 	"bytes"
-	"github.com/pkg/errors"
 	"go/format"
 	"io/ioutil"
 	"text/template"
+
+	"github.com/pkg/errors"
 )
 
 type GoTemplateConfig struct {
@@ -26,7 +27,7 @@ func (c *GoTemplateConfig) Render(root string) error {
 	if b, err = ioutil.ReadFile(join(root, c.Src)); err != nil {
 		return errors.Wrap(err, "can't read template file")
 	}
-	if t, err = template.New("main").Parse(string(b)); err != nil {
+	if t, err = template.New(c.Src).Parse(string(b)); err != nil {
 		return errors.Wrap(err, "can't parse template")
 	}
 	buf.WriteString(Header(generatorName, join(root, c.Src)))

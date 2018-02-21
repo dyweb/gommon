@@ -1,11 +1,34 @@
 package noodle
 
 var embedTemplate = `
-package noodle
+package {{ .pkg }}
 
-import "time"
+import (
+	"os"
+	"time"
+)
 
-var dirs = map[string]embedDir{
+type embedFile struct {
+	FileInfo
+	data []byte
+}
+
+type embedDir struct {
+	FileInfo
+	Entries []FileInfo
+}
+
+type FileInfo struct {
+	name    string
+	size    int64
+	mode    os.FileMode
+	modTime time.Time
+	isDir   bool
+}
+
+func init() {
+
+dirs := map[string]embedDir{
 {{ range .dir }}
 	"{{ .FileInfo.Name }}": {
 		FileInfo: FileInfo{
@@ -28,5 +51,8 @@ var dirs = map[string]embedDir{
         },
 	},
 {{ end }}
+}
+
+
 }
 `
