@@ -4,7 +4,7 @@ install:
 
 .PHONY: test
 test:
-	go test -v -cover ./cast/... ./config/... ./generator/... ./log/... ./requests/... ./runner/... ./structure/... ./util/...
+	go test -v -cover ./cast/... ./config/... ./generator/... ./log/... ./noodle/... ./requests/... ./runner/... ./structure/... ./util/...
 
 .PHONY: test-log
 test-log:
@@ -12,7 +12,7 @@ test-log:
 
 .PHONY: fmt
 fmt:
-	gofmt -d -l -w ./cast ./config ./generator ./log ./requests ./runner ./structure ./util
+	gofmt -d -l -w ./cast ./config ./generator ./log ./noodle ./requests ./runner ./structure ./util
 
 .PHONY: docker-test
 docker-test:

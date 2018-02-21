@@ -2,10 +2,10 @@ package main
 
 import (
 	"bytes"
-	"os"
-	"net/http"
-	"time"
 	"fmt"
+	"net/http"
+	"os"
+	"time"
 )
 
 // hand written data before we figure out how to generate them
@@ -18,7 +18,7 @@ type FileSystem struct {
 	files map[string]*File
 }
 
-func NewFs(f ... *File) *FileSystem {
+func NewFs(f ...*File) *FileSystem {
 	fs := &FileSystem{
 		files: make(map[string]*File, len(f)),
 	}

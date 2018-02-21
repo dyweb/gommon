@@ -2,20 +2,20 @@ package color
 
 
 const (
-{{ range $color, $code := .}}
-    {{ $color }}Code = {{ $code }}
+{{ range . }}
+    {{ .Name }}Code = {{ .Code }}
 {{ end }}
 )
 
 const (
-{{ range $color, $code := .}}
-    {{ $color }}Start = "\x1b[{{ $code }}m"
+{{ range . }}
+    {{ .Name }}Start = "\x1b[{{ .Code }}m"
 {{ end }}
     End = "\x1b[0m"
 )
 
-{{ range $color, $code := .}}
-func {{ $color }}(str string) string {
-    return "\x1b[{{ $code }}m" + str + "\x1b[0m"
+{{ range . }}
+func {{ .Name }}(str string) string {
+    return "\x1b[{{ .Code }}m" + str + "\x1b[0m"
 }
 {{ end }}

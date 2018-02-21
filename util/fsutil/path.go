@@ -1,6 +1,8 @@
 package fsutil
 
 import (
+	"github.com/pkg/errors"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -39,6 +41,14 @@ func DirExists(path string) bool {
 	} else {
 		return i.IsDir()
 	}
+}
+
+// WriteFile use 0666 as permission and wrap standard error
+func WriteFile(path string, data []byte) error {
+	if err := ioutil.WriteFile(path, data, 0666); err != nil {
+		return errors.Wrap(err, "can't write file")
+	}
+	return nil
 }
 
 func join(s ...string) string {
