@@ -35,7 +35,7 @@ scripts:
     serve:
         - cmd: Ayi web static
           desc: serve static web content
-          # run in background, all the background commands are run in parrallel, since they won't end in a short time
+          # run in background, all the background commands are run in parallel, since they won't end in a short time
           background: true
           # restart if the running process exit
           restart: true

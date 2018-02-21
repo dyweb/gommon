@@ -11,6 +11,7 @@ import (
 type Config struct {
 	Loggers     []LoggerConfig     `yaml:"loggers"`
 	GoTemplates []GoTemplateConfig `yaml:"gotmpls"`
+	Shells      []ShellConfig      `yaml:"shells"`
 	// set when traversing the folders
 	pkg  string
 	file string
@@ -20,7 +21,7 @@ func NewConfig(pkg string, file string) *Config {
 	return &Config{pkg: pkg, file: file}
 }
 
-func (c *Config) Render() ([]byte, error) {
+func (c *Config) RenderGommon() ([]byte, error) {
 	body := &bytes.Buffer{}
 	header := &bytes.Buffer{}
 	fmt.Fprintf(header, Header(generatorName, c.file))
@@ -51,6 +52,19 @@ func (c *Config) RenderGoTemplate(root string) error {
 	}
 	for _, t := range c.GoTemplates {
 		if err := t.Render(root); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Config) RenderShell(root string) error {
+	if len(c.Shells) == 0 {
+		log.Debugf("no shell specified in file %s", c.file)
+		return nil
+	}
+	for _, s := range c.Shells {
+		if err := s.Render(root); err != nil {
 			return err
 		}
 	}

@@ -2,3 +2,16 @@
 loggers:
   - struct: "*Config"
     receiver: c
+shells:
+  - code: go version
+    shell: false
+  - code: echo $GOPATH
+    shell: true
+  - code: echo $GOPATH
+    shell: false
+  - code: pwd
+    shell: true
+    cd: false
+  - code: pwd
+    shell: true
+    cd: true

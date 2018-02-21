@@ -1,0 +1,21 @@
+# TODO: the example is not testable
+loggers:
+  - struct: "*YAMLConfig"
+    receiver: c
+gotmpls:
+  - src: logger_generated.go.tmpl
+    dst: logger_generated.go
+    go: true
+    data:
+      - Trace
+      - Debug
+      - Info
+      - Warn
+      - Error
+shells:
+  - code: protoc --proto_path=$GOPATH/src/:. --gogo_out=plugins=grpc:. rpc.proto
+    shell: true
+    cd: true
+  - code: go version
+    shell: false
+    cd: false

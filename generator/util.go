@@ -1,11 +1,9 @@
 package generator
 
 import (
-	"io/ioutil"
 	"path/filepath"
 
 	"github.com/dyweb/gommon/util/fsutil"
-	"github.com/pkg/errors"
 )
 
 func DefaultIgnores() *fsutil.Ignores {
@@ -25,12 +23,13 @@ func DefaultIgnores() *fsutil.Ignores {
 // NOTE: 0664 is octal literal in Go, the code would compile for 664, but the result file mode is incorrect
 // learned this the hard way https://github.com/dyweb/gommon/issues/41
 // stat -c %a pkg.go
-func WriteFile(f string, b []byte) error {
-	if err := ioutil.WriteFile(f, b, 0664); err != nil {
-		return errors.WithStack(err)
-	}
-	return nil
-}
+// NOTE: this code is now in
+//func WriteFile(f string, b []byte) error {
+//	if err := ioutil.WriteFile(f, b, 0664); err != nil {
+//		return errors.WithStack(err)
+//	}
+//	return nil
+//}
 
 func join(s ...string) string {
 	return filepath.Join(s...)

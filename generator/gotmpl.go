@@ -7,6 +7,8 @@ import (
 	"text/template"
 
 	"github.com/pkg/errors"
+
+	"github.com/dyweb/gommon/util/fsutil"
 )
 
 type GoTemplateConfig struct {
@@ -41,7 +43,7 @@ func (c *GoTemplateConfig) Render(root string) error {
 	} else {
 		b = buf.Bytes()
 	}
-	if err = WriteFile(join(root, c.Dst), b); err != nil {
+	if err = fsutil.WriteFile(join(root, c.Dst), b); err != nil {
 		return err
 	}
 	log.Debugf("rendered go tmpl %s to %s", join(root, c.Src), join(root, c.Dst))
