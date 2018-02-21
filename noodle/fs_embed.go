@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"text/template"
 	"time"
 
 	"github.com/dyweb/gommon/util/fsutil"
@@ -21,8 +22,10 @@ type embedFile struct {
 
 type embedDir struct {
 	FileInfo
-	entries []FileInfo
+	Entries []FileInfo
 }
+
+var _ os.FileInfo = (*FileInfo)(nil)
 
 type FileInfo struct {
 	name    string
@@ -58,7 +61,7 @@ func GenerateEmbed(root string) error {
 		if info.IsDir() {
 			dirInfo := newEmbedDir(info)
 			dirs[join(path, info.Name())] = dirInfo
-			dirs[path].entries = append(dirs[path].entries, dirInfo.FileInfo)
+			dirs[path].Entries = append(dirs[path].Entries, dirInfo.FileInfo)
 			return
 		}
 		if file, err := newEmbedFile(path, info); err != nil {
@@ -72,7 +75,8 @@ func GenerateEmbed(root string) error {
 	log.Infof("total dirs (including root) %d", len(dirs))
 	log.Infof("dirs %d", len(files))
 	updateDirectoryInfo(dirs, files)
-	err = writeZipFiles("t.zip", root, files)
+	//err = writeZipFiles("t.zip", root, files)
+	err = renderTemplate(dirs)
 	log.Warn(err)
 	return lastErr
 }
@@ -96,10 +100,11 @@ func readIgnoreFile(root string) (*fsutil.Ignores, error) {
 func newEmbedDir(info os.FileInfo) *embedDir {
 	return &embedDir{
 		FileInfo: FileInfo{
-			name:  info.Name(),
-			size:  info.Size(),
-			mode:  info.Mode(),
-			isDir: info.IsDir(),
+			name:    info.Name(),
+			size:    info.Size(),
+			mode:    info.Mode(),
+			modTime: info.ModTime(),
+			isDir:   info.IsDir(),
 		},
 	}
 }
@@ -110,10 +115,11 @@ func newEmbedFile(path string, info os.FileInfo) (*embedFile, error) {
 	} else {
 		return &embedFile{
 			FileInfo: FileInfo{
-				name:  info.Name(),
-				size:  info.Size(),
-				mode:  info.Mode(),
-				isDir: info.IsDir(),
+				name:    info.Name(),
+				size:    info.Size(),
+				mode:    info.Mode(),
+				modTime: info.ModTime(),
+				isDir:   info.IsDir(),
 			},
 			data: b,
 		}, nil
@@ -125,7 +131,7 @@ func updateDirectoryInfo(dirs map[string]*embedDir, flatFiles map[string][]*embe
 	for path, files := range flatFiles {
 		log.Infof("path %s files %d", path, len(files))
 		for _, f := range files {
-			dirs[path].entries = append(dirs[path].entries, f.FileInfo)
+			dirs[path].Entries = append(dirs[path].Entries, f.FileInfo)
 		}
 	}
 }
@@ -167,6 +173,22 @@ func writeZipFile(w *zip.Writer, root string, path string, file *embedFile) erro
 	if _, err := f.Write(file.data); err != nil {
 		return errors.Wrap(err, "can't write zip file content")
 	}
+	return nil
+}
+
+func renderTemplate(dirs map[string]*embedDir) error {
+	t, err := template.New("noodleembed").Parse(embedTemplate)
+	if err != nil {
+		return errors.Wrap(err, "can't parse embed template")
+	}
+	buf := &bytes.Buffer{}
+	if err := t.Execute(buf, map[string]interface{}{
+		"dir": dirs,
+	}); err != nil {
+		return errors.Wrap(err, "can't execute template")
+	}
+	log.Info(buf.String())
+	ioutil.WriteFile("t.go", buf.Bytes(), 0666)
 	return nil
 }
 
