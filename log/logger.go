@@ -63,12 +63,22 @@ func (l *Logger) Panic(args ...interface{}) {
 }
 
 func (l *Logger) Panicf(format string, args ...interface{}) {
-	l.Panic(fmt.Sprintf(format, args...))
+	s := fmt.Sprintf(format, args...)
+	if !l.source {
+		l.h.HandleLog(PanicLevel, time.Now(), s)
+	} else {
+		l.h.HandleLogWithSource(PanicLevel, time.Now(), s, caller())
+	}
+	l.h.Flush()
+	panic(s)
 }
 
 func (l *Logger) PanicF(msg string, fields Fields) {
-	// TODO: handle log with fields source
-	l.h.HandleLogWithFields(PanicLevel, time.Now(), msg, fields)
+	if !l.source {
+		l.h.HandleLogWithFields(PanicLevel, time.Now(), msg, fields)
+	} else {
+		l.h.HandleLogWithSourceFields(PanicLevel, time.Now(), msg, caller(), fields)
+	}
 	l.h.Flush()
 	panic(msg)
 }
@@ -87,11 +97,23 @@ func (l *Logger) Fatal(args ...interface{}) {
 
 // FIXME: source line is in correct because we call Fatal in Fatalf
 func (l *Logger) Fatalf(format string, args ...interface{}) {
-	l.Fatal(fmt.Sprintf(format, args...))
+	s := fmt.Sprintf(format, args...)
+	if !l.source {
+		l.h.HandleLog(FatalLevel, time.Now(), s)
+	} else {
+		l.h.HandleLogWithSource(FatalLevel, time.Now(), s, caller())
+	}
+	l.h.Flush()
+	// TODO: allow user to register hook to do cleanup before exit directly
+	os.Exit(1)
 }
 
 func (l *Logger) FatalF(msg string, fields Fields) {
-	l.h.HandleLogWithFields(FatalLevel, time.Now(), msg, fields)
+	if !l.source {
+		l.h.HandleLogWithFields(FatalLevel, time.Now(), msg, fields)
+	} else {
+		l.h.HandleLogWithSourceFields(FatalLevel, time.Now(), msg, caller(), fields)
+	}
 	l.h.Flush()
 	// TODO: allow user to register hook to do cleanup before exit directly
 	os.Exit(1)
