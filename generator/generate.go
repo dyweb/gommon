@@ -37,21 +37,30 @@ func GenerateSingle(file string) error {
 	segments := strings.Split(dir, string(os.PathSeparator))
 	pkg := segments[len(segments)-1]
 	cfg := NewConfig(pkg, file)
-	// TODO: config may remove LoadYAMLAsStruct
+	// TODO: config may remove LoadYAMLAsStruct in the future
 	if err = config.LoadYAMLAsStruct(file, &cfg); err != nil {
 		return errors.WithMessage(err, "can't read config file")
 	}
-	if rendered, err = cfg.Render(); err != nil {
+
+	// gommon logger
+	if rendered, err = cfg.RenderGommon(); err != nil {
 		return errors.WithMessage(err, "can't render based on config")
 	}
 	//log.Debugf("%s rendered length %d", file, len(rendered))
-	if err = WriteFile(join(dir, generatedFile), rendered); err != nil {
-		return errors.WithMessage(err, "can't write rendered file")
+	if err = fsutil.WriteFile(join(dir, generatedFile), rendered); err != nil {
+		return errors.WithMessage(err, "can't write rendered gommon file")
 	}
 	log.Debugf("generated %s from %s", join(dir, generatedFile), file)
+
 	// gotmpl
 	if err = cfg.RenderGoTemplate(dir); err != nil {
 		return errors.WithMessage(err, "can't render go templates")
 	}
+
+	// logger
+	if err = cfg.RenderShell(dir); err != nil {
+		return errors.WithMessage(err, "can't render using shell commands")
+	}
+
 	return nil
 }

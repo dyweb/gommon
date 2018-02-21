@@ -9,6 +9,7 @@ Supported generators
 
 - logger, generate methods to match `log.LoggableStruct` interface
 - go template, render template using `text/template`
+- shell, call external commands like `protoc`
 
 ````yaml
 loggers:
@@ -32,9 +33,13 @@ logger
 
 - [ ] use assert in test
 - [ ] generate interface check
-- [ ] return error in Render, better error handling
-- [ ] write to buffer and then run go format like https://github.com/dyweb/Ayi/blob/master/cmd/gotmpl.go
+- [x] return error in Render, better error handling
+- [x] write to buffer and then run go format like https://github.com/dyweb/Ayi/blob/master/cmd/gotmpl.go
 
 gotmpl
 
-- [ ] replace Ayi's gotmpl
+- [x] replace Ayi's gotmpl
+
+shell
+
+- [ ] support using `sh -c`
