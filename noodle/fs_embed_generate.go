@@ -13,6 +13,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// GenerateEmbed return code without package and the CODE GENERATED header
 func GenerateEmbed(root string) ([]byte, error) {
 	var (
 		err     error

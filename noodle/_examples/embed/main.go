@@ -5,7 +5,9 @@ import (
 
 	"archive/zip"
 	"bytes"
+	"fmt"
 	"github.com/dyweb/gommon/noodle"
+	"net/http"
 )
 
 // need to include t.go
@@ -23,4 +25,10 @@ func main() {
 	for _, f := range zipReader.File {
 		log.Println(f.Name)
 	}
+
+	addr := ":8080"
+	var root http.FileSystem
+	root = &box
+	fmt.Printf("listen on %s\n", addr)
+	http.ListenAndServe(addr, http.FileServer(root))
 }
