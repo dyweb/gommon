@@ -6,6 +6,7 @@ import (
 	"go/format"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strings"
 	"text/template"
 
@@ -125,8 +126,14 @@ func zipFiles(root string, flatFiles map[string][]*EmbedFile) ([]byte, error) {
 	var lastErr error
 	buf := &bytes.Buffer{}
 	w := zip.NewWriter(buf)
-	for path, files := range flatFiles {
-		for _, f := range files {
+	// sort dir to make the output stable https://github.com/dyweb/gommon/issues/52
+	var paths []string
+	for path := range flatFiles {
+		paths = append(paths, path)
+	}
+	sort.Strings(paths)
+	for _, path := range paths {
+		for _, f := range flatFiles[path] {
 			//log.Infof("write file %s FileSize %d", f.FileName, len(f.Data))
 			lastErr = writeZipFile(w, root, path, f)
 		}
