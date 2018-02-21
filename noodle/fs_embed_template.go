@@ -1,8 +1,6 @@
 package noodle
 
 var embedTemplate = `
-package {{ .pkg }}
-
 import (
 	"time"
 

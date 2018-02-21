@@ -8,41 +8,12 @@ import (
 	"os"
 	"strings"
 	"text/template"
-	"time"
 
 	"github.com/dyweb/gommon/util/fsutil"
 	"github.com/pkg/errors"
 )
 
-var registeredBoxes map[string]EmbedBox
-
-type EmbedBox struct {
-	Dirs map[string]EmbedDir
-	Data []byte
-}
-
-type EmbedFile struct {
-	FileInfo
-	Data []byte
-}
-
-type EmbedDir struct {
-	FileInfo
-	Entries []FileInfo
-}
-
-var _ os.FileInfo = (*FileInfo)(nil)
-
-// the File prefix is to export the field but avoid conflict with os.FileInfo interface ...
-type FileInfo struct {
-	FileName    string
-	FileSize    int64
-	FileMode    os.FileMode
-	FileModTime time.Time
-	FileIsDir   bool
-}
-
-func GenerateEmbed(root string) error {
+func GenerateEmbed(root string) ([]byte, error) {
 	var (
 		err     error
 		ignores *fsutil.Ignores
@@ -52,13 +23,13 @@ func GenerateEmbed(root string) error {
 		lastErr error
 	)
 	if rootStat, err := os.Stat(root); err != nil {
-		return errors.Wrap(err, "can't get stat of root folder")
+		return nil, errors.Wrap(err, "can't get stat of root folder")
 	} else {
 		//log.Infof("root %s rootStat name %s", root, rootStat.Name())
 		dirs[root] = newEmbedDir(rootStat)
 	}
 	if ignores, err = readIgnoreFile(root); err != nil {
-		return err
+		return nil, err
 	}
 	fsutil.Walk(root, ignores, func(path string, info os.FileInfo) {
 		//log.Info(path)
@@ -67,30 +38,30 @@ func GenerateEmbed(root string) error {
 		//	return
 		//}
 		if info.IsDir() {
-			log.Infof("add %s to path %s", info.Name(), path)
+			//log.Infof("add %s to path %s", info.Name(), path)
 			dirInfo := newEmbedDir(info)
 			dirs[join(path, info.Name())] = dirInfo
 			dirs[path].Entries = append(dirs[path].Entries, dirInfo.FileInfo)
 			return
 		}
+		// TODO: error group
 		if file, err := newEmbedFile(path, info); err != nil {
-			// TODO: aggregate the error, errors group?
 			log.Warn(err)
 			lastErr = err
 		} else {
 			files[path] = append(files[path], file)
 		}
 	})
-	log.Infof("total dirs (including root) %d", len(dirs))
-	log.Infof("dirs %d", len(files))
-	updateDirectoryInfo(dirs, files)
-	//err = writeZipFiles("t.zip", root, files)
-	if data, err = zipFiles(root, files); err != nil {
-		return err
+	if lastErr != nil {
+		return nil, lastErr
 	}
-	lastErr = renderTemplate(root, dirs, data)
-	log.Warn(lastErr)
-	return lastErr
+	//log.Infof("dirs (including root) %d", len(dirs))
+	//log.Infof("dirs (excluding root) %d", len(files))
+	updateDirectoryInfo(dirs, files)
+	if data, err = zipFiles(root, files); err != nil {
+		return nil, err
+	}
+	return renderTemplate(root, dirs, data)
 }
 
 func readIgnoreFile(root string) (*fsutil.Ignores, error) {
@@ -139,11 +110,10 @@ func newEmbedFile(path string, info os.FileInfo) (*EmbedFile, error) {
 }
 
 func updateDirectoryInfo(dirs map[string]*EmbedDir, flatFiles map[string][]*EmbedFile) {
-	//folders := make(map[string][]FileInfo, len(flatFiles) + 1)
 	for path, files := range flatFiles {
-		log.Infof("path %s files %d", path, len(files))
+		//log.Infof("path %s files %d", path, len(files))
 		for _, f := range files {
-			log.Infof("add %s to path %s", f.Name(), path)
+			//log.Infof("add %s to path %s", f.Name(), path)
 			dirs[path].Entries = append(dirs[path].Entries, f.FileInfo)
 		}
 	}
@@ -187,10 +157,10 @@ func writeZipFile(w *zip.Writer, root string, path string, file *EmbedFile) erro
 	return nil
 }
 
-func renderTemplate(root string, dirs map[string]*EmbedDir, data []byte) error {
+func renderTemplate(root string, dirs map[string]*EmbedDir, data []byte) ([]byte, error) {
 	t, err := template.New("noodleembed").Parse(embedTemplate)
 	if err != nil {
-		return errors.Wrap(err, "can't parse embed template")
+		return nil, errors.Wrap(err, "can't parse embed template")
 	}
 	// trim root
 	trimmedDirs := make(map[string]*EmbedDir)
@@ -199,59 +169,14 @@ func renderTemplate(root string, dirs map[string]*EmbedDir, data []byte) error {
 	}
 	buf := &bytes.Buffer{}
 	if err := t.Execute(buf, map[string]interface{}{
-		"pkg":  "main", // TODO: allow config package FileName
 		"dir":  trimmedDirs,
 		"data": data,
 	}); err != nil {
-		return errors.Wrap(err, "can't execute template")
+		return nil, errors.Wrap(err, "can't execute template")
 	}
-	//fmt.Printf("%#v", data)
-	log.Info(buf.String())
 	if b, err := format.Source(buf.Bytes()); err != nil {
-		return errors.Wrap(err, "can't format go code")
+		return nil, errors.Wrap(err, "can't format go code")
 	} else {
-		ioutil.WriteFile("_examples/embed/t.go", b, 0666)
+		return b, nil
 	}
-	return nil
-}
-
-func (i *FileInfo) Name() string {
-	return i.FileName
-}
-
-func (i *FileInfo) Size() int64 {
-	return i.FileSize
-}
-
-func (i *FileInfo) Mode() os.FileMode {
-	return i.FileMode
-}
-
-func (i *FileInfo) ModTime() time.Time {
-	return i.FileModTime
-}
-
-func (i *FileInfo) IsDir() bool {
-	return i.FileIsDir
-}
-
-func (i *FileInfo) Sys() interface{} {
-	return nil
-}
-
-func RegisterEmbedBox(name string, box EmbedBox) {
-	log.Debugf("register embed box %s", name)
-	registeredBoxes[name] = box
-}
-
-func GetEmbedBox(name string) (EmbedBox, error) {
-	if box, exists := registeredBoxes[name]; exists {
-		return box, nil
-	} else {
-		return box, errors.Errorf("box %s does not exist", name)
-	}
-}
-
-func init() {
-	registeredBoxes = make(map[string]EmbedBox)
 }
