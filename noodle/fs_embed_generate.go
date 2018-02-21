@@ -175,6 +175,7 @@ func renderTemplate(root string, dirs map[string]*EmbedDir, data []byte) ([]byte
 	}); err != nil {
 		return nil, errors.Wrap(err, "can't execute template")
 	}
+	//log.Info(buf.String())
 	if b, err := format.Source(buf.Bytes()); err != nil {
 		return nil, errors.Wrap(err, "can't format go code")
 	} else {

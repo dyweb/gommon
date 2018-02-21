@@ -18,5 +18,5 @@ func TestGenerateEmbed(t *testing.T) {
 
 func TestFileMode(t *testing.T) {
 	// 2147483648
-	fmt.Printf("%#0d", os.ModeDir)
+	fmt.Printf("%#o", os.ModeDir)
 }

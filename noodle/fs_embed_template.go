@@ -15,7 +15,7 @@ dirs := map[string]noodle.EmbedDir{
 		FileInfo: noodle.FileInfo{
 			FileName: "{{ $dir.FileInfo.Name }}",
 			FileSize: {{ $dir.FileInfo.Size }},
-			FileMode: {{ printf "%#0d" $dir.FileInfo.Mode }},
+			FileMode: {{ printf "%#o" $dir.FileInfo.Mode }},
 			FileModTime: time.Unix({{$dir.FileInfo.ModTime.Unix }}, 0),
 			FileIsDir: {{ $dir.FileInfo.IsDir }},
 		},
@@ -24,7 +24,7 @@ dirs := map[string]noodle.EmbedDir{
 			{
 				FileName: "{{ .Name }}",
 				FileSize: {{ .Size }},
-				FileMode: {{ printf "%#0d" .Mode }},
+				FileMode: {{ printf "%#o" .Mode }},
 				FileModTime: time.Unix({{.ModTime.Unix }}, 0),
 				FileIsDir: {{ .IsDir }},
 			},
