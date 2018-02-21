@@ -14,15 +14,22 @@ import (
 	"github.com/pkg/errors"
 )
 
+var registeredBoxes map[string]EmbedBox
+
 type EmbedBox struct {
-	Dirs  map[string]EmbedDir
-	Files map[string]EmbedFile
+	Dirs map[string]EmbedDir
+	Data []byte
 }
 
 type EmbedFile struct {
 	FileInfo
 	Data []byte
 }
+
+//type EmbedImmutableFile struct {
+//	FileInfo
+//	Data string
+//}
 
 type EmbedDir struct {
 	FileInfo
@@ -183,7 +190,7 @@ func writeZipFile(w *zip.Writer, root string, path string, file *EmbedFile) erro
 	return nil
 }
 
-// TODO: trim root
+// TODO: trim root, might share it with write zip...
 func renderTemplate(dirs map[string]*EmbedDir) error {
 	t, err := template.New("noodleembed").Parse(embedTemplate)
 	if err != nil {
@@ -227,4 +234,21 @@ func (i *FileInfo) IsDir() bool {
 
 func (i *FileInfo) Sys() interface{} {
 	return nil
+}
+
+func RegisterEmbedBox(name string, box EmbedBox) {
+	log.Debugf("register embed box %s", name)
+	registeredBoxes[name] = box
+}
+
+func GetEmbedBox(name string) (EmbedBox, error) {
+	if box, exists := registeredBoxes[name]; exists {
+		return box, nil
+	} else {
+		return box, errors.Errorf("box %s does not exist", name)
+	}
+}
+
+func init() {
+	registeredBoxes = make(map[string]EmbedBox)
 }

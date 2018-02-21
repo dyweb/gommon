@@ -34,9 +34,13 @@ dirs := map[string]noodle.EmbedDir{
         },
 	},
 {{- end -}}
-
 }
 
+box := noodle.EmbedBox{
+	Dirs: dirs,
+}
+
+noodle.RegisterEmbedBox("test", box)
 
 }
 `

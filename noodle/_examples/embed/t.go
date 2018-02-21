@@ -133,4 +133,9 @@ func init() {
 		}},
 	}}
 
+	box := noodle.EmbedBox{
+		Dirs: dirs,
+	}
+
+	noodle.RegisterEmbedBox("test", box)
 }
