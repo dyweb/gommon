@@ -4,53 +4,37 @@ var embedTemplate = `
 package {{ .pkg }}
 
 import (
-	"os"
 	"time"
+
+	"github.com/dyweb/gommon/noodle"
 )
-
-type embedFile struct {
-	FileInfo
-	data []byte
-}
-
-type embedDir struct {
-	FileInfo
-	Entries []FileInfo
-}
-
-type FileInfo struct {
-	name    string
-	size    int64
-	mode    os.FileMode
-	modTime time.Time
-	isDir   bool
-}
 
 func init() {
 
-dirs := map[string]embedDir{
-{{ range .dir }}
+dirs := map[string]noodle.EmbedDir{
+{{- range .dir -}}
 	"{{ .FileInfo.Name }}": {
-		FileInfo: FileInfo{
-			name: "{{ .FileInfo.Name }}",
-			size: {{ .FileInfo.Size }},
-			mode: {{ printf "%#0d" .FileInfo.Mode }},
-			modTime: time.Unix({{.FileInfo.ModTime.Unix }}, 0),
-			isDir: {{ .FileInfo.IsDir }},
+		FileInfo: noodle.FileInfo{
+			FileName: "{{ .FileInfo.Name }}",
+			FileSize: {{ .FileInfo.Size }},
+			FileMode: {{ printf "%#0d" .FileInfo.Mode }},
+			FileModTime: time.Unix({{.FileInfo.ModTime.Unix }}, 0),
+			FileIsDir: {{ .FileInfo.IsDir }},
 		},
-		Entries: []FileInfo{
-			{{ range .Entries }}
+		Entries: []noodle.FileInfo{
+			{{- range .Entries -}}
 			{
-				name: "{{ .Name }}",
-				size: {{ .Size }},
-				mode: {{ printf "%#0d" .Mode }},
-				modTime: time.Unix({{.ModTime.Unix }}, 0),
-				isDir: {{ .IsDir }},
+				FileName: "{{ .Name }}",
+				FileSize: {{ .Size }},
+				FileMode: {{ printf "%#0d" .Mode }},
+				FileModTime: time.Unix({{.ModTime.Unix }}, 0),
+				FileIsDir: {{ .IsDir }},
 			},
-			{{ end }}
+			{{- end -}}
         },
 	},
-{{ end }}
+{{- end -}}
+
 }
 
 

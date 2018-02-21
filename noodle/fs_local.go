@@ -35,7 +35,7 @@ func NewLocalUnsafe(root string) *LocalFs {
 }
 
 func (fs *LocalFs) Open(name string) (http.File, error) {
-	//return os.Open(filepath.Join(fs.root, name))
+	//return os.Open(filepath.Join(fs.root, FileName))
 	// NOTE: http.Dir has extra error handling, https://github.com/golang/go/issues/18984
 	// some operation are mapped to 404 instead of 500
 	f, err := fs.dir.Open(name)

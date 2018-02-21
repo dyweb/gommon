@@ -31,7 +31,7 @@ func TestReadIgnore(t *testing.T) {
 	ignores, err := ReadIgnore(bytes.NewReader([]byte(exampleIgnore)))
 	assert.Nil(err)
 	assert.Equal(4, ignores.Len())
-	// TODO: there seems to be no way of checking name and folder pattern ...
+	// TODO: there seems to be no way of checking FileName and folder pattern ...
 	patterns := ignores.Patterns()
 	assert.IsType(fsutil.ExactPattern(""), patterns[0])
 	assert.IsType(fsutil.WildcardPattern(""), patterns[1])

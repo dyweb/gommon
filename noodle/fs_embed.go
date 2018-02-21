@@ -14,34 +14,33 @@ import (
 	"github.com/pkg/errors"
 )
 
-// TODO
-// walk the folder, keep track of folders
-type embedFile struct {
+type EmbedFile struct {
 	FileInfo
-	data []byte
+	Data []byte
 }
 
-type embedDir struct {
+type EmbedDir struct {
 	FileInfo
 	Entries []FileInfo
 }
 
 var _ os.FileInfo = (*FileInfo)(nil)
 
+// the File prefix is to export the field but avoid conflict with os.FileInfo interface ...
 type FileInfo struct {
-	name    string
-	size    int64
-	mode    os.FileMode
-	modTime time.Time
-	isDir   bool
+	FileName    string
+	FileSize    int64
+	FileMode    os.FileMode
+	FileModTime time.Time
+	FileIsDir   bool
 }
 
 func GenerateEmbed(root string) error {
 	var (
 		err     error
 		ignores *fsutil.Ignores
-		dirs    = make(map[string]*embedDir)
-		files   = make(map[string][]*embedFile)
+		dirs    = make(map[string]*EmbedDir)
+		files   = make(map[string][]*EmbedFile)
 		lastErr error
 	)
 	if rootStat, err := os.Stat(root); err != nil {
@@ -98,36 +97,36 @@ func readIgnoreFile(root string) (*fsutil.Ignores, error) {
 	return ignores, nil
 }
 
-func newEmbedDir(info os.FileInfo) *embedDir {
-	return &embedDir{
+func newEmbedDir(info os.FileInfo) *EmbedDir {
+	return &EmbedDir{
 		FileInfo: FileInfo{
-			name:    info.Name(),
-			size:    info.Size(),
-			mode:    info.Mode(),
-			modTime: info.ModTime(),
-			isDir:   info.IsDir(),
+			FileName:    info.Name(),
+			FileSize:    info.Size(),
+			FileMode:    info.Mode(),
+			FileModTime: info.ModTime(),
+			FileIsDir:   info.IsDir(),
 		},
 	}
 }
 
-func newEmbedFile(path string, info os.FileInfo) (*embedFile, error) {
+func newEmbedFile(path string, info os.FileInfo) (*EmbedFile, error) {
 	if b, err := ioutil.ReadFile(join(path, info.Name())); err != nil {
 		return nil, errors.Wrap(err, "can't read file from disk")
 	} else {
-		return &embedFile{
+		return &EmbedFile{
 			FileInfo: FileInfo{
-				name:    info.Name(),
-				size:    info.Size(),
-				mode:    info.Mode(),
-				modTime: info.ModTime(),
-				isDir:   info.IsDir(),
+				FileName:    info.Name(),
+				FileSize:    info.Size(),
+				FileMode:    info.Mode(),
+				FileModTime: info.ModTime(),
+				FileIsDir:   info.IsDir(),
 			},
-			data: b,
+			Data: b,
 		}, nil
 	}
 }
 
-func updateDirectoryInfo(dirs map[string]*embedDir, flatFiles map[string][]*embedFile) {
+func updateDirectoryInfo(dirs map[string]*EmbedDir, flatFiles map[string][]*EmbedFile) {
 	//folders := make(map[string][]FileInfo, len(flatFiles) + 1)
 	for path, files := range flatFiles {
 		log.Infof("path %s files %d", path, len(files))
@@ -137,13 +136,13 @@ func updateDirectoryInfo(dirs map[string]*embedDir, flatFiles map[string][]*embe
 	}
 }
 
-func writeZipFiles(dst string, root string, flatFiles map[string][]*embedFile) error {
+func writeZipFiles(dst string, root string, flatFiles map[string][]*EmbedFile) error {
 	var lastErr error
 	buf := &bytes.Buffer{}
 	w := zip.NewWriter(buf)
 	for path, files := range flatFiles {
 		for _, f := range files {
-			log.Infof("write file %s size %d", f.name, len(f.data))
+			log.Infof("write file %s FileSize %d", f.FileName, len(f.Data))
 			lastErr = writeZipFile(w, root, path, f)
 		}
 	}
@@ -160,7 +159,7 @@ func writeZipFiles(dst string, root string, flatFiles map[string][]*embedFile) e
 	return nil
 }
 
-func writeZipFile(w *zip.Writer, root string, path string, file *embedFile) error {
+func writeZipFile(w *zip.Writer, root string, path string, file *EmbedFile) error {
 	header, err := zip.FileInfoHeader(&file.FileInfo)
 	if err != nil {
 		return errors.Wrap(err, "can't create file header")
@@ -171,20 +170,20 @@ func writeZipFile(w *zip.Writer, root string, path string, file *embedFile) erro
 	if err != nil {
 		return errors.Wrap(err, "can't add file to zip")
 	}
-	if _, err := f.Write(file.data); err != nil {
+	if _, err := f.Write(file.Data); err != nil {
 		return errors.Wrap(err, "can't write zip file content")
 	}
 	return nil
 }
 
-func renderTemplate(dirs map[string]*embedDir) error {
+func renderTemplate(dirs map[string]*EmbedDir) error {
 	t, err := template.New("noodleembed").Parse(embedTemplate)
 	if err != nil {
 		return errors.Wrap(err, "can't parse embed template")
 	}
 	buf := &bytes.Buffer{}
 	if err := t.Execute(buf, map[string]interface{}{
-		"pkg": "embed", // TODO: allow config package name
+		"pkg": "embed", // TODO: allow config package FileName
 		"dir": dirs,
 	}); err != nil {
 		return errors.Wrap(err, "can't execute template")
@@ -199,23 +198,23 @@ func renderTemplate(dirs map[string]*embedDir) error {
 }
 
 func (i *FileInfo) Name() string {
-	return i.name
+	return i.FileName
 }
 
 func (i *FileInfo) Size() int64 {
-	return i.size
+	return i.FileSize
 }
 
 func (i *FileInfo) Mode() os.FileMode {
-	return i.mode
+	return i.FileMode
 }
 
 func (i *FileInfo) ModTime() time.Time {
-	return i.modTime
+	return i.FileModTime
 }
 
 func (i *FileInfo) IsDir() bool {
-	return i.isDir
+	return i.FileIsDir
 }
 
 func (i *FileInfo) Sys() interface{} {
