@@ -48,9 +48,15 @@ func (d *EmbedDir) Readdir(count int) ([]os.FileInfo, error) {
 	// TODO: disable list dir
 	log.Infof("readdir %d", count)
 	files := make([]os.FileInfo, 0, len(d.Entries))
-	for _, f := range d.Entries {
-		log.Infof("file %s", f.Name())
-		files = append(files, &f)
+	// FIXED: learn this the hard way .. https://github.com/dyweb/gommon/issues/50
+	// the element is range syntax is created when loop start and it is reused between iterations, thus same pointer
+	// https://tam7t.com/golang-range-and-pointers/
+	//for _, f := range d.Entries {
+	//	log.Infof("file %s", f.Name())
+	//	files = append(files, &f)
+	//}
+	for i := range d.Entries {
+		files = append(files, &d.Entries[i])
 	}
 	return files, nil
 }

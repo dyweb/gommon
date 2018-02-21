@@ -30,8 +30,18 @@ func main() {
 		},
 	}
 	files := make([]I, 0, len(dir.Entries))
+	// wrong
 	for _, f := range dir.Entries {
+		fmt.Printf("%p\n", &f) // it's the same ...
 		files = append(files, &f)
+	}
+	for _, f := range files {
+		fmt.Println(f.GetName())
+	}
+	// right
+	files = make([]I, 0, len(dir.Entries))
+	for i := range dir.Entries {
+		files = append(files, &dir.Entries[i])
 	}
 	for _, f := range files {
 		fmt.Println(f.GetName())
