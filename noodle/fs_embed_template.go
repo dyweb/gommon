@@ -12,17 +12,17 @@ import (
 func init() {
 
 dirs := map[string]noodle.EmbedDir{
-{{- range .dir -}}
-	"{{ .FileInfo.Name }}": {
+{{- range $path, $dir := .dir -}}
+	"{{ $path }}": {
 		FileInfo: noodle.FileInfo{
-			FileName: "{{ .FileInfo.Name }}",
-			FileSize: {{ .FileInfo.Size }},
-			FileMode: {{ printf "%#0d" .FileInfo.Mode }},
-			FileModTime: time.Unix({{.FileInfo.ModTime.Unix }}, 0),
-			FileIsDir: {{ .FileInfo.IsDir }},
+			FileName: "{{ $dir.FileInfo.Name }}",
+			FileSize: {{ $dir.FileInfo.Size }},
+			FileMode: {{ printf "%#0d" $dir.FileInfo.Mode }},
+			FileModTime: time.Unix({{$dir.FileInfo.ModTime.Unix }}, 0),
+			FileIsDir: {{ $dir.FileInfo.IsDir }},
 		},
 		Entries: []noodle.FileInfo{
-			{{- range .Entries -}}
+			{{- range $dir.Entries -}}
 			{
 				FileName: "{{ .Name }}",
 				FileSize: {{ .Size }},

@@ -14,6 +14,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+type EmbedBox struct {
+	Dirs  map[string]EmbedDir
+	Files map[string]EmbedFile
+}
+
 type EmbedFile struct {
 	FileInfo
 	Data []byte
@@ -59,6 +64,7 @@ func GenerateEmbed(root string) error {
 		//	return
 		//}
 		if info.IsDir() {
+			log.Infof("add %s to path %s", info.Name(), path)
 			dirInfo := newEmbedDir(info)
 			dirs[join(path, info.Name())] = dirInfo
 			dirs[path].Entries = append(dirs[path].Entries, dirInfo.FileInfo)
@@ -131,6 +137,7 @@ func updateDirectoryInfo(dirs map[string]*EmbedDir, flatFiles map[string][]*Embe
 	for path, files := range flatFiles {
 		log.Infof("path %s files %d", path, len(files))
 		for _, f := range files {
+			log.Infof("add %s to path %s", f.Name(), path)
 			dirs[path].Entries = append(dirs[path].Entries, f.FileInfo)
 		}
 	}
@@ -176,6 +183,7 @@ func writeZipFile(w *zip.Writer, root string, path string, file *EmbedFile) erro
 	return nil
 }
 
+// TODO: trim root
 func renderTemplate(dirs map[string]*EmbedDir) error {
 	t, err := template.New("noodleembed").Parse(embedTemplate)
 	if err != nil {
@@ -183,7 +191,7 @@ func renderTemplate(dirs map[string]*EmbedDir) error {
 	}
 	buf := &bytes.Buffer{}
 	if err := t.Execute(buf, map[string]interface{}{
-		"pkg": "embed", // TODO: allow config package FileName
+		"pkg": "main", // TODO: allow config package FileName
 		"dir": dirs,
 	}); err != nil {
 		return errors.Wrap(err, "can't execute template")
