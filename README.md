@@ -17,9 +17,12 @@ It has the following components:
 - [Requests](requests) A pythonic wrapper for `net/http`, HTTP for Gopher.
 - [Cast](cast) Convert Golang types
 - [Data structure](structure) Bring Set etc. to Golang.
-- [Runner](runner) A os/exec wrapper
 
-<!--- web server - resource binding (replace go.rice)-->
+Legacy
+
+- [log v1](legacy/log) A logrus like structured logger
+- [Runner](legacy/runner) A os/exec wrapper
+
 
 ## Dependencies
 
@@ -60,7 +63,7 @@ Currently, gommon is in a very violate state, please open issues after it become
 
 ## Acknowledgement & Improvement
 
-Gommon is inspired by the following awesome libraries, most gommon packages have much less features a few improvements 
+Gommon is inspired by the following awesome libraries, most gommon packages have much less features and a few improvements 
 compared to packages it modeled after.
 
 - [sirupsen/logrus](https://github.com/sirupsen/logrus) for structured logging 
@@ -76,7 +79,7 @@ compared to packages it modeled after.
 - [Requests](http://docs.python-requests.org/en/master/) for requests
 - [benbjohnson/tmpl](https://github.com/benbjohnson/tmpl) for go template generator
   - first saw it in [influxdata/influxdb](https://github.com/influxdata/influxdb/blob/master/tsdb/engine/tsm1/encoding.gen.go.tmpl)
-  - we put template data in `gommon.yml`, so we don't need to pass it via cli
+  - we put template data in `gommon.yml`, so we don't need to pass data as json via cli
 - [GeertJohan/go.rice](https://github.com/GeertJohan/go.rice) for ~~rice~~ noodle
   - we implemented `.gitignore` like [feature](https://github.com/at15/go.rice/issues/1) but the upstream didn't respond for the [feature request #83](https://github.com/GeertJohan/go.rice/issues/83)
 

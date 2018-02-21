@@ -1,10 +1,10 @@
 dep-install:
     - dep ensure
 test:
-    - go test -v -cover ./cast/... ./config/... ./generator/... ./log/... ./requests/... ./runner/... ./structure/... ./util/...
+    - go test -v -cover ./cast/... ./config/... ./generator/... ./log/... ./requests/... ./structure/... ./util/...
 scripts:
   fmt:
-    - gofmt -d -l -w ./cast ./config ./log ./requests ./runner ./structure ./util
+    - gofmt -d -l -w ./cast ./config ./log ./requests ./structure ./util
     - git status
   check:
     # TODO: didn't see any error so far ...
