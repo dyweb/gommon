@@ -5,6 +5,7 @@
 - don't allow list dir by returning empty slice for `Readdir`
   - i.e. even you want to list dir, it is not allowed
   - [ ] it is using a map, may need to sort names and figure out which one is folder, but `archive/zip` might support this?
+- it is using a custom bytes printer `FprintZipData` to print it as string literal
 
 ````go
 func init() {
