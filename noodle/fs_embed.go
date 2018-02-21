@@ -26,11 +26,6 @@ type EmbedFile struct {
 	Data []byte
 }
 
-//type EmbedImmutableFile struct {
-//	FileInfo
-//	Data string
-//}
-
 type EmbedDir struct {
 	FileInfo
 	Entries []FileInfo
@@ -53,12 +48,13 @@ func GenerateEmbed(root string) error {
 		ignores *fsutil.Ignores
 		dirs    = make(map[string]*EmbedDir)
 		files   = make(map[string][]*EmbedFile)
+		data    []byte
 		lastErr error
 	)
 	if rootStat, err := os.Stat(root); err != nil {
 		return errors.Wrap(err, "can't get stat of root folder")
 	} else {
-		log.Infof("root %s rootStat name %s", root, rootStat.Name())
+		//log.Infof("root %s rootStat name %s", root, rootStat.Name())
 		dirs[root] = newEmbedDir(rootStat)
 	}
 	if ignores, err = readIgnoreFile(root); err != nil {
@@ -89,8 +85,11 @@ func GenerateEmbed(root string) error {
 	log.Infof("dirs %d", len(files))
 	updateDirectoryInfo(dirs, files)
 	//err = writeZipFiles("t.zip", root, files)
-	err = renderTemplate(dirs)
-	log.Warn(err)
+	if data, err = zipFiles(root, files); err != nil {
+		return err
+	}
+	lastErr = renderTemplate(root, dirs, data)
+	log.Warn(lastErr)
 	return lastErr
 }
 
@@ -150,27 +149,24 @@ func updateDirectoryInfo(dirs map[string]*EmbedDir, flatFiles map[string][]*Embe
 	}
 }
 
-func writeZipFiles(dst string, root string, flatFiles map[string][]*EmbedFile) error {
+func zipFiles(root string, flatFiles map[string][]*EmbedFile) ([]byte, error) {
+	// TODO: error group
 	var lastErr error
 	buf := &bytes.Buffer{}
 	w := zip.NewWriter(buf)
 	for path, files := range flatFiles {
 		for _, f := range files {
-			log.Infof("write file %s FileSize %d", f.FileName, len(f.Data))
+			//log.Infof("write file %s FileSize %d", f.FileName, len(f.Data))
 			lastErr = writeZipFile(w, root, path, f)
 		}
 	}
-
 	if lastErr != nil {
-		return lastErr
+		return nil, lastErr
 	}
 	if err := w.Close(); err != nil {
-		return errors.Wrap(err, "can't close zip writer")
+		return nil, errors.Wrap(err, "can't close zip writer")
 	}
-	if err := ioutil.WriteFile(dst, buf.Bytes(), 0666); err != nil {
-		return errors.Wrap(err, "can't write zip file")
-	}
-	return nil
+	return buf.Bytes(), nil
 }
 
 func writeZipFile(w *zip.Writer, root string, path string, file *EmbedFile) error {
@@ -179,7 +175,8 @@ func writeZipFile(w *zip.Writer, root string, path string, file *EmbedFile) erro
 		return errors.Wrap(err, "can't create file header")
 	}
 	header.Method = zip.Deflate
-	header.Name = strings.TrimLeft(join(path, file.FileInfo.Name()), root)
+	// trim root
+	header.Name = join(strings.TrimLeft(path, root), file.Name())
 	f, err := w.CreateHeader(header)
 	if err != nil {
 		return errors.Wrap(err, "can't add file to zip")
@@ -190,19 +187,25 @@ func writeZipFile(w *zip.Writer, root string, path string, file *EmbedFile) erro
 	return nil
 }
 
-// TODO: trim root, might share it with write zip...
-func renderTemplate(dirs map[string]*EmbedDir) error {
+func renderTemplate(root string, dirs map[string]*EmbedDir, data []byte) error {
 	t, err := template.New("noodleembed").Parse(embedTemplate)
 	if err != nil {
 		return errors.Wrap(err, "can't parse embed template")
 	}
+	// trim root
+	trimmedDirs := make(map[string]*EmbedDir)
+	for p, d := range dirs {
+		trimmedDirs[strings.TrimLeft(p, root)] = d
+	}
 	buf := &bytes.Buffer{}
 	if err := t.Execute(buf, map[string]interface{}{
-		"pkg": "main", // TODO: allow config package FileName
-		"dir": dirs,
+		"pkg":  "main", // TODO: allow config package FileName
+		"dir":  trimmedDirs,
+		"data": data,
 	}); err != nil {
 		return errors.Wrap(err, "can't execute template")
 	}
+	//fmt.Printf("%#v", data)
 	log.Info(buf.String())
 	if b, err := format.Source(buf.Bytes()); err != nil {
 		return errors.Wrap(err, "can't format go code")

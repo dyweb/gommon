@@ -38,6 +38,7 @@ dirs := map[string]noodle.EmbedDir{
 
 box := noodle.EmbedBox{
 	Dirs: dirs,
+	Data: {{ printf "%#v" .data }},
 }
 
 noodle.RegisterEmbedBox("test", box)
