@@ -46,8 +46,10 @@ func (d *EmbedDir) Close() error {
 
 func (d *EmbedDir) Readdir(count int) ([]os.FileInfo, error) {
 	// TODO: disable list dir
-	files := make([]os.FileInfo, len(d.Entries))
+	log.Infof("readdir %d", count)
+	files := make([]os.FileInfo, 0, len(d.Entries))
 	for _, f := range d.Entries {
+		log.Infof("file %s", f.Name())
 		files = append(files, &f)
 	}
 	return files, nil
