@@ -2,12 +2,12 @@ package requests
 
 import (
 	"encoding/json"
-
 	"net/http"
 
 	"github.com/pkg/errors"
 )
 
+// FIXME: remove response, this is no longer needed I think ...
 type Response struct {
 	Res  *http.Response
 	Text []byte

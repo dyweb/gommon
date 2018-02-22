@@ -10,6 +10,7 @@ TODO: it is mainly used for building config for http client to use socks5 proxy
 
 ## Changelog
 
+- use same config as `DefaultTransport` in `net/http`
 - add client struct and default client which wraps `http.Client`
 - support socks5 proxy https://github.com/dyweb/gommon/issues/18
 - rename `GetJSON` to get `GetJSONStringMap`, this should break old Xephon-B code, which is now in tsdb-proxy

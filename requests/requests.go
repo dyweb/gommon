@@ -18,6 +18,7 @@ const (
 )
 
 var (
+	// FIXME: remove defaultClient ....
 	defaultClient = &Client{http: &http.Client{Transport: &http.Transport{}}}
 )
 
