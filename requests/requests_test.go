@@ -55,12 +55,12 @@ func TestRequestsE2E(t *testing.T) {
 		assert.Equal(version, data["version"])
 	})
 
-	t.Run("PostJSONString", func(t *testing.T) {
+	t.Run("PostString", func(t *testing.T) {
 		assert := asst.New(t)
 		payload := fmt.Sprintf("{\"version\": \"%s\"}", version)
-		res, err := c.PostJSONString(echoURL, payload)
+		res, err := c.PostString(echoURL, payload)
 		assert.Nil(err)
-		assert.Equal(payload, string(res.Text))
+		assert.Equal(payload, string(res.Data))
 	})
 }
 

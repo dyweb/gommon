@@ -6,7 +6,10 @@ Originally from [xephon-b](https://github.com/xephonhq/xephon-b)
 
 ## Usage
 
-TODO: it is mainly used for building config for http client to use socks5 proxy
+TODO: 
+
+- it was mainly used for building config for http client to use socks5 proxy
+- [ ] https://github.com/hashicorp/go-getter like features
 
 ## Changelog
 
