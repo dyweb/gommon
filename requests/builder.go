@@ -9,7 +9,7 @@ import (
 
 // TODO: might switch to functional options https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
 // TODO: http proxy? might just use environment variable? https://stackoverflow.com/questions/14661511/setting-up-proxy-for-http-client
-// TransportBuilder is the initial builder, its method return a new copy for chaining and keep itself unchanged
+// TransportBuilder is the initial builder, its method use value receiver and return a new copy for chaining and keep itself unchanged
 var TransportBuilder transportBuilder
 
 type transportBuilder struct {
@@ -40,7 +40,7 @@ func (b transportBuilder) UseSocks5(host string, username string, password strin
 }
 
 func (b transportBuilder) Build() (*http.Transport, error) {
-	transport := &http.Transport{}
+	transport := NewDefaultTransport()
 	if b.skipKeyVerify {
 		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	}
