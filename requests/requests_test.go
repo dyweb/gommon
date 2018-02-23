@@ -2,17 +2,19 @@ package requests
 
 import (
 	"fmt"
-	asst "github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	asst "github.com/stretchr/testify/assert"
 )
 
 func TestRequestsE2E(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skip requests e2e test")
 	}
+	assert := asst.New(t)
 
 	// create an echo server
 	version := "0.0.1"
@@ -37,16 +39,18 @@ func TestRequestsE2E(t *testing.T) {
 	versionURL := testServer.URL + "/version"
 	echoURL := testServer.URL + "/echo"
 
+	c, err := NewClient()
+	assert.Nil(err)
 	t.Run("Get", func(t *testing.T) {
 		assert := asst.New(t)
-		res, err := Get(versionURL)
+		res, err := c.Get(versionURL)
 		assert.Nil(err)
 		assert.Equal(http.StatusOK, res.Res.StatusCode)
 	})
 
 	t.Run("GetJSONStringMap", func(t *testing.T) {
 		assert := asst.New(t)
-		data, err := GetJSONStringMap(versionURL)
+		data, err := c.GetJSONStringMap(versionURL)
 		assert.Nil(err)
 		assert.Equal(version, data["version"])
 	})
@@ -54,7 +58,7 @@ func TestRequestsE2E(t *testing.T) {
 	t.Run("PostJSONString", func(t *testing.T) {
 		assert := asst.New(t)
 		payload := fmt.Sprintf("{\"version\": \"%s\"}", version)
-		res, err := PostJSONString(echoURL, payload)
+		res, err := c.PostJSONString(echoURL, payload)
 		assert.Nil(err)
 		assert.Equal(payload, string(res.Text))
 	})

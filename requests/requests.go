@@ -17,25 +17,16 @@ const (
 	ContentJSON      = "application/json"
 )
 
-var (
-	// FIXME: remove defaultClient ....
-	defaultClient = &Client{http: &http.Client{Transport: &http.Transport{}}}
-)
-
 type Client struct {
 	http *http.Client
 }
 
 func NewClient(options ...func(h *http.Client)) (*Client, error) {
-	c := &Client{http: &http.Client{Transport: &http.Transport{}}}
+	c := &Client{http: NewDefaultClient()}
 	for _, option := range options {
 		option(c.http)
 	}
 	return c, nil
-}
-
-func makeRequest(method string, url string, body io.Reader) (*Response, error) {
-	return defaultClient.makeRequest(method, url, body)
 }
 
 func (client *Client) makeRequest(method string, url string, body io.Reader) (*Response, error) {
@@ -65,34 +56,18 @@ func (client *Client) makeRequest(method string, url string, body io.Reader) (*R
 	return response, nil
 }
 
-func Get(url string) (*Response, error) {
-	return makeRequest(http.MethodGet, url, nil)
-}
-
 func (client *Client) Get(url string) (*Response, error) {
 	return client.makeRequest(http.MethodGet, url, nil)
 }
 
 // TODO: accept io.reader
 
-func PostJSONString(url string, data string) (*Response, error) {
-	return makeRequest(http.MethodPost, url, ioutil.NopCloser(strings.NewReader(data)))
-}
-
 func (client *Client) PostJSONString(url string, data string) (*Response, error) {
 	return client.makeRequest(http.MethodPost, url, ioutil.NopCloser(strings.NewReader(data)))
 }
 
-func PostJSONBytes(url string, data []byte) (*Response, error) {
-	return makeRequest(http.MethodPost, url, ioutil.NopCloser(bytes.NewReader(data)))
-}
-
 func (client *Client) PostJSONBytes(url string, data []byte) (*Response, error) {
 	return client.makeRequest(http.MethodPost, url, ioutil.NopCloser(bytes.NewReader(data)))
-}
-
-func GetJSON(url string, data interface{}) error {
-	return defaultClient.GetJSON(url, data)
 }
 
 func (client *Client) GetJSON(url string, data interface{}) error {
@@ -105,10 +80,6 @@ func (client *Client) GetJSON(url string, data interface{}) error {
 		return errors.Wrap(err, "error parsing json")
 	}
 	return nil
-}
-
-func GetJSONStringMap(url string) (map[string]string, error) {
-	return defaultClient.GetJSONStringMap(url)
 }
 
 func (client *Client) GetJSONStringMap(url string) (map[string]string, error) {

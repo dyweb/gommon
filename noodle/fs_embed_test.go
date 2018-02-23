@@ -8,6 +8,8 @@ import (
 )
 
 func TestGenerateEmbed(t *testing.T) {
+	t.Skip("modification time result in different binary data")
+
 	b, err := GenerateEmbed("_examples/embed/assets")
 	if err != nil {
 		t.Fatal(err)
