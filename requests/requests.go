@@ -24,12 +24,12 @@ type Client struct {
 	content string
 }
 
-func NewClient(options ...func(h *http.Client)) (*Client, error) {
+func NewClient(options ...func(h *http.Client)) *Client {
 	c := &Client{h: NewDefaultClient(), content: ContentJSON}
 	for _, option := range options {
 		option(c.h)
 	}
-	return c, nil
+	return c
 }
 
 func (c *Client) makeRequest(method string, url string, body io.Reader) (*Response, error) {

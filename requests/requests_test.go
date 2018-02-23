@@ -14,7 +14,6 @@ func TestRequestsE2E(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skip requests e2e test")
 	}
-	assert := asst.New(t)
 
 	// create an echo server
 	version := "0.0.1"
@@ -39,26 +38,47 @@ func TestRequestsE2E(t *testing.T) {
 	versionURL := testServer.URL + "/version"
 	echoURL := testServer.URL + "/echo"
 
-	c, err := NewClient()
-	assert.Nil(err)
-	t.Run("Get", func(t *testing.T) {
+	c := NewClient()
+	t.Run("c.Get", func(t *testing.T) {
 		assert := asst.New(t)
 		res, err := c.Get(versionURL)
 		assert.Nil(err)
 		assert.Equal(http.StatusOK, res.Res.StatusCode)
 	})
 
-	t.Run("GetJSONStringMap", func(t *testing.T) {
+	t.Run("Get", func(t *testing.T) {
+		assert := asst.New(t)
+		res, err := Get(versionURL)
+		assert.Nil(err)
+		assert.Equal(http.StatusOK, res.Res.StatusCode)
+	})
+
+	t.Run("c.GetJSONStringMap", func(t *testing.T) {
 		assert := asst.New(t)
 		data, err := c.GetJSONStringMap(versionURL)
 		assert.Nil(err)
 		assert.Equal(version, data["version"])
 	})
 
-	t.Run("PostString", func(t *testing.T) {
+	t.Run("GetJSONStringMap", func(t *testing.T) {
+		assert := asst.New(t)
+		data, err := GetJSONStringMap(versionURL)
+		assert.Nil(err)
+		assert.Equal(version, data["version"])
+	})
+
+	t.Run("c.PostString", func(t *testing.T) {
 		assert := asst.New(t)
 		payload := fmt.Sprintf("{\"version\": \"%s\"}", version)
 		res, err := c.PostString(echoURL, payload)
+		assert.Nil(err)
+		assert.Equal(payload, string(res.Data))
+	})
+
+	t.Run("c.PostString", func(t *testing.T) {
+		assert := asst.New(t)
+		payload := fmt.Sprintf("{\"version\": \"%s\"}", version)
+		res, err := PostString(echoURL, payload)
 		assert.Nil(err)
 		assert.Equal(payload, string(res.Data))
 	})
@@ -68,10 +88,9 @@ func TestNewClient(t *testing.T) {
 	assert := asst.New(t)
 	tr, err := TransportBuilder.UseShadowSocks().Build()
 	assert.Nil(err)
-	c, err := NewClient(func(h *http.Client) {
+	c := NewClient(func(h *http.Client) {
 		h.Transport = tr
 	})
-	assert.Nil(err)
 	assert.NotNil(c)
 	// uncomment the following if you have local socks 5 proxy running
 	//_, err = c.Get("https://google.com")
