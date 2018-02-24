@@ -1,3 +1,4 @@
+// Package logutil is a registry of loggers, it is required for all lib and app that use gommon/log
 package logutil
 
 import (

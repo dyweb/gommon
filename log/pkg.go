@@ -1,4 +1,4 @@
-// Package log is not usable yet, see legacy/log
+// Package log is a structured logging with fine grained control
 package log
 
 //// TODO: deal w/ http access log later

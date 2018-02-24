@@ -1,3 +1,4 @@
+// Package fsutil adds ignore support for walk
 package fsutil
 
 import (

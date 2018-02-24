@@ -33,6 +33,7 @@ func (c *GoTemplateConfig) Render(root string) error {
 		return errors.Wrap(err, "can't parse template")
 	}
 	buf.WriteString(Header(generatorName, join(root, c.Src)))
+	buf.Write([]byte("\n"))
 	if err = t.Execute(&buf, c.Data); err != nil {
 		return errors.Wrap(err, "can't render template")
 	}

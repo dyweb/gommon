@@ -1,3 +1,4 @@
+// gommon is the commandline util for generator
 package main
 
 import (

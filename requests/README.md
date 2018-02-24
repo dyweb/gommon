@@ -1,6 +1,6 @@
 # Requests
 
-A pythonic HTTP library for Gopher with socks5 proxy support
+A wrapper around net/http with less public global variables
 
 Originally from [xephon-b](https://github.com/xephonhq/xephon-b)
 

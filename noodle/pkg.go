@@ -1,3 +1,4 @@
+// Package noodle helps embedding static assets into go binary, it supports using ignore file
 package noodle
 
 import (
