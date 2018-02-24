@@ -9,6 +9,7 @@ type MultiErr interface {
 	error
 	Append(error)
 	Errors() []error
+	ErrorOrNil() error
 }
 
 func NewMultiErr() MultiErr {
@@ -41,6 +42,13 @@ func (m *multiErr) Error() string {
 	return formatErrors(m.errs)
 }
 
+func (m *multiErr) ErrorOrNil() error {
+	if m == nil || len(m.errs) == 0 {
+		return nil
+	}
+	return m
+}
+
 var _ MultiErr = (*multiErrSafe)(nil)
 
 type multiErrSafe struct {
@@ -71,6 +79,20 @@ func (m *multiErrSafe) Error() string {
 	s := formatErrors(m.errs)
 	m.mu.Unlock()
 	return s
+}
+
+func (m *multiErrSafe) ErrorOrNil() error {
+	if m == nil {
+		return nil
+	}
+	m.mu.Lock()
+	if len(m.errs) == 0 {
+		m.mu.Unlock()
+		return nil
+	} else {
+		m.mu.Unlock()
+		return m
+	}
 }
 
 func formatErrors(errs []error) string {

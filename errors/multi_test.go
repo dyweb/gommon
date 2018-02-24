@@ -48,3 +48,13 @@ func TestMultiErr_Flatten(t *testing.T) {
 		})
 	}
 }
+
+func TestMultiErr_ErrorOrNil(t *testing.T) {
+	assert := asst.New(t)
+
+	merr := NewMultiErr()
+	assert.Nil(merr.ErrorOrNil())
+
+	merr.Append(os.ErrPermission)
+	assert.NotNil(merr.ErrorOrNil())
+}
