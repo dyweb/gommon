@@ -7,7 +7,8 @@ import (
 
 type MultiErr interface {
 	error
-	Append(error)
+	// Append returns true if the appended error is not nil, it is inspired by https://github.com/uber-go/multierr/issues/21
+	Append(error) bool
 	Errors() []error
 	ErrorOrNil() error
 }
@@ -26,12 +27,16 @@ type multiErr struct {
 	errs []error
 }
 
-func (m *multiErr) Append(err error) {
+func (m *multiErr) Append(err error) bool {
+	if err == nil {
+		return false
+	}
 	if mErr, ok := err.(MultiErr); ok {
 		m.errs = append(m.errs, mErr.Errors()...)
 	} else {
 		m.errs = append(m.errs, err)
 	}
+	return true
 }
 
 func (m *multiErr) Errors() []error {
@@ -56,7 +61,10 @@ type multiErrSafe struct {
 	errs []error
 }
 
-func (m *multiErrSafe) Append(err error) {
+func (m *multiErrSafe) Append(err error) bool {
+	if err == nil {
+		return false
+	}
 	m.mu.Lock()
 	if mErr, ok := err.(MultiErr); ok {
 		m.errs = append(m.errs, mErr.Errors()...)
@@ -64,6 +72,7 @@ func (m *multiErrSafe) Append(err error) {
 		m.errs = append(m.errs, err)
 	}
 	m.mu.Unlock()
+	return true
 }
 
 func (m *multiErrSafe) Errors() []error {
@@ -104,7 +113,7 @@ func formatErrors(errs []error) string {
 	buf = append(buf, " errors; "...)
 	for i := range errs {
 		buf = append(buf, errs[i].Error()...)
-		buf = append(buf, ';', ' ')
+		buf = append(buf, "; "...)
 	}
 	return string(buf[:len(buf)-2])
 }
