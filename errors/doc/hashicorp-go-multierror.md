@@ -16,6 +16,21 @@ type Error struct {
 	ErrorFormat ErrorFormatFunc
 }
 
+func (e *Error) ErrorOrNil() error {
+	if e == nil {
+		return nil
+	}
+	if len(e.Errors) == 0 {
+		return nil
+	}
+
+	return e
+}
+
+func (e *Error) GoString() string {
+	return fmt.Sprintf("*%#v", *e)
+}
+
 // kind of similar to what is wanted in uber-multierr https://github.com/uber-go/multierr/issues/21
 var result *multierror.Error
 return result.ErrorOrNil()
