@@ -3,7 +3,7 @@ package errors
 import "runtime"
 
 type TracedError interface {
-	ErrorStack() *runtime.Frames
+	ErrorStack() []runtime.Frame
 }
 
 var _ error = (*FreshError)(nil)
@@ -11,14 +11,14 @@ var _ TracedError = (*FreshError)(nil)
 
 type FreshError struct {
 	msg   string
-	stack *runtime.Frames
+	stack []runtime.Frame
 }
 
 func (fresh *FreshError) Error() string {
 	return fresh.msg
 }
 
-func (fresh *FreshError) ErrorStack() *runtime.Frames {
+func (fresh *FreshError) ErrorStack() []runtime.Frame {
 	return fresh.stack
 }
 
@@ -28,7 +28,7 @@ var _ TracedError = (*WrappedError)(nil)
 type WrappedError struct {
 	msg   string
 	cause error
-	stack *runtime.Frames
+	stack []runtime.Frame
 }
 
 func Wrap(err error, msg string) error {
@@ -43,7 +43,7 @@ func Wrap(err error, msg string) error {
 	if err == nil {
 		return nil
 	}
-	var stack *runtime.Frames
+	var stack []runtime.Frame
 	if t, ok := err.(TracedError); ok {
 		stack = t.ErrorStack()
 	} else {
@@ -60,6 +60,6 @@ func (wrapped *WrappedError) Error() string {
 	return wrapped.msg + ": " + wrapped.cause.Error()
 }
 
-func (wrapped *WrappedError) ErrorStack() *runtime.Frames {
+func (wrapped *WrappedError) ErrorStack() []runtime.Frame {
 	return wrapped.stack
 }
