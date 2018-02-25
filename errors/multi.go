@@ -11,6 +11,8 @@ type MultiErr interface {
 	Append(error) bool
 	Errors() []error
 	ErrorOrNil() error
+	// HasError is ErrorOrNil != nil
+	HasError() bool
 }
 
 func NewMultiErr() MultiErr {
@@ -52,6 +54,13 @@ func (m *multiErr) ErrorOrNil() error {
 		return nil
 	}
 	return m
+}
+
+func (m *multiErr) HasError() bool {
+	if m == nil || len(m.errs) == 0 {
+		return false
+	}
+	return true
 }
 
 var _ MultiErr = (*multiErrSafe)(nil)
@@ -101,6 +110,20 @@ func (m *multiErrSafe) ErrorOrNil() error {
 	} else {
 		m.mu.Unlock()
 		return m
+	}
+}
+
+func (m *multiErrSafe) HasError() bool {
+	if m == nil {
+		return false
+	}
+	m.mu.Lock()
+	if len(m.errs) == 0 {
+		m.mu.Unlock()
+		return false
+	} else {
+		m.mu.Unlock()
+		return true
 	}
 }
 

@@ -22,7 +22,7 @@ func GenerateEmbed(root string) ([]byte, error) {
 		dirs    = make(map[string]*EmbedDir)
 		files   = make(map[string][]*EmbedFile)
 		data    []byte
-		lastErr error
+		merr    = errors.NewMultiErr()
 	)
 	if rootStat, err := os.Stat(root); err != nil {
 		return nil, errors.Wrap(err, "can't get stat of root folder")
@@ -46,16 +46,14 @@ func GenerateEmbed(root string) ([]byte, error) {
 			dirs[path].Entries = append(dirs[path].Entries, dirInfo.FileInfo)
 			return
 		}
-		// TODO: error group
 		if file, err := newEmbedFile(path, info); err != nil {
-			log.Warn(err)
-			lastErr = err
+			merr.Append(err)
 		} else {
 			files[path] = append(files[path], file)
 		}
 	})
-	if lastErr != nil {
-		return nil, lastErr
+	if merr.HasError() {
+		return nil, merr
 	}
 	//log.Infof("dirs (including root) %d", len(dirs))
 	//log.Infof("dirs (excluding root) %d", len(files))
@@ -122,8 +120,7 @@ func updateDirectoryInfo(dirs map[string]*EmbedDir, flatFiles map[string][]*Embe
 }
 
 func zipFiles(root string, flatFiles map[string][]*EmbedFile) ([]byte, error) {
-	// TODO: error group
-	var lastErr error
+	merr := errors.NewMultiErr()
 	buf := &bytes.Buffer{}
 	w := zip.NewWriter(buf)
 	// sort dir to make the output stable https://github.com/dyweb/gommon/issues/52
@@ -135,11 +132,11 @@ func zipFiles(root string, flatFiles map[string][]*EmbedFile) ([]byte, error) {
 	for _, path := range paths {
 		for _, f := range flatFiles[path] {
 			//log.Infof("write file %s FileSize %d", f.FileName, len(f.Data))
-			lastErr = writeZipFile(w, root, path, f)
+			merr.Append(writeZipFile(w, root, path, f))
 		}
 	}
-	if lastErr != nil {
-		return nil, lastErr
+	if merr.HasError() {
+		return nil, merr
 	}
 	if err := w.Close(); err != nil {
 		return nil, errors.Wrap(err, "can't close zip writer")

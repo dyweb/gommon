@@ -26,15 +26,17 @@ Legacy
 
 ## Dependencies
 
-Currently we only have two non standard library dependencies, see [Gopkg.lock](Gopkg.lock), 
-we might replace them with our own implementation in the future.
+Currently we only have one non standard library dependencies, see [Gopkg.lock](Gopkg.lock)
 
-- [pkg/errors](https://github.com/pkg/errors) for including context in error
-  - however it's still not very machine friendly, we are likely to opt it out in future version
 - [go-yaml/yaml](https://github.com/go-yaml/yaml) for read config written in YAML
   - we don't need most feature of YAML, and want to have access to the parser directly to report which line has incorrect semantic (after checking it in application).
     - might write one in [ANTLR](https://github.com/antlr/antlr4)
   - we also have a DSL work in progress [RCL: Reika Configuration Language](https://github.com/at15/reika/issues/49), which is like [HCL](https://github.com/hashicorp/hcl2)
+
+Removed 
+
+- [pkg/errors](https://github.com/pkg/errors) for including context in error
+  - removed in [#59](https://github.com/dyweb/gommon/pull/59)
 
 <!-- no, we are using the standard flag package ... -->
 <!-- For command line util, we are using [spf13/cobra](https://github.com/spf13/cobra), it is more flexible than [ufrave/cli](https://github.com/urfave/cli) -->
@@ -82,7 +84,9 @@ compared to packages it modeled after.
   - we put template data in `gommon.yml`, so we don't need to pass data as json via cli
 - [GeertJohan/go.rice](https://github.com/GeertJohan/go.rice) for ~~rice~~ noodle
   - we implemented `.gitignore` like [feature](https://github.com/at15/go.rice/issues/1) but the upstream didn't respond for the [feature request #83](https://github.com/GeertJohan/go.rice/issues/83)
-
+- [pkg/errors](https://github.com/pkg/errors) for errors, it can not introduce breaking change, but `WithMessage` and `WithStack` is annoying
+  - see [#54](https://github.com/dyweb/gommon/issues/54) and [errors/doc](errors/doc) about other error packages
+  
 ## About
 
 It was part of [Ayi](https://github.com/dyweb/Ayi) and split out for wider use.
