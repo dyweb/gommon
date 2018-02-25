@@ -6,8 +6,7 @@ import (
 	"io/ioutil"
 	"text/template"
 
-	"github.com/pkg/errors"
-
+	"github.com/dyweb/gommon/errors"
 	"github.com/dyweb/gommon/util/fsutil"
 )
 
@@ -33,6 +32,7 @@ func (c *GoTemplateConfig) Render(root string) error {
 		return errors.Wrap(err, "can't parse template")
 	}
 	buf.WriteString(Header(generatorName, join(root, c.Src)))
+	buf.Write([]byte("\n"))
 	if err = t.Execute(&buf, c.Data); err != nil {
 		return errors.Wrap(err, "can't render template")
 	}

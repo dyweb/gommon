@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"go/format"
 
-	"github.com/pkg/errors"
+	"github.com/dyweb/gommon/errors"
 )
 
 type Config struct {
@@ -25,6 +25,7 @@ func (c *Config) RenderGommon() ([]byte, error) {
 	body := &bytes.Buffer{}
 	header := &bytes.Buffer{}
 	fmt.Fprintf(header, Header(generatorName, c.file))
+	fmt.Fprint(header, "\n")
 	fmt.Fprintf(header, "package %s\n\n", c.pkg)
 	if len(c.Loggers) > 0 {
 		fmt.Fprintln(header, "import dlog \"github.com/dyweb/gommon/log\"")

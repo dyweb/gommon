@@ -2,7 +2,8 @@ package cast
 
 import (
 	"encoding/json"
-	"github.com/pkg/errors"
+
+	"github.com/dyweb/gommon/errors"
 	"gopkg.in/yaml.v2"
 )
 

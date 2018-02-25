@@ -13,5 +13,7 @@ install:
 
 script:
   - make install
-  - go test -v -cover ./cast/... ./config/... ./generator/... ./log/... ./noodle/... ./requests/... ./runner/... ./structure/... ./util/...
+  - make test
+  - make test-race
+  - make vet
   # TODO: gommon doesn't have coverage ... amazing ..

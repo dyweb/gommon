@@ -1,3 +1,4 @@
+// for i, ele := range slice is reusing same struct https://github.com/dyweb/gommon/issues/50
 package main
 
 import "fmt"

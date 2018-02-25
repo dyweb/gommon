@@ -1,4 +1,4 @@
-// Package util contains helper for test
+// Package util contains helpers
 package util
 
 func GeneratedHeader(generator string, template string) string {

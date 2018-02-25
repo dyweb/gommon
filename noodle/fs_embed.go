@@ -1,14 +1,14 @@
 package noodle
 
 import (
+	"archive/zip"
+	"bytes"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"time"
 
-	"archive/zip"
-	"bytes"
-	"github.com/pkg/errors"
-	"io/ioutil"
+	"github.com/dyweb/gommon/errors"
 )
 
 var registeredBoxes map[string]EmbedBox

@@ -10,13 +10,14 @@ Gommon is a collection of common util libraries written in Go.
 
 It has the following components:
 
-- [Config](config) A YAML config reader with template support
-- [Log](log) A Javaish logger for Go, application can control library and set level for different pkg via config or flag
-- [Generator](generator) Render go template, generate methods for logger interface based on `gommon.yml`
-- [Noodle](noodle) Embed static assets for web application with `.noodleignore` support
-- [Requests](requests) A pythonic wrapper for `net/http`, HTTP for Gopher.
-- [Cast](cast) Convert Golang types
-- [Data structure](structure) Bring Set etc. to Golang.
+- [config](config) A YAML config reader with template support
+- [errors](errors) Wrap error and multi error
+- [generator](generator) Render go template, generate methods for logger interface based on `gommon.yml`
+- [log](log) A Javaish logger for Go, application can control library and set level for different pkg via config or flag
+- [noodle](noodle) Embed static assets for web application with `.noodleignore` support
+- [requests](requests) A pythonic wrapper for `net/http`, HTTP for Gopher.
+- [cast](cast) Convert Golang types
+- [structure](structure) Bring data structure like Set etc. to Golang.
 
 Legacy
 
@@ -26,15 +27,17 @@ Legacy
 
 ## Dependencies
 
-Currently we only have two non standard library dependencies, see [Gopkg.lock](Gopkg.lock), 
-we might replace them with our own implementation in the future.
+Currently we only have one non standard library dependencies, see [Gopkg.lock](Gopkg.lock)
 
-- [pkg/errors](https://github.com/pkg/errors) for including context in error
-  - however it's still not very machine friendly, we are likely to opt it out in future version
 - [go-yaml/yaml](https://github.com/go-yaml/yaml) for read config written in YAML
   - we don't need most feature of YAML, and want to have access to the parser directly to report which line has incorrect semantic (after checking it in application).
     - might write one in [ANTLR](https://github.com/antlr/antlr4)
   - we also have a DSL work in progress [RCL: Reika Configuration Language](https://github.com/at15/reika/issues/49), which is like [HCL](https://github.com/hashicorp/hcl2)
+
+Removed 
+
+- [pkg/errors](https://github.com/pkg/errors) for including context in error
+  - removed in [#59](https://github.com/dyweb/gommon/pull/59)
 
 <!-- no, we are using the standard flag package ... -->
 <!-- For command line util, we are using [spf13/cobra](https://github.com/spf13/cobra), it is more flexible than [ufrave/cli](https://github.com/urfave/cli) -->
@@ -66,22 +69,45 @@ Currently, gommon is in a very violate state, please open issues after it become
 Gommon is inspired by the following awesome libraries, most gommon packages have much less features and a few improvements 
 compared to packages it modeled after.
 
+log
+
 - [sirupsen/logrus](https://github.com/sirupsen/logrus) for structured logging 
   - log v1 is entirely modeled after logrus, entry contains log information with methods like `Info`, `Infof`
 - [apex/log](https://github.com/apex/log) for log handlers
   - log v2's handler is inspired by apex/log, but we didn't use entry and chose to pass multiple parameters to explicitly state what a handler should handle
 - [uber-go/zap](https://github.com/uber-go/zap) for serialize log fields without using `fmt.Sprintf` and use `strconv` directly
   - we didn't go that extreme as Zap or ZeroLog for zero allocation, performance is not our goal for now
+
+config
+
 - [spf13/cast](https://github.com/spf13/cast) for cast, it is used by Viper
 - [spf13/viper](https://github.com/spf13/viper/) for config
   - looking up config via string key makes type system useless, so we always marshal entire config file to a single struct
     - it also makes refactor easier
+
+requests
+
 - [Requests](http://docs.python-requests.org/en/master/) for requests
+- [hashicorp/go-cleanhttp](https://github.com/hashicorp/go-cleanhttp) for using non default http transport and client
+
+generator
+
 - [benbjohnson/tmpl](https://github.com/benbjohnson/tmpl) for go template generator
   - first saw it in [influxdata/influxdb](https://github.com/influxdata/influxdb/blob/master/tsdb/engine/tsm1/encoding.gen.go.tmpl)
   - we put template data in `gommon.yml`, so we don't need to pass data as json via cli
-- [GeertJohan/go.rice](https://github.com/GeertJohan/go.rice) for ~~rice~~ noodle
+
+noodle
+
+- [GeertJohan/go.rice](https://github.com/GeertJohan/go.rice)
   - we implemented `.gitignore` like [feature](https://github.com/at15/go.rice/issues/1) but the upstream didn't respond for the [feature request #83](https://github.com/GeertJohan/go.rice/issues/83)
+
+errors
+
+- [pkg/errors](https://github.com/pkg/errors) it can not introduce breaking change, but `WithMessage` and `WithStack` is annoying
+  - see [#54](https://github.com/dyweb/gommon/issues/54) and [errors/doc](errors/doc) about other error packages
+  - https://github.com/pkg/errors/pull/122 for check existing stack before attach new one
+- [uber-go/multierr#21]( https://github.com/uber-go/multierr/issues/21) for return bool after append
+- [hashicorp/go-multierror](https://github.com/hashicorp/go-multierror) for `ErrorOrNil`
 
 ## About
 

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/pkg/errors"
+	"github.com/dyweb/gommon/errors"
 )
 
 // NOTE: net/http already implemented it https://golang.org/pkg/net/http/#Request.BasicAuth
@@ -34,7 +34,7 @@ func ExtractBasicAuth(val string) (username string, password string, err error) 
 	}
 	ss := strings.Split(string(decoded), ":")
 	if len(ss) != 2 {
-		errors.Errorf("invalid username:password, got %s segments after split by ':'", len(ss))
+		errors.Errorf("invalid username:password, got %d segments after split by ':'", len(ss))
 	}
 	username = ss[0]
 	password = ss[1]

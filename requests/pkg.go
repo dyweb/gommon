@@ -1,2 +1,2 @@
-// Package requests is a pythonic HTTP library for Gopher
+// Package requests is a wrapper around net/http with less public global variables
 package requests

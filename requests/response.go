@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/pkg/errors"
+	"github.com/dyweb/gommon/errors"
 )
 
 type Response struct {
