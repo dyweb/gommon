@@ -7,9 +7,10 @@ import (
 
 type MultiErr interface {
 	error
-	// Append returns true if the appended error is not nil, it is inspired by https://github.com/uber-go/multierr/issues/21
+	// Append returns true if the appended error is not nil, inspired by https://github.com/uber-go/multierr/issues/21
 	Append(error) bool
 	Errors() []error
+	// Error returns itself or nil if there are no errors, inspired by https://github.com/hashicorp/go-multierror
 	ErrorOrNil() error
 	// HasError is ErrorOrNil != nil
 	HasError() bool

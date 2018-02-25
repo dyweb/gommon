@@ -28,6 +28,9 @@ func wrappedStdErr() error {
 func TestWrap(t *testing.T) {
 	assert := asst.New(t)
 
+	n := Wrap(nil, "nothing")
+	assert.Nil(n)
+
 	errw := Wrap(os.ErrClosed, "can't open closed file")
 	terr, ok := errw.(TracedError)
 	assert.True(ok)
