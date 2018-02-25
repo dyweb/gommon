@@ -5,11 +5,37 @@ import (
 	"runtime"
 )
 
+// TODO: it should be configurable? or move to pkg.go?
+const depth = 20
+
+type Stack struct {
+	p      *runtime.Frames
+	depth  int
+	frames []runtime.Frame
+}
+
+func (s *Stack) Frames() []runtime.Frame {
+	if s == nil || s.p == nil {
+		return nil
+	}
+	if len(s.frames) != 0 {
+		return s.frames
+	}
+	frames := make([]runtime.Frame, 0, s.depth)
+	for {
+		frame, more := s.p.Next()
+		frames = append(frames, frame)
+		if !more {
+			break
+		}
+	}
+	s.frames = frames
+	return frames
+}
+
 // TODO: handling print stack
 
-func callers() []runtime.Frame {
-	// TODO: it should be configurable? or move to pkg.go?
-	const depth = 20
+func callers() *Stack {
 	pcs := make([]uintptr, depth)
 	// 3 skips runtime.Callers itself, callers function, and the function that creates error, i.e New, Errorf
 	//more true | runtime.Callers /home/at15/app/go/src/runtime/extern.go:212
@@ -17,15 +43,10 @@ func callers() []runtime.Frame {
 	//more true | github.com/dyweb/gommon/errors.New /home/at15/workspace/src/github.com/dyweb/gommon/errors/pkg.go:16
 	n := runtime.Callers(3, pcs)
 	frames := runtime.CallersFrames(pcs[:n])
-	res := make([]runtime.Frame, 0, depth)
-	for {
-		frame, more := frames.Next()
-		res = append(res, frame)
-		if !more {
-			break
-		}
+	return &Stack{
+		p:     frames,
+		depth: n,
 	}
-	return res
 }
 
 func printFrames(frames []runtime.Frame) {

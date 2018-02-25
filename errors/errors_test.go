@@ -13,8 +13,8 @@ func TestNew(t *testing.T) {
 	assert.NotNil(err)
 	terr, ok := err.(TracedError)
 	assert.True(ok)
-	printFrames(terr.ErrorStack())
-	assert.Equal(3, len(terr.ErrorStack()))
+	printFrames(terr.ErrorStack().Frames())
+	assert.Equal(3, len(terr.ErrorStack().Frames()))
 }
 
 func freshErr() error {
@@ -31,18 +31,18 @@ func TestWrap(t *testing.T) {
 	errw := Wrap(os.ErrClosed, "can't open closed file")
 	terr, ok := errw.(TracedError)
 	assert.True(ok)
-	printFrames(terr.ErrorStack())
-	assert.Equal(3, len(terr.ErrorStack()))
+	printFrames(terr.ErrorStack().Frames())
+	assert.Equal(3, len(terr.ErrorStack().Frames()))
 
 	errw = Wrap(freshErr(), "wrap again")
 	terr, ok = errw.(TracedError)
 	assert.True(ok)
-	printFrames(terr.ErrorStack())
-	assert.Equal(4, len(terr.ErrorStack()))
+	printFrames(terr.ErrorStack().Frames())
+	assert.Equal(4, len(terr.ErrorStack().Frames()))
 
 	errw = Wrap(wrappedStdErr(), "wrap again")
 	terr, ok = errw.(TracedError)
 	assert.True(ok)
-	printFrames(terr.ErrorStack())
-	assert.Equal(4, len(terr.ErrorStack()))
+	printFrames(terr.ErrorStack().Frames())
+	assert.Equal(4, len(terr.ErrorStack().Frames()))
 }

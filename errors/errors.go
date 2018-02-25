@@ -1,9 +1,7 @@
 package errors
 
-import "runtime"
-
 type TracedError interface {
-	ErrorStack() []runtime.Frame
+	ErrorStack() *Stack
 }
 
 var _ error = (*FreshError)(nil)
@@ -11,14 +9,14 @@ var _ TracedError = (*FreshError)(nil)
 
 type FreshError struct {
 	msg   string
-	stack []runtime.Frame
+	stack *Stack
 }
 
 func (fresh *FreshError) Error() string {
 	return fresh.msg
 }
 
-func (fresh *FreshError) ErrorStack() []runtime.Frame {
+func (fresh *FreshError) ErrorStack() *Stack {
 	return fresh.stack
 }
 
@@ -28,7 +26,7 @@ var _ TracedError = (*WrappedError)(nil)
 type WrappedError struct {
 	msg   string
 	cause error
-	stack []runtime.Frame
+	stack *Stack
 }
 
 func Wrap(err error, msg string) error {
@@ -43,7 +41,7 @@ func Wrap(err error, msg string) error {
 	if err == nil {
 		return nil
 	}
-	var stack []runtime.Frame
+	var stack *Stack
 	if t, ok := err.(TracedError); ok {
 		stack = t.ErrorStack()
 	} else {
@@ -60,6 +58,6 @@ func (wrapped *WrappedError) Error() string {
 	return wrapped.msg + ": " + wrapped.cause.Error()
 }
 
-func (wrapped *WrappedError) ErrorStack() []runtime.Frame {
+func (wrapped *WrappedError) ErrorStack() *Stack {
 	return wrapped.stack
 }
