@@ -113,7 +113,7 @@ func formatErrors(errs []error) string {
 	buf = append(buf, " errors; "...)
 	for i := range errs {
 		buf = append(buf, errs[i].Error()...)
-		buf = append(buf, "; "...)
+		buf = append(buf, MultiErrSep...)
 	}
 	return string(buf[:len(buf)-2])
 }
