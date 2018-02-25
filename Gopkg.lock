@@ -14,12 +14,6 @@
   revision = "cd60e84ee657ff3dc51de0b4f55dd299a3e136f2"
 
 [[projects]]
-  name = "github.com/pkg/errors"
-  packages = ["."]
-  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
-  version = "v0.8.0"
-
-[[projects]]
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
@@ -35,17 +29,17 @@
   branch = "master"
   name = "golang.org/x/net"
   packages = ["proxy"]
-  revision = "2fb46b16b8dda405028c50f7c7f0f9dd1fa6bfb1"
+  revision = "cbe0f9307d0156177f9dd5dc85da1a31abc5f2fb"
 
 [[projects]]
-  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "d670f9405373e636a5a2765eea47fac0c9bc91a4"
+  revision = "7f97868eec74b32b0982dd158a51a446d1da7eb5"
+  version = "v2.1.1"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f3cd24d5f84b06d6778542731631e85ba94ebdad3a0e6b2ee28e5b75021aa98e"
+  inputs-digest = "12db862c5f0874f36c16cc991c2340defc029e3bf79457980deaf3e06b9e598d"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"go/format"
 
-	"github.com/pkg/errors"
+	"github.com/dyweb/gommon/errors"
 )
 
 type Config struct {

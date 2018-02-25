@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/dyweb/gommon/errors"
 	"github.com/dyweb/gommon/util/fsutil"
-	"github.com/pkg/errors"
 )
 
 func ReadIgnoreFile(path string) (*fsutil.Ignores, error) {

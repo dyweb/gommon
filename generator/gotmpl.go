@@ -6,8 +6,7 @@ import (
 	"io/ioutil"
 	"text/template"
 
-	"github.com/pkg/errors"
-
+	"github.com/dyweb/gommon/errors"
 	"github.com/dyweb/gommon/util/fsutil"
 )
 

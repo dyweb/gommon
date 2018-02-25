@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/pkg/errors"
+	"github.com/dyweb/gommon/errors"
 )
 
 // NOTE: net/http already implemented it https://golang.org/pkg/net/http/#Request.BasicAuth

@@ -2,7 +2,6 @@ package config
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -10,11 +9,12 @@ import (
 	"sync"
 	"text/template"
 
+	"gopkg.in/yaml.v2"
+
 	"github.com/dyweb/gommon/cast"
+	"github.com/dyweb/gommon/errors"
 	dlog "github.com/dyweb/gommon/log"
 	"github.com/dyweb/gommon/util"
-	"github.com/pkg/errors"
-	"gopkg.in/yaml.v2"
 )
 
 // YAMLConfig is a thread safe struct for parse YAML file and get value
@@ -35,10 +35,10 @@ func LoadYAMLAsStruct(file string, structuredConfig interface{}) error {
 	}
 	c := NewYAMLConfig()
 	if err := c.ParseSingleDocument(b); err != nil {
-		return errors.WithMessage(err, "can't parse as single document")
+		return errors.Wrap(err, "can't parse as single document")
 	}
 	if err := c.Unmarshal(structuredConfig, true); err != nil {
-		return errors.WithMessage(err, fmt.Sprintf("can't turn file %s into structured config", file))
+		return errors.Wrapf(err, "can't turn file %s into structured config", file)
 	}
 	return nil
 }

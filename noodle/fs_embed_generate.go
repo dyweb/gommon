@@ -10,8 +10,8 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/dyweb/gommon/errors"
 	"github.com/dyweb/gommon/util/fsutil"
-	"github.com/pkg/errors"
 )
 
 // GenerateEmbed return code without package and the CODE GENERATED header

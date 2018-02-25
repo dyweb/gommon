@@ -4,9 +4,10 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/dyweb/gommon/util/fsutil"
 	"github.com/kballard/go-shellquote"
-	"github.com/pkg/errors"
+
+	"github.com/dyweb/gommon/errors"
+	"github.com/dyweb/gommon/util/fsutil"
 )
 
 // https://github.com/dyweb/gommon/issues/53

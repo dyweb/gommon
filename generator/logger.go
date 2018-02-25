@@ -1,9 +1,10 @@
 package generator
 
 import (
-	"github.com/pkg/errors"
 	"io"
 	"text/template"
+
+	"github.com/dyweb/gommon/errors"
 )
 
 type LoggerConfig struct {

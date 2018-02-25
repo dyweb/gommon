@@ -1,5 +1,7 @@
 package errors
 
+import "fmt"
+
 type TracedError interface {
 	ErrorStack() *Stack
 }
@@ -42,6 +44,7 @@ func Wrap(err error, msg string) error {
 		return nil
 	}
 	var stack *Stack
+	// reuse existing stack
 	if t, ok := err.(TracedError); ok {
 		stack = t.ErrorStack()
 	} else {
@@ -49,6 +52,25 @@ func Wrap(err error, msg string) error {
 	}
 	return &WrappedError{
 		msg:   msg,
+		cause: err,
+		stack: stack,
+	}
+}
+
+func Wrapf(err error, format string, args ...interface{}) error {
+	// NOTE: copied from wrap instead of call Wrap due to caller
+	if err == nil {
+		return nil
+	}
+	var stack *Stack
+	// reuse existing stack
+	if t, ok := err.(TracedError); ok {
+		stack = t.ErrorStack()
+	} else {
+		stack = callers()
+	}
+	return &WrappedError{
+		msg:   fmt.Sprintf(format, args...),
 		cause: err,
 		stack: stack,
 	}

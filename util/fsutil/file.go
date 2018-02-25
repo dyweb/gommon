@@ -3,7 +3,7 @@ package fsutil
 import (
 	"io/ioutil"
 
-	"github.com/pkg/errors"
+	"github.com/dyweb/gommon/errors"
 )
 
 // WriteFile use 0666 as permission and wrap standard error

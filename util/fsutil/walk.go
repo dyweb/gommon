@@ -1,9 +1,10 @@
 package fsutil
 
 import (
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"os"
+
+	"github.com/dyweb/gommon/errors"
 )
 
 type WalkFunc func(path string, info os.FileInfo)

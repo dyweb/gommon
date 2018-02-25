@@ -2,9 +2,11 @@ package requests
 
 import (
 	"crypto/tls"
-	"github.com/pkg/errors"
-	"golang.org/x/net/proxy"
 	"net/http"
+
+	"golang.org/x/net/proxy"
+
+	"github.com/dyweb/gommon/errors"
 )
 
 // TODO: might switch to functional options https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
