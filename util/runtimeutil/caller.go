@@ -55,18 +55,3 @@ func SplitStructMethod(f string) (st string, function string) {
 	}
 	return
 }
-
-// GetCallerPackage is used by log package to get caller source code position
-// Deprecated
-// only used by legacy/log
-func GetCallerPackage(skip int) string {
-	pc, _, _, ok := runtime.Caller(skip)
-	if !ok {
-		return "unknown"
-	}
-	// FIXME: https://github.com/golang/go/issues/19426 use runtime.Frames instead of runtime.FuncForPC
-	fn := runtime.FuncForPC(pc)
-	fnName := fn.Name()
-	lastDot := strings.LastIndex(fnName, ".")
-	return fnName[:lastDot]
-}
