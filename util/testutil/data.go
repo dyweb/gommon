@@ -20,3 +20,10 @@ func ReadJsonTo(t *testing.T, path string, v interface{}) {
 		t.Fatalf("can't unmarshal fixture %v", err)
 	}
 }
+
+func WriteFixture(t *testing.T, path string, data []byte) {
+	err := ioutil.WriteFile(path, data, 0664)
+	if err != nil {
+		t.Fatalf("can't write fixture %s: %v", path, err)
+	}
+}
