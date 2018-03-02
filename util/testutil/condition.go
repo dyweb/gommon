@@ -1,9 +1,9 @@
 package testutil
 
 import (
-	"testing"
 	"os"
 	"strings"
+	"testing"
 )
 
 // https://github.com/dyweb/gommon/issues/57
@@ -14,6 +14,8 @@ const (
 
 type Condition interface {
 	Eval() (res bool, msg string, err error)
+	// B is used for normal if condition
+	B() bool
 }
 
 type con struct {
@@ -22,6 +24,14 @@ type con struct {
 
 func (c *con) Eval() (res bool, msg string, err error) {
 	return c.stmt()
+}
+
+func (c *con) B() bool {
+	b, _, err := c.stmt()
+	if err != nil || b == false {
+		return false
+	}
+	return true
 }
 
 func SkipIf(t *testing.T, con Condition) {
@@ -147,6 +157,22 @@ func EnvHas(name string) Condition {
 			}
 		},
 	}
+}
+
+// util wrapper
+// IsTravis check if env TRAVIS is true
+func IsTravis() Condition {
+	return EnvTrue("TRAVIS")
+}
+
+// Dump check if env DUMP or GOMMON_DUMP is set, so print detail or use go-spew to dump structs etc.
+func Dump() Condition {
+	return Or(EnvHas("DUMP"), EnvHas("GOMMON_DUMP"))
+}
+
+// GenGolden check if env GOLDEN or GEN_GOLDEN is set, sometimes you need to generate test fixture in test
+func GenGolden() Condition {
+	return Or(EnvHas("GOLDEN"), EnvHas("GEN_GOLDEN"))
 }
 
 // noop does nothing

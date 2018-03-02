@@ -1,11 +1,20 @@
 package testutil
 
 import (
-	"testing"
 	"os"
+	"testing"
 
+	"github.com/davecgh/go-spew/spew"
 	asst "github.com/stretchr/testify/assert"
 )
+
+func TestCon_B(t *testing.T) {
+	if IsTravis().B() {
+		t.Log("you can use condition in if statement on travis")
+	} else {
+		t.Log("you can use condition in if statement")
+	}
+}
 
 func TestEnvHas(t *testing.T) {
 	assert := asst.New(t)
@@ -31,6 +40,24 @@ func TestEnvTrue(t *testing.T) {
 	assert.Nil(err)
 }
 
+func TestAnd(t *testing.T) {
+	assert := asst.New(t)
+
+	res, msg, err := And(Bool("t", true), Bool("f", false)).Eval()
+	assert.Nil(err)
+	assert.False(res)
+	assert.Equal("f is false", msg)
+}
+
+func TestOr(t *testing.T) {
+	assert := asst.New(t)
+
+	res, msg, err := Or(Bool("t", true), Bool("f", false)).Eval()
+	assert.Nil(err)
+	assert.True(res)
+	assert.Equal("t is true", msg)
+}
+
 func TestRunIf(t *testing.T) {
 	t.Run("travis", func(t *testing.T) {
 		RunIf(t, EnvTrue("TRAVIS"))
@@ -42,5 +69,33 @@ func TestSkipIf(t *testing.T) {
 	t.Run("travis", func(t *testing.T) {
 		SkipIf(t, EnvTrue("TRAVIS"))
 		t.Log("I should NOT be seen on travis")
+	})
+}
+
+func TestIsTravis(t *testing.T) {
+	RunIf(t, IsTravis())
+	t.Log("this is travis!")
+}
+
+func TestDump(t *testing.T) {
+	if Dump().B() {
+		spew.Dump(Dump())
+	} else {
+		t.Log("no dump")
+	}
+}
+
+func TestGenGolden(t *testing.T) {
+	// export GOLDEN=true
+	// export GEN_GOLDEN=true
+	t.Run("generate", func(t *testing.T) {
+		RunIf(t, GenGolden())
+		WriteFixture(t, "testdata/golden", []byte("I am a file"))
+	})
+	t.Run("use", func(t *testing.T) {
+		assert := asst.New(t)
+		SkipIf(t, GenGolden())
+		d := ReadFixture(t, "testdata/golden")
+		assert.Equal("I am a file", string(d))
 	})
 }
