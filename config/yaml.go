@@ -2,6 +2,7 @@ package config
 
 import (
 	"bytes"
+	"io"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -26,10 +27,21 @@ type YAMLConfig struct {
 	log          *dlog.Logger
 }
 
-func LoadYamlDirect(file string, cfg interface{}) error {
+func LoadYAMLDirect(file string, cfg interface{}) error {
 	b, err := ioutil.ReadFile(file)
 	if err != nil {
 		return errors.Wrapf(err, "can't read config file %s", file)
+	}
+	if err := yaml.Unmarshal(b, cfg); err != nil {
+		return errors.Wrap(err, "can't parse yaml")
+	}
+	return nil
+}
+
+func LoadYAMLDirectFrom(r io.Reader, cfg interface{}) error {
+	b, err := ioutil.ReadAll(r)
+	if err != nil {
+		return errors.Wrap(err, "can't read reader")
 	}
 	if err := yaml.Unmarshal(b, cfg); err != nil {
 		return errors.Wrap(err, "can't parse yaml")
