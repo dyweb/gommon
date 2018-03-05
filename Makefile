@@ -30,6 +30,11 @@ doc:
 	xdg-open http://localhost:6060/pkg/github.com/dyweb/gommon &
 	godoc -http=":6060"
 
+.PHONY: loc
+loc:
+	cloc --exclude-dir=vendor,.idea,playground,legacy .
+
+#--- docker ---#
 .PHONY: docker-test
 docker-test:
 	docker-compose -f scripts/docker-compose.yml run --rm golang1.9
@@ -38,3 +43,4 @@ docker-test:
 .PHONY: docker-remove-all-containers
 docker-remove-all-containers:
 	docker rm $(shell docker ps -a -q)
+#--- docker ---#
