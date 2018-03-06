@@ -1,12 +1,14 @@
 package errors
 
 import (
+	"fmt"
 	"strconv"
 	"sync"
 )
 
 type MultiErr interface {
 	error
+	fmt.Formatter
 	// Append returns true if the appended error is not nil, inspired by https://github.com/uber-go/multierr/issues/21
 	Append(error) bool
 	Errors() []error
@@ -62,6 +64,16 @@ func (m *multiErr) HasError() bool {
 		return false
 	}
 	return true
+}
+
+func (m *multiErr) Format(s fmt.State, verb rune) {
+	// TODO:
+	switch verb {
+	case 'v', 's':
+		s.Write([]byte(formatErrors(m.errs)))
+	case 'q':
+		fmt.Fprintf(s, "%q", formatErrors(m.errs))
+	}
 }
 
 var _ MultiErr = (*multiErrSafe)(nil)
@@ -128,6 +140,21 @@ func (m *multiErrSafe) HasError() bool {
 	}
 }
 
+func (m *multiErrSafe) Format(s fmt.State, verb rune) {
+	if m == nil {
+		return
+	}
+	m.mu.Lock()
+	switch verb {
+	case 'v', 's':
+		s.Write([]byte(formatErrors(m.errs)))
+	case 'q':
+		fmt.Fprintf(s, "%q", formatErrors(m.errs))
+	}
+	m.mu.Unlock()
+}
+
+// TODO: it should support format flag so we can pass it down to sub errors
 func formatErrors(errs []error) string {
 	if len(errs) == 1 {
 		return errs[0].Error()

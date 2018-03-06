@@ -3,6 +3,7 @@ package errors
 import "fmt"
 
 type TracedError interface {
+	fmt.Formatter
 	ErrorStack() *Stack
 }
 
@@ -20,6 +21,19 @@ func (fresh *FreshError) Error() string {
 
 func (fresh *FreshError) ErrorStack() *Stack {
 	return fresh.stack
+}
+
+func (fresh *FreshError) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 'v':
+		// TODO: print stack if s.Flag('+')
+		fallthrough
+	case 's':
+		s.Write([]byte(fresh.msg))
+	case 'q':
+		// %q	a double-quoted string safely escaped with Go syntax
+		fmt.Fprintf(s, "%q", fresh.msg)
+	}
 }
 
 var _ error = (*WrappedError)(nil)
@@ -82,4 +96,16 @@ func (wrapped *WrappedError) Error() string {
 
 func (wrapped *WrappedError) ErrorStack() *Stack {
 	return wrapped.stack
+}
+
+func (wrapped *WrappedError) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 'v':
+		// TODO: print stack if s.Flag('+')
+		fallthrough
+	case 's':
+		s.Write([]byte(wrapped.Error()))
+	case 'q':
+		fmt.Fprintf(s, "%q", wrapped.Error())
+	}
 }
