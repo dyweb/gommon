@@ -6,3 +6,7 @@ func HashStringFnv64a(str string) uint64 {
 	h.WriteString(str)
 	return h.Sum64()
 }
+
+// TODO:
+// https://segment.com/blog/allocation-efficiency-in-high-performance-go-services/
+// https://github.com/segmentio/fasthash
