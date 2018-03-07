@@ -1,12 +1,12 @@
 package errors
 
 import (
+	"fmt"
 	"os"
 	"testing"
-	"fmt"
 
-	asst "github.com/stretchr/testify/assert"
 	"github.com/dyweb/gommon/util/testutil"
+	asst "github.com/stretchr/testify/assert"
 )
 
 func TestNew(t *testing.T) {

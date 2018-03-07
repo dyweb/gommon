@@ -49,6 +49,28 @@ func LoadYAMLDirectFrom(r io.Reader, cfg interface{}) error {
 	return nil
 }
 
+func LoadYAMLDirectStrict(file string, cfg interface{}) error {
+	b, err := ioutil.ReadFile(file)
+	if err != nil {
+		return errors.Wrapf(err, "can't read config file %s", file)
+	}
+	if err := yaml.UnmarshalStrict(b, cfg); err != nil {
+		return errors.Wrap(err, "can't parse yaml in strict mode")
+	}
+	return nil
+}
+
+func LoadYAMLDirectFromStrict(r io.Reader, cfg interface{}) error {
+	b, err := ioutil.ReadAll(r)
+	if err != nil {
+		return errors.Wrap(err, "can't read reader")
+	}
+	if err := yaml.UnmarshalStrict(b, cfg); err != nil {
+		return errors.Wrap(err, "can't parse yaml in strict mode")
+	}
+	return nil
+}
+
 // LoadYAMLAsStruct is a convenient wrapper for loading a single YAML file into struct, you should pass a pointer to the
 // struct as second argument. It will remove the vars section.
 func LoadYAMLAsStruct(file string, structuredConfig interface{}) error {

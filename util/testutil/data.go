@@ -30,6 +30,13 @@ func ReadYAMLTo(t *testing.T, path string, v interface{}) {
 	}
 }
 
+func ReadYAMLToStrict(t *testing.T, path string, v interface{}) {
+	b := ReadFixture(t, path)
+	if err := yaml.UnmarshalStrict(b, v); err != nil {
+		t.Fatalf("can't unmarhsal YAML fixture %s in strict mode %v", path, err)
+	}
+}
+
 func WriteFixture(t *testing.T, path string, data []byte) {
 	err := ioutil.WriteFile(path, data, 0664)
 	if err != nil {
