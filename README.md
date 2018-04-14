@@ -1,4 +1,4 @@
-# Gommon - Golang common util libraries
+# Gommon - Go common libraries
 
 [![GoDoc](https://godoc.org/github.com/dyweb/gommon?status.svg)](https://godoc.org/github.com/dyweb/gommon)
 [![Build Status](https://travis-ci.org/dyweb/gommon.svg?branch=master)](https://travis-ci.org/dyweb/gommon)
@@ -38,6 +38,7 @@ Removed
 
 - [pkg/errors](https://github.com/pkg/errors) for including context in error
   - removed in [#59](https://github.com/dyweb/gommon/pull/59)
+  - replaced by `gommon/errors`
 
 <!-- no, we are using the standard flag package ... -->
 <!-- For command line util, we are using [spf13/cobra](https://github.com/spf13/cobra), it is more flexible than [ufrave/cli](https://github.com/urfave/cli) -->
