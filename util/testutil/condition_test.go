@@ -58,6 +58,15 @@ func TestOr(t *testing.T) {
 	assert.Equal("t is true", msg)
 }
 
+func TestNot(t *testing.T) {
+	assert := asst.New(t)
+
+	res, msg, err := Not(Bool("t", true)).Eval()
+	assert.Nil(err)
+	assert.False(res)
+	assert.Equal("not t is true", msg)
+}
+
 func TestRunIf(t *testing.T) {
 	t.Run("travis", func(t *testing.T) {
 		RunIf(t, EnvTrue("TRAVIS"))
@@ -83,19 +92,4 @@ func TestDump(t *testing.T) {
 	} else {
 		t.Log("no dump")
 	}
-}
-
-func TestGenGolden(t *testing.T) {
-	// export GOLDEN=true
-	// export GEN_GOLDEN=true
-	t.Run("generate", func(t *testing.T) {
-		RunIf(t, GenGolden())
-		WriteFixture(t, "testdata/golden", []byte("I am a file"))
-	})
-	t.Run("use", func(t *testing.T) {
-		assert := asst.New(t)
-		SkipIf(t, GenGolden())
-		d := ReadFixture(t, "testdata/golden")
-		assert.Equal("I am a file", string(d))
-	})
 }

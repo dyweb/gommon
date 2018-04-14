@@ -106,6 +106,19 @@ func Or(l Condition, r Condition) Condition {
 	}
 }
 
+func Not(c Condition) Condition {
+	return &con{
+		stmt: func() (res bool, msg string, err error) {
+			r, m, e := c.Eval()
+			if e != nil {
+				return false, "eval Not error", e
+			}
+			return !r, "not " + m, e
+		},
+	}
+}
+
+// Bool checks if a bool is true
 func Bool(name string, b bool) Condition {
 	return &con{
 		stmt: func() (res bool, msg string, err error) {
@@ -118,6 +131,7 @@ func Bool(name string, b bool) Condition {
 	}
 }
 
+// BoolP checks if value of a pointer to bool is true
 func BoolP(name string, b *bool) Condition {
 	return &con{
 		stmt: func() (res bool, msg string, err error) {
@@ -159,7 +173,8 @@ func EnvHas(name string) Condition {
 	}
 }
 
-// util wrapper
+// wrapper for common conditions, NOTE: some are defined in other files like golden.go
+
 // IsTravis check if env TRAVIS is true
 func IsTravis() Condition {
 	return EnvTrue("TRAVIS")
@@ -168,11 +183,6 @@ func IsTravis() Condition {
 // Dump check if env DUMP or GOMMON_DUMP is set, so print detail or use go-spew to dump structs etc.
 func Dump() Condition {
 	return Or(EnvHas("DUMP"), EnvHas("GOMMON_DUMP"))
-}
-
-// GenGolden check if env GOLDEN or GEN_GOLDEN is set, sometimes you need to generate test fixture in test
-func GenGolden() Condition {
-	return Or(EnvHas("GOLDEN"), EnvHas("GEN_GOLDEN"))
 }
 
 // noop does nothing
