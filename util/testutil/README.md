@@ -18,3 +18,10 @@ TODO: load dot env
 TODO: use golden file
 
 actually, just Read/WriteFixture would work ...
+
+````go
+// GenGolden check if env GOLDEN or GEN_GOLDEN is set, sometimes you need to generate test fixture in test
+func GenGolden() Condition {
+	return Or(EnvHas("GOLDEN"), EnvHas("GEN_GOLDEN"))
+}
+````
