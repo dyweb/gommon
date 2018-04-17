@@ -21,11 +21,12 @@ test-log:
 fmt:
 	gofmt -d -l -w $(PKGST)
 
+# TODO: refer tools used in https://github.com/360EntSecGroup-Skylar/goreporter
 .PHONY: vet
 vet:
 	go vet $(PKGST)
 
-.PHONy: doc
+.PHONY: doc
 doc:
 	xdg-open http://localhost:6060/pkg/github.com/dyweb/gommon &
 	godoc -http=":6060"
