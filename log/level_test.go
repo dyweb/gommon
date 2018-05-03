@@ -28,3 +28,18 @@ func TestLevel_String(t *testing.T) {
 		assert.Equal(c.Str, fmt.Sprint(c.Lvl))
 	}
 }
+
+func ExampleLevel() {
+	fmt.Println(FatalLevel.String())
+	fmt.Println(FatalLevel.AlignedUpperString())
+	// Output:
+	// fatal
+	// FATA
+}
+
+// FIXME: how to write the terminal color in example output, need to debug godoc command, it does not have any output
+//func ExampleLevel_ColoredString() {
+//	fmt.Println(FatalLevel.ColoredString())
+//	// Output:
+//	// \x1b[31mfatal\x1b[0m
+//}

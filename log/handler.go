@@ -12,6 +12,10 @@ const (
 	defaultTimeStampFormat = time.RFC3339
 )
 
+// Handler formats log message and writes to underlying storage, stdout, file, remote server etc.
+// It MUST be thread safe because logger call handler concurrently witout any locking
+// There is NO log entry struct in gommon/log, which is used in many logging packages, the reason is
+// if extra field is added to the interface, compiler would throw error on stale handler implementation.
 type Handler interface {
 	HandleLog(level Level, time time.Time, msg string)
 	HandleLogWithSource(level Level, time time.Time, msg string, source string)
@@ -29,6 +33,10 @@ type Handler interface {
 //	f(level, msg)
 //}
 
+var _ Syncer = (*os.File)(nil)
+
+// Syncer is implemented by os.File, handler implementation should check this interface and call Sync
+// if they support using file as sink
 type Syncer interface {
 	Sync() error
 }
@@ -39,10 +47,12 @@ type ioHandler struct {
 
 var defaultHandler = &ioHandler{w: os.Stderr}
 
+// DefaultHandler returns the singleton defaultHandler instance, which logs to stdout in text format
 func DefaultHandler() Handler {
 	return defaultHandler
 }
 
+// NewIOHanlder
 func NewIOHandler(w io.Writer) Handler {
 	return &ioHandler{w: w}
 }
@@ -91,7 +101,7 @@ func (h *ioHandler) Flush() {
 	}
 }
 
-// unlike log v1 entry is only used for test, it is not passed around
+// entry is only used for test, it is not passed around like other loging packages
 type entry struct {
 	level  Level
 	time   time.Time
@@ -100,46 +110,56 @@ type entry struct {
 	source string
 }
 
-var _ Handler = (*testHandler)(nil)
+var _ Handler = (*TestHandler)(nil)
 
-type testHandler struct {
+// TestHandler stores log as entry, its slice is protected by a RWMutex and safe for concurrent use
+type TestHandler struct {
 	mu      sync.RWMutex
 	entries []entry
 }
 
-func NewTestHandler() *testHandler {
-	return &testHandler{}
+// NewTestHandler returns a test handler, it should only be used in test,
+// a concrete type instead of Handler interface is returned to reduce unnecessary type cast in test
+func NewTestHandler() *TestHandler {
+	return &TestHandler{}
 }
 
-func (h *testHandler) HandleLog(level Level, time time.Time, msg string) {
+// HandleLog implements Handler interface
+func (h *TestHandler) HandleLog(level Level, time time.Time, msg string) {
 	h.mu.Lock()
 	h.entries = append(h.entries, entry{level: level, time: time, msg: msg})
 	h.mu.Unlock()
 }
 
-func (h *testHandler) HandleLogWithSource(level Level, time time.Time, msg string, source string) {
+// HandleLogWithSource implements Handler interface
+func (h *TestHandler) HandleLogWithSource(level Level, time time.Time, msg string, source string) {
 	h.mu.Lock()
 	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, source: source})
 	h.mu.Unlock()
 }
 
-func (h *testHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
+// HandleLogWithFields implements Handler interface
+func (h *TestHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
 	h.mu.Lock()
 	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, fields: fields})
 	h.mu.Unlock()
 }
 
-func (h *testHandler) HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields) {
+// HandleLogWithSourceFields implements Handler interface
+func (h *TestHandler) HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields) {
 	h.mu.Lock()
 	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, source: source, fields: fields})
 	h.mu.Unlock()
 }
 
-func (h *testHandler) Flush() {
+// Flush implements Handler interface
+func (h *TestHandler) Flush() {
 	// nop
 }
 
-func (h *testHandler) HasLog(level Level, msg string) bool {
+// HasLog checks if a log with specified level and message exists in slice
+// TODO: support field, source etc.
+func (h *TestHandler) HasLog(level Level, msg string) bool {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 	for _, e := range h.entries {

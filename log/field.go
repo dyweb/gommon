@@ -1,6 +1,8 @@
 package log
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type FieldType uint8
 

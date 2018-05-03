@@ -9,6 +9,7 @@ import (
 	asst "github.com/stretchr/testify/assert"
 )
 
+// Deprecated this only works for old logging package
 type logConfig struct {
 	Level  string `yaml:"level"`
 	Color  bool   `yaml:"color"`

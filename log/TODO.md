@@ -1,5 +1,9 @@
 # TODO
 
+## 2018-05-02
+
+- [ ] [#67](https://github.com/dyweb/gommon/issues/67) add example in doc 
+
 ## 2018-02-04
 
 - [x] support fields
