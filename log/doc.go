@@ -1,6 +1,6 @@
 /*
 Package log provides structured logging with fine grained control
-over libraries using a tree hierarchy of loggers
+over libraries using a tree hierarchy of loggers.
 
 Conventions
 

@@ -13,15 +13,22 @@ const (
 )
 
 // Handler formats log message and writes to underlying storage, stdout, file, remote server etc.
-// It MUST be thread safe because logger call handler concurrently witout any locking
+// It MUST be thread safe because logger calls handler concurrently without any locking.
 // There is NO log entry struct in gommon/log, which is used in many logging packages, the reason is
-// if extra field is added to the interface, compiler would throw error on stale handler implementation.
+// if extra field is added to the interface, compiler would throw error on stale handler implementations.
 type Handler interface {
+	// HandleLog accepts level, log time, formatted log message
 	HandleLog(level Level, time time.Time, msg string)
+	// HandleLogWithSource accepts formatted source line of log i.e., http.go:13
+	// TODO: pass frame instead of string so handler can use trace for error handling?
 	HandleLogWithSource(level Level, time time.Time, msg string, source string)
+	// HandleLogWithFields accepts fields with type hint,
+	// implementation should inspect the type field instead of using reflection
 	// TODO: pass pointer for fields?
 	HandleLogWithFields(level Level, time time.Time, msg string, fields Fields)
+	// HandleLogWithSourceFields accepts both source and fields
 	HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields)
+	// Flush writes the buffer to underlying storage
 	Flush()
 }
 
@@ -41,20 +48,25 @@ type Syncer interface {
 	Sync() error
 }
 
-type ioHandler struct {
-	w io.Writer
-}
+//// TODO: handler for http access log, this should be in extra package
+//type HttpAccessLogger struct {
+//}`
 
-var defaultHandler = &ioHandler{w: os.Stderr}
+var defaultHandler = NewIOHandler(os.Stderr)
 
 // DefaultHandler returns the singleton defaultHandler instance, which logs to stdout in text format
 func DefaultHandler() Handler {
 	return defaultHandler
 }
 
-// NewIOHanlder
+// IOHandler writes log to io.Writer, default handler uses os.Stderr
+type IOHandler struct {
+	w io.Writer
+}
+
+// NewIOHandler
 func NewIOHandler(w io.Writer) Handler {
-	return &ioHandler{w: w}
+	return &IOHandler{w: w}
 }
 
 // TODO: performance (which is not a major concern now ...)
@@ -66,19 +78,22 @@ func NewIOHandler(w io.Writer) Handler {
 // - what would happen if os.Stderr.Close()
 // - os.Stderr.Sync() will there be any different if stderr/stdout is redirected to a file
 
-func (h *ioHandler) HandleLog(level Level, time time.Time, msg string) {
+// HandleLog implements Handler interface
+func (h *IOHandler) HandleLog(level Level, time time.Time, msg string) {
 	b := formatHead(level, time, msg)
 	b = append(b, '\n')
 	h.w.Write(b)
 }
 
-func (h *ioHandler) HandleLogWithSource(level Level, time time.Time, msg string, source string) {
+// HandleLogWithSource implements Handler interface
+func (h *IOHandler) HandleLogWithSource(level Level, time time.Time, msg string, source string) {
 	b := formatHeadWithSource(level, time, msg, source)
 	b = append(b, '\n')
 	h.w.Write(b)
 }
 
-func (h *ioHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
+// HandleLogWithFields implements Handler interface
+func (h *IOHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
 	// we use raw slice instead of bytes buffer because we need to use strconv.Append*, which requires raw slice
 	b := formatHead(level, time, msg)
 	b = append(b, ' ')
@@ -87,7 +102,8 @@ func (h *ioHandler) HandleLogWithFields(level Level, time time.Time, msg string,
 	h.w.Write(b)
 }
 
-func (h *ioHandler) HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields) {
+// HandleLogWithSourceFields implements Handler interface
+func (h *IOHandler) HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields) {
 	b := formatHeadWithSource(level, time, msg, source)
 	b = append(b, ' ')
 	b = formatFields(b, fields)
@@ -95,7 +111,8 @@ func (h *ioHandler) HandleLogWithSourceFields(level Level, time time.Time, msg s
 	h.w.Write(b)
 }
 
-func (h *ioHandler) Flush() {
+// Flush implements Handler interface
+func (h *IOHandler) Flush() {
 	if s, ok := h.w.(Syncer); ok {
 		s.Sync()
 	}

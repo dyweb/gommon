@@ -9,7 +9,3 @@ type LoggableStruct interface {
 	SetLogger(logger *Logger)
 	LoggerIdentity(justCallMe func() *Identity) *Identity
 }
-
-//// TODO: deal w/ http access log later
-//type HttpAccessLogger struct {
-//}

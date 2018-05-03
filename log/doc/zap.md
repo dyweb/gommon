@@ -245,6 +245,14 @@ func putCheckedEntry(ce *CheckedEntry) {
 Field field.go `Any(key string, value interface{}) zapcore.Field` and `zapcore/field.go` `func (f Field) AddTo(enc ObjectEncoder)`
 
 ````go
+type Field struct {
+	Key       string
+	Type      FieldType
+	Integer   int64
+	String    string
+	Interface interface{}
+}
+
 // Any takes a key and an arbitrary value and chooses the best way to represent
 // them as a field, falling back to a reflection-based approach only if
 // necessary.

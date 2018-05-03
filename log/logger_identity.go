@@ -7,6 +7,7 @@ import (
 	"github.com/dyweb/gommon/util/runtimeutil"
 )
 
+// LoggerType can be used for filtering loggers, it is set when creating logger
 type LoggerType uint8
 
 const (

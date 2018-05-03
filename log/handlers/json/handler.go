@@ -1,3 +1,7 @@
+/*
+Package json writes log in JSON format, it concatenates string directly and does not use encoding/json.
+TODO: support escape https://medium.com/go-walkthrough/go-walkthrough-encoding-json-package-9681d1d37a8f
+*/
 package json
 
 import (
