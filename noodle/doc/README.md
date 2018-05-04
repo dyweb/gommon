@@ -2,7 +2,7 @@
 
 ## TODO
 
-- generate go file based on assets (like most bind-data ish library does)
+- [x] generate go file based on assets (like most bind-data ish library does)
 - figure out how to create and append zipfile, without relying on external zip binary
 
 ## Ref

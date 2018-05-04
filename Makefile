@@ -1,9 +1,14 @@
 PKGS=./cast/... ./config/... ./errors/... ./generator/... ./log/... ./noodle/... ./requests/... ./structure/... ./util/...
-PKGST=./cast ./config ./errors ./generator ./log ./noodle ./requests ./structure ./util
+PKGST=./cast ./cmd ./config ./errors ./generator ./log ./noodle ./requests ./structure ./util
+VERSION = 0.0.1
+BUILD_COMMIT = $(shell git rev-parse HEAD)
+BUILD_TIME = $(shell date +%Y-%m-%dT%H:%M:%S%z)
+CURRENT_USER = $(USER)
+FLAGS = -X main.version=$(VERSION) -X main.commit=$(BUILD_COMMIT) -X main.buildTime=$(BUILD_TIME) -X main.buildUser=$(CURRENT_USER)
 
 .PHONY: install
 install:
-	go install ./cmd/gommon
+	go install -ldflags "$(FLAGS)" ./cmd/gommon
 
 .PHONY: test
 test:
@@ -39,6 +44,10 @@ doc:
 .PHONY: loc
 loc:
 	cloc --exclude-dir=vendor,.idea,playground,legacy .
+
+.PHONY: update-dep
+update-dep:
+	dep ensure -update
 
 #--- docker ---#
 .PHONY: docker-test
