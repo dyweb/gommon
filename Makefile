@@ -11,7 +11,8 @@ test:
 
 .PHONY: test-cover
 test-cover:
-	go test -coverprofile=c.out $(PKGS)
+# https://github.com/codecov/example-go
+	go test -coverprofile=coverage.txt -covermode=atomic $(PKGS)
 
 .PHONY: test-race
 test-race:

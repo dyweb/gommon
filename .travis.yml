@@ -16,4 +16,7 @@ script:
   - make test
   - make test-race
   - make vet
-  # TODO: gommon doesn't have coverage ... amazing ..
+  - make test-cover
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
