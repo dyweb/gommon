@@ -2,6 +2,7 @@
 
 [![GoDoc](https://godoc.org/github.com/dyweb/gommon?status.svg)](https://godoc.org/github.com/dyweb/gommon)
 [![Build Status](https://travis-ci.org/dyweb/gommon.svg?branch=master)](https://travis-ci.org/dyweb/gommon)
+[![codecov](https://codecov.io/gh/dyweb/gommon/branch/master/graph/badge.svg)](https://codecov.io/gh/dyweb/gommon)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dyweb/gommon)](https://goreportcard.com/report/github.com/dyweb/gommon)
 [![codebeat badge](https://codebeat.co/badges/8d42a846-f1dc-4a6b-8bd9-5862726ed35d)](https://codebeat.co/projects/github-com-dyweb-gommon-master)
 [![Sourcegraph](https://sourcegraph.com/github.com/dyweb/gommon/-/badge.svg)](https://sourcegraph.com/github.com/dyweb/gommon?badge)
@@ -52,17 +53,17 @@ Removed
 
 ### Roadmap
 
-0.0.6 
+0.0.7
 
-- [ ] better documentation, add examples
+- [x] test coverage for multiple packages
 - [ ] explain internals of some implementation
 
-0.0.7
+0.0.8
 
 - [ ] organized error types 
 - [ ] extension for collecting errors using third party services
 
-0.0.8
+0.0.9
 
 - [ ] tree of loggers in use
 - [ ] benchmark against other loggers
@@ -79,11 +80,10 @@ MIT
 
 Currently, gommon is in a very violate state, please open issues after it becomes stable 
 
-## Acknowledgement & Improvement
+## Acknowledgement & Comparisons
 
-Gommon is inspired by the following awesome libraries, 
-most gommon packages have much less (not more) features and a few improvements 
-compared to packages it modeled after.
+Gommon is inspired by many awesome libraries.
+However, we chose to reinvent the wheel because we need some breaking changes and only a subset of their features. 
 
 log
 
@@ -92,7 +92,7 @@ log
 - [apex/log](https://github.com/apex/log) for log handlers
   - log v2's handler is inspired by apex/log, but we didn't use entry and chose to pass multiple parameters to explicitly state what a handler should handle
 - [uber-go/zap](https://github.com/uber-go/zap) for serialize log fields without using `fmt.Sprintf` and use `strconv` directly
-  - we didn't go that extreme as Zap or ZeroLog for zero allocation, performance is not measured
+  - we didn't go that extreme as Zap or ZeroLog for zero allocation, performance is currently not measured
 
 config
 
@@ -100,7 +100,7 @@ config
 - [spf13/viper](https://github.com/spf13/viper/) for config
   - looking up config via string key makes type system useless, so we always marshal entire config file to a single struct
     - it also makes refactor easier
-  - we only use YAML, might add RCL, won't support TOML
+  - we only use YAML, might add RCL
 
 requests
 
@@ -129,7 +129,8 @@ errors
 
 ## About
 
-It was part of [Ayi](https://github.com/dyweb/Ayi) and split out for wider use.
+Gommon was part of [Ayi](https://github.com/dyweb/Ayi) and split out for wider use.
 The name Gommon is suggested by [@arrowrowe](https://github.com/arrowrowe).
 The original blog post can be found [here](http://blog.dongyueweb.com/ayi.html).
-Thanks all the fellows in [@dyweb](https://github.com/dyweb) especially [@gaocegege](https://github.com/gaocegege) for their support in early development.
+Thanks all the fellows in [@dyweb](https://github.com/dyweb)
+especially [@gaocegege](https://github.com/gaocegege) for their support in early development.
