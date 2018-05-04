@@ -12,12 +12,23 @@ const (
 	defaultTimeStampFormat = time.RFC3339
 )
 
+// Handler formats log message and writes to underlying storage, stdout, file, remote server etc.
+// It MUST be thread safe because logger calls handler concurrently without any locking.
+// There is NO log entry struct in gommon/log, which is used in many logging packages, the reason is
+// if extra field is added to the interface, compiler would throw error on stale handler implementations.
 type Handler interface {
+	// HandleLog accepts level, log time, formatted log message
 	HandleLog(level Level, time time.Time, msg string)
+	// HandleLogWithSource accepts formatted source line of log i.e., http.go:13
+	// TODO: pass frame instead of string so handler can use trace for error handling?
 	HandleLogWithSource(level Level, time time.Time, msg string, source string)
+	// HandleLogWithFields accepts fields with type hint,
+	// implementation should inspect the type field instead of using reflection
 	// TODO: pass pointer for fields?
 	HandleLogWithFields(level Level, time time.Time, msg string, fields Fields)
+	// HandleLogWithSourceFields accepts both source and fields
 	HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields)
+	// Flush writes the buffer to underlying storage
 	Flush()
 }
 
@@ -29,22 +40,33 @@ type Handler interface {
 //	f(level, msg)
 //}
 
+var _ Syncer = (*os.File)(nil)
+
+// Syncer is implemented by os.File, handler implementation should check this interface and call Sync
+// if they support using file as sink
 type Syncer interface {
 	Sync() error
 }
 
-type ioHandler struct {
-	w io.Writer
-}
+//// TODO: handler for http access log, this should be in extra package
+//type HttpAccessLogger struct {
+//}`
 
-var defaultHandler = &ioHandler{w: os.Stderr}
+var defaultHandler = NewIOHandler(os.Stderr)
 
+// DefaultHandler returns the singleton defaultHandler instance, which logs to stdout in text format
 func DefaultHandler() Handler {
 	return defaultHandler
 }
 
+// IOHandler writes log to io.Writer, default handler uses os.Stderr
+type IOHandler struct {
+	w io.Writer
+}
+
+// NewIOHandler
 func NewIOHandler(w io.Writer) Handler {
-	return &ioHandler{w: w}
+	return &IOHandler{w: w}
 }
 
 // TODO: performance (which is not a major concern now ...)
@@ -56,19 +78,22 @@ func NewIOHandler(w io.Writer) Handler {
 // - what would happen if os.Stderr.Close()
 // - os.Stderr.Sync() will there be any different if stderr/stdout is redirected to a file
 
-func (h *ioHandler) HandleLog(level Level, time time.Time, msg string) {
+// HandleLog implements Handler interface
+func (h *IOHandler) HandleLog(level Level, time time.Time, msg string) {
 	b := formatHead(level, time, msg)
 	b = append(b, '\n')
 	h.w.Write(b)
 }
 
-func (h *ioHandler) HandleLogWithSource(level Level, time time.Time, msg string, source string) {
+// HandleLogWithSource implements Handler interface
+func (h *IOHandler) HandleLogWithSource(level Level, time time.Time, msg string, source string) {
 	b := formatHeadWithSource(level, time, msg, source)
 	b = append(b, '\n')
 	h.w.Write(b)
 }
 
-func (h *ioHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
+// HandleLogWithFields implements Handler interface
+func (h *IOHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
 	// we use raw slice instead of bytes buffer because we need to use strconv.Append*, which requires raw slice
 	b := formatHead(level, time, msg)
 	b = append(b, ' ')
@@ -77,7 +102,8 @@ func (h *ioHandler) HandleLogWithFields(level Level, time time.Time, msg string,
 	h.w.Write(b)
 }
 
-func (h *ioHandler) HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields) {
+// HandleLogWithSourceFields implements Handler interface
+func (h *IOHandler) HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields) {
 	b := formatHeadWithSource(level, time, msg, source)
 	b = append(b, ' ')
 	b = formatFields(b, fields)
@@ -85,13 +111,14 @@ func (h *ioHandler) HandleLogWithSourceFields(level Level, time time.Time, msg s
 	h.w.Write(b)
 }
 
-func (h *ioHandler) Flush() {
+// Flush implements Handler interface
+func (h *IOHandler) Flush() {
 	if s, ok := h.w.(Syncer); ok {
 		s.Sync()
 	}
 }
 
-// unlike log v1 entry is only used for test, it is not passed around
+// entry is only used for test, it is not passed around like other loging packages
 type entry struct {
 	level  Level
 	time   time.Time
@@ -100,46 +127,56 @@ type entry struct {
 	source string
 }
 
-var _ Handler = (*testHandler)(nil)
+var _ Handler = (*TestHandler)(nil)
 
-type testHandler struct {
+// TestHandler stores log as entry, its slice is protected by a RWMutex and safe for concurrent use
+type TestHandler struct {
 	mu      sync.RWMutex
 	entries []entry
 }
 
-func NewTestHandler() *testHandler {
-	return &testHandler{}
+// NewTestHandler returns a test handler, it should only be used in test,
+// a concrete type instead of Handler interface is returned to reduce unnecessary type cast in test
+func NewTestHandler() *TestHandler {
+	return &TestHandler{}
 }
 
-func (h *testHandler) HandleLog(level Level, time time.Time, msg string) {
+// HandleLog implements Handler interface
+func (h *TestHandler) HandleLog(level Level, time time.Time, msg string) {
 	h.mu.Lock()
 	h.entries = append(h.entries, entry{level: level, time: time, msg: msg})
 	h.mu.Unlock()
 }
 
-func (h *testHandler) HandleLogWithSource(level Level, time time.Time, msg string, source string) {
+// HandleLogWithSource implements Handler interface
+func (h *TestHandler) HandleLogWithSource(level Level, time time.Time, msg string, source string) {
 	h.mu.Lock()
 	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, source: source})
 	h.mu.Unlock()
 }
 
-func (h *testHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
+// HandleLogWithFields implements Handler interface
+func (h *TestHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
 	h.mu.Lock()
 	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, fields: fields})
 	h.mu.Unlock()
 }
 
-func (h *testHandler) HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields) {
+// HandleLogWithSourceFields implements Handler interface
+func (h *TestHandler) HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields) {
 	h.mu.Lock()
 	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, source: source, fields: fields})
 	h.mu.Unlock()
 }
 
-func (h *testHandler) Flush() {
+// Flush implements Handler interface
+func (h *TestHandler) Flush() {
 	// nop
 }
 
-func (h *testHandler) HasLog(level Level, msg string) bool {
+// HasLog checks if a log with specified level and message exists in slice
+// TODO: support field, source etc.
+func (h *TestHandler) HasLog(level Level, msg string) bool {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 	for _, e := range h.entries {

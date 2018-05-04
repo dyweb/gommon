@@ -3,23 +3,26 @@ package log
 import "github.com/dyweb/gommon/util/color"
 
 // Level is log level
+// TODO: allow change default logging level at compile time
 type Level uint8
 
 const (
 	// FatalLevel log error and call `os.Exit(1)`
-	// TODO: allow user hook exit?
+	// TODO: allow user to add hooks before calling os.Exit?
 	FatalLevel Level = iota
 	// PanicLevel log error and call `panic`
 	PanicLevel
-	// ErrorLevel log error
+	// ErrorLevel log error and do nothing
+	// TODO: add integration with errors package
 	ErrorLevel
-	// WarnLevel log warning
+	// WarnLevel log warning that is often ignored
 	WarnLevel
 	// InfoLevel log info
 	InfoLevel
 	// DebugLevel log debug message, user should enable DebugLevel logging when report bug
 	DebugLevel
 	// TraceLevel is very verbose, user should enable it only on packages they are currently investing instead of globally
+	// TODO: add compile flag to use empty trace logger implementation to eliminate the call at runtime
 	TraceLevel
 )
 
@@ -32,6 +35,16 @@ var levelStrings = []string{
 	InfoLevel:  "info",
 	DebugLevel: "debug",
 	TraceLevel: "trace",
+}
+
+var levelAlignedUpperStrings = []string{
+	FatalLevel: "FATA",
+	PanicLevel: "PANI",
+	ErrorLevel: "ERRO",
+	WarnLevel:  "WARN",
+	InfoLevel:  "INFO",
+	DebugLevel: "DEBU",
+	TraceLevel: "TRAC",
 }
 
 var levelColoredStrings = []string{
@@ -58,10 +71,18 @@ func (level Level) String() string {
 	return levelStrings[level]
 }
 
+// AlignedUpperString returns fixed length level string in uppercase
+func (level Level) AlignedUpperString() string {
+	return levelAlignedUpperStrings[level]
+}
+
+// ColoredString returns level string wrapped by terminal color characters, only works on *nix
 func (level Level) ColoredString() string {
 	return levelColoredStrings[level]
 }
 
+// ColoredAlignedUpperString returns fixed length level string in uppercase,
+// wrapped by terminal color characters, only works on *nix
 func (level Level) ColoredAlignedUpperString() string {
 	return levelColoredAlignedUpperStrings[level]
 }

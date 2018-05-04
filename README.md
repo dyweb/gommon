@@ -24,7 +24,6 @@ Legacy
 - [log v1](legacy/log) A logrus like structured logger
 - [Runner](legacy/runner) A os/exec wrapper
 
-
 ## Dependencies
 
 Currently we only have one non standard library dependencies, see [Gopkg.lock](Gopkg.lock)
@@ -34,7 +33,7 @@ Currently we only have one non standard library dependencies, see [Gopkg.lock](G
     - might write one in [ANTLR](https://github.com/antlr/antlr4)
   - we also have a DSL work in progress [RCL: Reika Configuration Language](https://github.com/at15/reika/issues/49), which is like [HCL](https://github.com/hashicorp/hcl2)
 
-Removed 
+Removed
 
 - [pkg/errors](https://github.com/pkg/errors) for including context in error
   - removed in [#59](https://github.com/dyweb/gommon/pull/59)
@@ -101,7 +100,7 @@ config
 
 requests
 
-- [Requests](http://docs.python-requests.org/en/master/) for requests
+- [python requests](http://docs.python-requests.org/en/master/) for requests
 - [hashicorp/go-cleanhttp](https://github.com/hashicorp/go-cleanhttp) for using non default http transport and client
 
 generator

@@ -50,7 +50,7 @@ func parseFlags(args []string) {
 	}
 	if *verbose {
 		dlog.SetLevelRecursive(log, dlog.DebugLevel)
-		dlog.EnableSourceRecusrive(log)
+		dlog.EnableSourceRecursive(log)
 	}
 }
 

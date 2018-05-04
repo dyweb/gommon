@@ -1,8 +1,13 @@
 # Log
 
-## Usage 
+## Convention
 
-all the logger of a package should be registered in a registry, which is also a logger
+- library/application MUST have a library/application logger as registry.
+- every package MUST have a package level logger.
+- logger is a registry and can contain children.
+- instance of struct should have their own logger as children of package logger
+
+## Usage
 
 ````go
 package logutil

@@ -7,6 +7,7 @@ import (
 	"github.com/dyweb/gommon/structure"
 )
 
+//
 // TODO: allow release a child logger, this will be a trouble if we created 1,000 Client struct with its own logger...
 func (l *Logger) AddChild(child *Logger) {
 	l.mu.Lock()
@@ -48,7 +49,8 @@ func SetHandlerRecursive(root *Logger, handler Handler) {
 	})
 }
 
-func EnableSourceRecusrive(root *Logger) {
+// FIXME: this fixed typo requires update in go.ice
+func EnableSourceRecursive(root *Logger) {
 	visited := make(map[*Logger]bool)
 	PreOrderDFS(root, visited, func(l *Logger) {
 		l.EnableSource()
@@ -114,11 +116,12 @@ func (l *Logger) PrintTree() {
 
 // FIXME: print tree is still having problem ....
 //⇒  icehubd log
-//app logger /home/at15/workspace/src/github.com/at15/go.ice/_example/github/pkg/util/logutil/pkg.go:8
-//└── lib logger /home/at15/workspace/src/github.com/at15/go.ice/ice/util/logutil/pkg.go:8
-//		└── lib logger /home/at15/workspace/src/github.com/dyweb/gommon/util/logutil/pkg.go:7
-//│         └── pkg logger /home/at15/workspace/src/github.com/dyweb/gommon/config/pkg.go:8
+//	app logger /home/at15/workspace/src/github.com/at15/go.ice/_example/github/pkg/util/logutil/pkg.go:8
+//	└── lib logger /home/at15/workspace/src/github.com/at15/go.ice/ice/util/logutil/pkg.go:8
+//			└── lib logger /home/at15/workspace/src/github.com/dyweb/gommon/util/logutil/pkg.go:7
+//	│         └── pkg logger /home/at15/workspace/src/github.com/dyweb/gommon/config/pkg.go:8
 
+// PrintTreeTo prints logger as a tree, using current logger as root
 func (l *Logger) PrintTreeTo(w io.Writer) {
 	st := ToStringTree(l)
 	st.PrintTo(w)
