@@ -9,6 +9,11 @@ install:
 test:
 	go test -v -cover $(PKGS)
 
+.PHONY: test-cover
+test-cover:
+# https://github.com/codecov/example-go
+	go test -coverprofile=coverage.txt -covermode=atomic $(PKGS)
+
 .PHONY: test-race
 test-race:
 	go test -race $(PKGS)
