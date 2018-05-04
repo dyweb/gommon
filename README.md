@@ -5,6 +5,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/dyweb/gommon)](https://goreportcard.com/report/github.com/dyweb/gommon)
 [![codebeat badge](https://codebeat.co/badges/8d42a846-f1dc-4a6b-8bd9-5862726ed35d)](https://codebeat.co/projects/github-com-dyweb-gommon-master)
 [![Sourcegraph](https://sourcegraph.com/github.com/dyweb/gommon/-/badge.svg)](https://sourcegraph.com/github.com/dyweb/gommon?badge)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdyweb%2Fgommon.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdyweb%2Fgommon?ref=badge_shield)
 
 Gommon is a collection of common util libraries written in Go.
 
@@ -70,6 +71,9 @@ Removed
 ## License
 
 MIT
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdyweb%2Fgommon.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdyweb%2Fgommon?ref=badge_large)
 
 ## Contribution
 
