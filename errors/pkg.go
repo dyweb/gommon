@@ -1,5 +1,5 @@
 // Package errors provides multi error, error wrapping. It defines error category code for machine post processing
-package errors
+package errors // import "github.com/dyweb/gommon/errors"
 
 import "fmt"
 

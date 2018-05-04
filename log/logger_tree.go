@@ -49,8 +49,8 @@ func SetHandlerRecursive(root *Logger, handler Handler) {
 	})
 }
 
-// FIXME: change the typo, this also requires update in go.ice
-func EnableSourceRecusrive(root *Logger) {
+// FIXME: this fixed typo requires update in go.ice
+func EnableSourceRecursive(root *Logger) {
 	visited := make(map[*Logger]bool)
 	PreOrderDFS(root, visited, func(l *Logger) {
 		l.EnableSource()

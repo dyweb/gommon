@@ -1,4 +1,9 @@
-package cli
+/*
+Package cli writes is same as builtin IOHandler except color and delta time.
+It is used by go.ice as default handler
+TODO: color can't be disabled and we don't detect tty like logrus
+*/
+package cli // import "github.com/dyweb/gommon/log/handlers/cli"
 
 import (
 	"io"

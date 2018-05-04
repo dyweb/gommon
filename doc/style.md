@@ -13,6 +13,7 @@ MUST cover the following
 
 - [ ] convention, i.e. variable names, error handling etc.
 - [ ] internal, a basic walk through of import parts
+- define canonical import path in `pkg.go` https://golang.org/doc/go1.4#canonicalimports 
 
 ## Application
 

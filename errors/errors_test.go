@@ -59,3 +59,11 @@ func TestWrap(t *testing.T) {
 	}
 	assert.Equal(4, len(terr.ErrorStack().Frames()))
 }
+
+// TODO: we should write test in errors_test package, especially for examples ...
+func ExampleWrap() {
+	err := Wrap(os.ErrNotExist, "oops")
+	fmt.Println(err)
+	// Output:
+	// oops: file does not exist
+}

@@ -34,9 +34,9 @@ func (tpe LoggerType) String() string {
 	return loggerTypeStrings[tpe]
 }
 
-// Identity is based where the logger is initialized, it is NOT exactly where the log happens.
+// Identity is set based on logger's initialization location,
+// it is close to, but NOT exactly same as location of actual log.
 // It is used for applying filter rules and print logger hierarchy.
-// TODO: example
 type Identity struct {
 	Package  string
 	Function string
@@ -61,6 +61,7 @@ func NewIdentityFromCaller(skip int) *Identity {
 		st       string
 	)
 	tpe := UnknownLogger
+	// TODO: does it handle vendor correctly
 	pkg, function = runtimeutil.SplitPackageFunc(frame.Function)
 	tpe = FunctionLogger
 	// NOTE: we distinguish a struct logger and method logger using the magic name,

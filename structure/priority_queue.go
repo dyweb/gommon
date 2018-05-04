@@ -1,3 +1,3 @@
 package structure
 
-// TODO
+// TODO: interface & impl
