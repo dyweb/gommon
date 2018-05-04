@@ -9,6 +9,10 @@ install:
 test:
 	go test -v -cover $(PKGS)
 
+.PHONY: test-cover
+test-cover:
+	go test -coverprofile=c.out $(PKGS)
+
 .PHONY: test-race
 test-race:
 	go test -race $(PKGS)
