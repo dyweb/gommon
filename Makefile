@@ -34,7 +34,7 @@ fmt:
 # TODO: refer tools used in https://github.com/360EntSecGroup-Skylar/goreporter
 .PHONY: vet
 vet:
-	go vet $(PKGST)
+	go vet $(PKGS)
 
 .PHONY: doc
 doc:
