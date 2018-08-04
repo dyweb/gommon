@@ -23,10 +23,14 @@ multi error
   - combine more than one error
   - [x] has a `atomic.Book` for copyNeeded, seems only used for fast path
   
-TODO: k8s
+TODO: 
 
-- [ ] https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/util/errors/errors.go
-- [ ] https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/util/validation/field/errors.go
+- https://github.com/dyweb/go.ice/issues/12
+  - tidb https://github.com/pingcap/tidb/tree/master/terror
+  - grpc https://github.com/grpc-ecosystem/grpc-opentracing/blob/master/go/otgrpc/errors.go
+- k8s
+  - [ ] https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/util/errors/errors.go
+  - [ ] https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/util/validation/field/errors.go
 
 
 - implement Formatter interface `Format(f State, c rune)` https://golang.org/pkg/fmt/#Formatter

@@ -13,13 +13,14 @@ Gommon is a collection of common util libraries written in Go.
 It has the following components:
 
 - [config](config) A YAML config reader with template support
-- [errors](errors) Wrap error and multi error
+- [errors](errors) Typed error with context, multi error
 - [generator](generator) Render go template, generate methods for logger interface based on `gommon.yml`
-- [log](log) A Javaish logger for Go, application can control library and set level for different pkg via config or flag
+- [log](log) A Javaish logger for Go, application can set level for their dependencies based on package, struct 
 - [noodle](noodle) Embed static assets for web application with `.noodleignore` support
-- [requests](requests) A pythonic wrapper for `net/http`, HTTP for Gopher.
-- [cast](cast) Convert Golang types
-- [structure](structure) Bring data structure like Set etc. to Golang.
+- [requests](requests) A pythonic wrapper for `net/http`, HTTP for Gopher
+- [cast](cast) Convert Golang types using intermediate format like JSON
+- [structure](structure) Bring data structure like Set etc. to Golang
+- [util](util) A collection of utils
 
 Legacy
 
@@ -28,7 +29,7 @@ Legacy
 
 ## Dependencies
 
-Currently we only have one non standard library dependencies, see [Gopkg.lock](Gopkg.lock)
+Currently we only have one non standard library dependencies (cmd and examples are not considered), see [Gopkg.lock](Gopkg.lock)
 
 - [go-yaml/yaml](https://github.com/go-yaml/yaml) for read config written in YAML
   - we don't need most feature of YAML, and want to have access to the parser directly to report which line has incorrect semantic (after checking it in application).
@@ -40,9 +41,6 @@ Removed
 - [pkg/errors](https://github.com/pkg/errors) for including context in error
   - removed in [#59](https://github.com/dyweb/gommon/pull/59)
   - replaced by `gommon/errors`
-
-<!-- no, we are using the standard flag package ... -->
-<!-- For command line util, we are using [spf13/cobra](https://github.com/spf13/cobra), it is more flexible than [ufrave/cli](https://github.com/urfave/cli) -->
 
 ## Development
 
@@ -57,11 +55,15 @@ Removed
 
 - [x] test coverage for multiple packages
 - [ ] explain internals of some implementation
+- [ ] start documenting the style for writing gommon itself, lib using gommon, app using gommon/lib using gommon
+- [ ] improve Makefile and dockerized build & test
 
 0.0.8
 
-- [ ] organized error types 
+- [ ] more complex error interface, error code
+- [ ] organized error types
 - [ ] extension for collecting errors using third party services
+- [ ] init go mod support, not sure if it will be compatible with dep 
 
 0.0.9
 
@@ -69,68 +71,32 @@ Removed
 - [ ] benchmark against other loggers
 - [ ] support better logging for errors
 
+0.0.10
+
+- [ ] simplify config package, no more template and get value by string path
+- [ ] move cast into util
+
+0.0.11
+
+- [ ] httputil package, merge part of current requests package unix domain sock etc.
+- [ ] requests, download and upload file, a curl like example
+
 ## License
 
 MIT
-
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdyweb%2Fgommon.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdyweb%2Fgommon?ref=badge_large)
 
 ## Contribution
 
-Currently, gommon is in a very violate state, please open issues after it becomes stable 
-
-## Acknowledgement & Comparisons
-
-Gommon is inspired by many awesome libraries.
-However, we chose to reinvent the wheel because we need some breaking changes and only a subset of their features. 
-
-log
-
-- [sirupsen/logrus](https://github.com/sirupsen/logrus) for structured logging 
-  - log v1 is entirely modeled after logrus, entry contains log information with methods like `Info`, `Infof`
-- [apex/log](https://github.com/apex/log) for log handlers
-  - log v2's handler is inspired by apex/log, but we didn't use entry and chose to pass multiple parameters to explicitly state what a handler should handle
-- [uber-go/zap](https://github.com/uber-go/zap) for serialize log fields without using `fmt.Sprintf` and use `strconv` directly
-  - we didn't go that extreme as Zap or ZeroLog for zero allocation, performance is currently not measured
-
-config
-
-- [spf13/cast](https://github.com/spf13/cast) for cast, it is used by Viper
-- [spf13/viper](https://github.com/spf13/viper/) for config
-  - looking up config via string key makes type system useless, so we always marshal entire config file to a single struct
-    - it also makes refactor easier
-  - we only use YAML, might add RCL
-
-requests
-
-- [python requests](http://docs.python-requests.org/en/master/) for requests
-- [hashicorp/go-cleanhttp](https://github.com/hashicorp/go-cleanhttp) for using non default http transport and client
-
-generator
-
-- [benbjohnson/tmpl](https://github.com/benbjohnson/tmpl) for go template generator
-  - first saw it in [influxdata/influxdb](https://github.com/influxdata/influxdb/blob/master/tsdb/engine/tsm1/encoding.gen.go.tmpl)
-  - we put template data in `gommon.yml`, so we don't need to pass data as json via cli
-
-noodle
-
-- [GeertJohan/go.rice](https://github.com/GeertJohan/go.rice)
-  - we implemented `.gitignore` like [feature](https://github.com/at15/go.rice/issues/1) but the upstream didn't respond for the [feature request #83](https://github.com/GeertJohan/go.rice/issues/83)
-  - we put data into generated code file while go.rice and append zip to existing go binary
-  
-errors
-
-- [pkg/errors](https://github.com/pkg/errors) it can not introduce breaking change, but `WithMessage` and `WithStack` is annoying
-  - see [#54](https://github.com/dyweb/gommon/issues/54) and [errors/doc](errors/doc) about other error packages
-  - https://github.com/pkg/errors/pull/122 for check existing stack before attach new one
-- [uber-go/multierr#21]( https://github.com/uber-go/multierr/issues/21) for return bool after append
-- [hashicorp/go-multierror](https://github.com/hashicorp/go-multierror) for `ErrorOrNil`
+Currently, gommon is in a very violate state, please open issues after it becomes stable.
 
 ## About
 
+Gommon is inspired by many existing libraries, attribution and comparision can be found in [doc/attribution](doc/attribution.md).
+
 Gommon was part of [Ayi](https://github.com/dyweb/Ayi) and split out for wider use.
 The name Gommon is suggested by [@arrowrowe](https://github.com/arrowrowe).
-The original blog post can be found [here](http://blog.dongyueweb.com/ayi.html).
-Thanks all the fellows in [@dyweb](https://github.com/dyweb)
+The original blog post can be found in dongyue web's [blog](http://blog.dongyueweb.com/ayi.html).
+Thanks all the folks in [@dyweb](https://github.com/dyweb)
 especially [@gaocegege](https://github.com/gaocegege) for their support in early development.
