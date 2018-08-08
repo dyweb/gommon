@@ -1,10 +1,12 @@
-PKGS=./cast/... ./config/... ./errors/... ./generator/... ./log/... ./noodle/... ./requests/... ./structure/... ./util/...
-PKGST=./cast ./cmd ./config ./errors ./generator ./log ./noodle ./requests ./structure ./util
+PKGS=./config/... ./errors/... ./generator/... ./log/... ./noodle/... ./requests/... ./structure/... ./util/...
+PKGST=./cmd ./config ./errors ./generator ./log ./noodle ./requests ./structure ./util
 VERSION = 0.0.1
 BUILD_COMMIT = $(shell git rev-parse HEAD)
 BUILD_TIME = $(shell date +%Y-%m-%dT%H:%M:%S%z)
 CURRENT_USER = $(USER)
 FLAGS = -X main.version=$(VERSION) -X main.commit=$(BUILD_COMMIT) -X main.buildTime=$(BUILD_TIME) -X main.buildUser=$(CURRENT_USER)
+
+# TODO: define help messages
 
 .PHONY: install
 install:
@@ -52,7 +54,7 @@ update-dep:
 #--- docker ---#
 .PHONY: docker-test
 docker-test:
-	docker-compose -f scripts/docker-compose.yml run --rm golang1.9
+	docker-compose -f scripts/docker-compose.yml run --rm golang1.10
 	docker-compose -f scripts/docker-compose.yml run --rm golanglatest
 
 .PHONY: docker-remove-all-containers

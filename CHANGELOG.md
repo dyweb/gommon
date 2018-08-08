@@ -1,5 +1,17 @@
 # Changelog
 
+
+## v0.0.7
+
+[release](https://github.com/dyweb/gommon/releases/tag/0.0.7)
+
+
+## v0.0.6
+
+[release](https://github.com/dyweb/gommon/releases/tag/0.0.6)
+
+- improve doc, fix typo
+
 ## v0.0.5
 
 [release](https://github.com/dyweb/gommon/releases/tag/0.0.5)
