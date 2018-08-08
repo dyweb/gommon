@@ -12,7 +12,6 @@ Gommon is a collection of common util libraries written in Go.
 
 It has the following components:
 
-- [config](config) A YAML config reader with template support
 - [errors](errors) Typed error with context, multi error
 - [generator](generator) Render go template, generate methods for logger interface based on `gommon.yml`
 - [log](log) A Javaish logger for Go, application can set level for their dependencies based on package, struct 
@@ -24,6 +23,7 @@ It has the following components:
 
 Legacy
 
+- [config v1](config) A YAML config reader with template support
 - [log v1](legacy/log) A logrus like structured logger
 - [Runner](legacy/runner) A os/exec wrapper
 
@@ -48,8 +48,6 @@ Removed
 - install dep https://github.com/golang/dep
 - `dep ensure`
 - `make test`
-
-
 
 ## License
 

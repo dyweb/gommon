@@ -3,7 +3,6 @@
 ## Project Layout
 
 - [cmd/gommon](cmd/gommon) the command line application
-- [config](config) config file reader
 - [doc](doc) documentation
 - [errors](errors) error wrapping and multi error
 - [generator](generator) generating interface methods, render go template, protobuf etc.

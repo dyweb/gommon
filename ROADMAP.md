@@ -1,10 +1,5 @@
 # Roadmap
 
-## 0.0.7
-
-- [ ] simplify config package, no more template and get value by string path
-- [ ] move cast into util
-
 ## 0.0.8
 
 - [x] test coverage for multiple packages

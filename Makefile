@@ -1,6 +1,6 @@
 PKGS=./errors/... ./generator/... ./log/... ./noodle/... ./requests/... ./structure/... ./util/...
 PKGST=./cmd ./errors ./generator ./log ./noodle ./requests ./structure ./util
-VERSION = 0.0.1
+VERSION = 0.0.7
 BUILD_COMMIT = $(shell git rev-parse HEAD)
 BUILD_TIME = $(shell date +%Y-%m-%dT%H:%M:%S%z)
 CURRENT_USER = $(USER)

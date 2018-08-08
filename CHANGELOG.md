@@ -1,10 +1,11 @@
 # Changelog
 
-
 ## v0.0.7
 
 [release](https://github.com/dyweb/gommon/releases/tag/0.0.7)
 
+- deprecated config v1, move it to legacy folder
+- move cast into util
 
 ## v0.0.6
 
