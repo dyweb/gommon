@@ -4,8 +4,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"io/ioutil"
 
-	"github.com/dyweb/gommon/config"
+	"gopkg.in/yaml.v2"
+
 	"github.com/dyweb/gommon/errors"
 	"github.com/dyweb/gommon/util/fsutil"
 )
@@ -37,9 +39,12 @@ func GenerateSingle(file string) error {
 	segments := strings.Split(dir, string(os.PathSeparator))
 	pkg := segments[len(segments)-1]
 	cfg := NewConfig(pkg, file)
-	// TODO: config may remove LoadYAMLAsStruct in the future
-	if err = config.LoadYAMLAsStruct(file, &cfg); err != nil {
+	b, err := ioutil.ReadFile(file)
+	if err != nil {
 		return errors.Wrap(err, "can't read config file")
+	}
+	if err = yaml.Unmarshal(b, &cfg); err != nil {
+		return errors.Wrap(err, "can't decode config file as YAML")
 	}
 
 	// gommon logger
