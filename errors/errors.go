@@ -16,6 +16,7 @@ type Wrapper interface {
 	Message() string
 }
 
+// TracedError is error with stack trace
 type TracedError interface {
 	fmt.Formatter
 	ErrorStack() *Stack
@@ -24,7 +25,6 @@ type TracedError interface {
 var (
 	_ error       = (*FreshError)(nil)
 	_ TracedError = (*FreshError)(nil)
-	_ Causer      = (*FreshError)(nil)
 )
 
 type FreshError struct {
@@ -38,10 +38,6 @@ func (fresh *FreshError) Error() string {
 
 func (fresh *FreshError) ErrorStack() *Stack {
 	return fresh.stack
-}
-
-func (fresh *FreshError) Cause() error {
-	return fresh
 }
 
 func (fresh *FreshError) Format(s fmt.State, verb rune) {
@@ -116,10 +112,10 @@ func Wrapf(err error, format string, args ...interface{}) error {
 	}
 }
 
-// Cause returns cause of the error, it stops at the last error that does not implement Causer interface
-// errors wrapped using pkg/errors also satisfy and this interface can be unwrapped as well.
-// If error is nil, it will return nil.
-// If error is a standard library error or FreshError it will return the error itself.
+// Cause returns root cause of the error (if any), it stops at the last error that does not implement Causer interface.
+// If you want get direct cause, use DirectCause.
+// If error is nil, it will return nil. If error is not wrapped it will return the error itself.
+// error wrapped using github.com/pkg/errors also satisfies this interface and can be unwrapped as well.
 func Cause(err error) error {
 	if err == nil {
 		return nil
@@ -132,6 +128,19 @@ func Cause(err error) error {
 		err = causer.Cause()
 	}
 	return err
+}
+
+// DirectCause returns the direct cause of the error (if any). It does NOT follow the cause chain, if you want to get
+// root cause, use Cause
+func DirectCause(err error) error {
+	if err == nil {
+		return nil
+	}
+	causer, ok := err.(Causer)
+	if !ok {
+		return nil
+	}
+	return causer.Cause()
 }
 
 func (wrapped *WrappedError) Error() string {

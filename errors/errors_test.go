@@ -74,6 +74,17 @@ func TestCause(t *testing.T) {
 	assert.Equal(os.ErrClosed, Cause(errww))
 }
 
+func TestDirectCause(t *testing.T) {
+	assert := asst.New(t)
+
+	errw := Wrap(os.ErrClosed, "can't open closed file")
+	errww := Wrap(errw, "wrap again")
+	assert.Equal(os.ErrClosed, Cause(errww))
+	assert.Equal(os.ErrClosed, DirectCause(errw))
+	assert.NotEqual(os.ErrClosed, DirectCause(errww))
+	assert.Equal("can't open closed file", DirectCause(errww).(Wrapper).Message())
+}
+
 func TestWrappedError_Message(t *testing.T) {
 	assert := asst.New(t)
 

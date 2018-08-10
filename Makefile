@@ -54,20 +54,21 @@ install:
 fmt:
 	gofmt -d -l -w $(PKGST)
 
-.PHONY: test
+.PHONY: test test-cover test-cover-html test-race test-log
+
 test:
 	go test -v -cover $(PKGS)
 
-.PHONY: test-cover
 test-cover:
 # https://github.com/codecov/example-go
 	go test -coverprofile=coverage.txt -covermode=atomic $(PKGS)
 
-.PHONY: test-race
+test-cover-html: test-cover
+	go tool cover -html=coverage.txt
+
 test-race:
 	go test -race $(PKGS)
 
-.PHONY: test-log
 test-log:
 	go test -v -cover ./log/...
 
