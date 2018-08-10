@@ -60,6 +60,28 @@ func TestWrap(t *testing.T) {
 	assert.Equal(4, len(terr.ErrorStack().Frames()))
 }
 
+// TODO: test Wrapf
+
+func TestCause(t *testing.T) {
+	assert := asst.New(t)
+	n := Wrap(nil, "nothing")
+	assert.Nil(Cause(n))
+
+	errw := Wrap(os.ErrClosed, "can't open closed file")
+	assert.Equal(os.ErrClosed, Cause(errw))
+
+	errww := Wrap(errw, "wrap again")
+	assert.Equal(os.ErrClosed, Cause(errww))
+}
+
+func TestWrappedError_Message(t *testing.T) {
+	assert := asst.New(t)
+
+	msg := "mewo"
+	errw := Wrap(os.ErrClosed, msg)
+	assert.Equal(msg, errw.(Wrapper).Message())
+}
+
 // TODO: we should write test in errors_test package, especially for examples ...
 func ExampleWrap() {
 	err := Wrap(os.ErrNotExist, "oops")

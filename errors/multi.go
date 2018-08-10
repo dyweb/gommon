@@ -18,6 +18,7 @@ type MultiErr interface {
 	HasError() bool
 }
 
+// NewMultiErr returns a non thread safe implementation
 func NewMultiErr() MultiErr {
 	return &multiErr{}
 }
@@ -28,6 +29,7 @@ func NewMultiErrSafe() MultiErr {
 
 var _ MultiErr = (*multiErr)(nil)
 
+// multiErr is NOT thread (goroutine) safe
 type multiErr struct {
 	errs []error
 }
