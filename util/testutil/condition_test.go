@@ -19,9 +19,12 @@ func TestCon_B(t *testing.T) {
 func TestEnvHas(t *testing.T) {
 	assert := asst.New(t)
 
-	res, msg, err := EnvHas("USER").Eval()
+	// FIXME: this does not work when test in docker, $USER is not set?...
+	//res, msg, err := EnvHas("USER").Eval()
+	os.Setenv("MUST_HAS", "")
+	res, msg, err := EnvHas("MUST_HAS").Eval()
 	assert.True(res)
-	assert.Equal("env USER is defined", msg)
+	assert.Equal("env MUST_HAS is defined", msg)
 	assert.Nil(err)
 
 	res, msg, err = EnvHas("HOUXIYA_MINI_YOUKOU").Eval()
