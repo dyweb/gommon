@@ -12,6 +12,8 @@ type Config struct {
 	Loggers     []LoggerConfig     `yaml:"loggers"`
 	GoTemplates []GoTemplateConfig `yaml:"gotmpls"`
 	Shells      []ShellConfig      `yaml:"shells"`
+	// GoPackage override folder name for generated go file
+	GoPackage string `yaml:"go_package"`
 	// set when traversing the folders
 	pkg  string
 	file string
@@ -21,12 +23,19 @@ func NewConfig(pkg string, file string) *Config {
 	return &Config{pkg: pkg, file: file}
 }
 
+// RenderGommon returns nil, nil when there is nothing to render
 func (c *Config) RenderGommon() ([]byte, error) {
-	body := &bytes.Buffer{}
+	// header
 	header := &bytes.Buffer{}
 	fmt.Fprintf(header, Header(generatorName, c.file))
 	fmt.Fprint(header, "\n")
-	fmt.Fprintf(header, "package %s\n\n", c.pkg)
+	if c.GoPackage != "" {
+		fmt.Fprintf(header, "package %s\n\n", c.GoPackage)
+	} else {
+		fmt.Fprintf(header, "package %s\n\n", c.pkg)
+	}
+	// body
+	body := &bytes.Buffer{}
 	if len(c.Loggers) > 0 {
 		fmt.Fprintln(header, "import dlog \"github.com/dyweb/gommon/log\"")
 		for _, l := range c.Loggers {
@@ -34,6 +43,9 @@ func (c *Config) RenderGommon() ([]byte, error) {
 				return nil, err
 			}
 		}
+	}
+	if len(body.Bytes()) == 0 {
+		return nil, nil
 	}
 	header.Write(body.Bytes())
 	//log.Debug(string(header.Bytes()))

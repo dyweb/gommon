@@ -10,6 +10,7 @@ import (
 type LoggerConfig struct {
 	Struct   string `yaml:"struct"`
 	Receiver string `yaml:"receiver"`
+	Field    string `yaml:"field"`
 }
 
 var structLoggerTmpl *template.Template
@@ -18,11 +19,11 @@ const structLoggerTmplName = "struct-logger"
 
 const structLoggerTmplStr = `
 func ({{.Receiver}} {{.Struct}}) SetLogger(logger *dlog.Logger) {
-	{{.Receiver}}.log = logger
+	{{.Receiver}}.{{.Field}} = logger
 }
 
 func ({{.Receiver}} {{.Struct}}) GetLogger() *dlog.Logger {
-	return {{.Receiver}}.log
+	return {{.Receiver}}.{{.Field}}
 }
 
 func ({{.Receiver}} {{.Struct}}) LoggerIdentity(justCallMe func() *dlog.Identity) *dlog.Identity {
@@ -31,6 +32,10 @@ func ({{.Receiver}} {{.Struct}}) LoggerIdentity(justCallMe func() *dlog.Identity
 `
 
 func (c *LoggerConfig) RenderTo(w io.Writer) error {
+	// NOTE: (at15) for backward compatibility, will remove it once refactor on generator is done
+	if c.Field == "" {
+		c.Field = "log"
+	}
 	if err := structLoggerTmpl.Execute(w, *c); err != nil {
 		return errors.Wrap(err, "failed to render logger template")
 	}

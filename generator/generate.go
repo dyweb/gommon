@@ -15,6 +15,7 @@ import (
 func Generate(root string) error {
 	var files []string
 	// TODO: limit level
+	// TODO: allow read ignore from file
 	fsutil.Walk(root, DefaultIgnores(), func(path string, info os.FileInfo) {
 		//log.Trace(path + "/" + info.Name())
 		if info.Name() == configFile {
@@ -51,11 +52,16 @@ func GenerateSingle(file string) error {
 	if rendered, err = cfg.RenderGommon(); err != nil {
 		return errors.Wrap(err, "can't render based on config")
 	}
-	//log.Debugf("%s rendered length %d", file, len(rendered))
-	if err = fsutil.WriteFile(join(dir, generatedFile), rendered); err != nil {
-		return errors.Wrap(err, "can't write rendered gommon file")
+	if len(rendered) != 0 {
+		//log.Debugf("%s rendered length %d", file, len(rendered))
+		if err = fsutil.WriteFile(join(dir, generatedFile), rendered); err != nil {
+			return errors.Wrap(err, "can't write rendered gommon file")
+		}
+		log.Debugf("generated %s from %s", join(dir, generatedFile), file)
+	} else {
+		// FIXME: (at15) this log is not accurate, gommon will have more than just logger identity
+		log.Debugf("%s does not have gommon logger config", dir)
 	}
-	log.Debugf("generated %s from %s", join(dir, generatedFile), file)
 
 	// gotmpl
 	if err = cfg.RenderGoTemplate(dir); err != nil {
