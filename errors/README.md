@@ -9,6 +9,7 @@ A error package supports wrapping and multi error
 ## Implementation
 
 - `Wrap` checks if this is already a `WrappedErr`, if not, it attach stack
+- `MultiErr` keep a slice of errors, the thread safe version use mutex and returns copy of slice when `Errors` is called
 
 ## Survey
 
@@ -21,4 +22,5 @@ A error package supports wrapping and multi error
 - Multi errors
   - [hashicorp/go-multierror](doc/hashicorp-go-multierror.md)
   - [uber/multierr](doc/uber-multierr.md)
+    - Wish we could tell if the append happened  https://github.com/uber-go/multierr/issues/21
   - [ ] https://godoc.org/github.com/gorilla/securecookie#MultiError

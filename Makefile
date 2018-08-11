@@ -72,8 +72,6 @@ test-race:
 test-log:
 	go test -v -cover ./log/...
 
-
-
 # TODO: refer tools used in https://github.com/360EntSecGroup-Skylar/goreporter
 .PHONY: vet
 vet:
