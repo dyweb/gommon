@@ -5,7 +5,8 @@ import (
 	"runtime"
 )
 
-// TODO: it should be configurable? or move to pkg.go?
+// TODO: it should be configurable? or move to pkg.go and make it public?
+// TODO: what if there is recursive function .... I guess any depth is not enough then? what is the limit on go runtime's side?
 const depth = 20
 
 type Stack struct {
@@ -49,7 +50,7 @@ func callers() *Stack {
 	}
 }
 
-func printFrames(frames []runtime.Frame) {
+func PrintFrames(frames []runtime.Frame) {
 	for i := 0; i < len(frames); i++ {
 		fmt.Printf("%s %s:%d\n", frames[i].Function, frames[i].File, frames[i].Line)
 	}

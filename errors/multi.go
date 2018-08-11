@@ -6,28 +6,39 @@ import (
 	"sync"
 )
 
+// MultiErr is a slice of Error. It has two implementation, NewMultiErr return a non thread safe version,
+// NewMultiErrSafe return a thread safe version using mutex
 type MultiErr interface {
 	error
 	fmt.Formatter
-	// Append returns true if the appended error is not nil, inspired by https://github.com/uber-go/multierr/issues/21
+	// Append adds error to current selection, it will flatten the error being added if it is also MultiErr
+	// It returns true if the appended error is not nil, inspired by https://github.com/uber-go/multierr/issues/21
 	Append(error) bool
+	// Errors returns errors stored, if no error
 	Errors() []error
-	// Error returns itself or nil if there are no errors, inspired by https://github.com/hashicorp/go-multierror
+	// ErrorOrNil returns itself or nil if there are no errors, inspired by https://github.com/hashicorp/go-multierror
 	ErrorOrNil() error
 	// HasError is ErrorOrNil != nil
 	HasError() bool
 }
 
+// NewMultiErr returns a non thread safe implementation
 func NewMultiErr() MultiErr {
 	return &multiErr{}
 }
 
+// NewMultiErrSafe returns a thread safe implementation which protects the underlying slice using mutex.
+// It returns a copy of slice when Errors is called
 func NewMultiErrSafe() MultiErr {
 	return &multiErrSafe{}
 }
 
-var _ MultiErr = (*multiErr)(nil)
+var (
+	_ MultiErr = (*multiErr)(nil)
+	_ MultiErr = (*multiErrSafe)(nil)
+)
 
+// multiErr is NOT thread (goroutine) safe
 type multiErr struct {
 	errs []error
 }
@@ -76,8 +87,7 @@ func (m *multiErr) Format(s fmt.State, verb rune) {
 	}
 }
 
-var _ MultiErr = (*multiErrSafe)(nil)
-
+// multiErrSafe is thread safe
 type multiErrSafe struct {
 	mu   sync.Mutex
 	errs []error
@@ -159,6 +169,9 @@ func formatErrors(errs []error) string {
 	if len(errs) == 1 {
 		return errs[0].Error()
 	}
+	// TODO: (at15) might use strings.Join implementation, two loops, first calculate the length of the strings to
+	// get total buf size, then copy the first element, the second loop copy separator and the n-1 elements, and there is
+	// no need to trim the last separator
 	buf := make([]byte, 0, len(errs)*10)
 	buf = strconv.AppendInt(buf, int64(len(errs)), 10)
 	buf = append(buf, " errors; "...)
@@ -166,5 +179,5 @@ func formatErrors(errs []error) string {
 		buf = append(buf, errs[i].Error()...)
 		buf = append(buf, MultiErrSep...)
 	}
-	return string(buf[:len(buf)-2])
+	return string(buf[:len(buf)-2]) // -2 trim len(MultiErrSep)
 }

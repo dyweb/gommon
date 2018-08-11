@@ -11,6 +11,6 @@ func TestStack_Frames(t *testing.T) {
 	s := callers()
 	// when Frames() is not called, it is empty
 	assert.Equal(0, len(s.frames))
-	printFrames(s.Frames())
+	PrintFrames(s.Frames())
 	assert.Equal(s.depth, len(s.Frames()))
 }

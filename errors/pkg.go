@@ -10,6 +10,7 @@ const (
 	ErrCauseSep = ": "
 )
 
+// New creates a FreshError with stack
 func New(msg string) error {
 	return &FreshError{
 		msg:   msg,
@@ -17,6 +18,7 @@ func New(msg string) error {
 	}
 }
 
+// Errorf is New with fmt.Sprintf
 func Errorf(format string, args ...interface{}) error {
 	return &FreshError{
 		msg:   fmt.Sprintf(format, args...),

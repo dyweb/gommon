@@ -1,10 +1,10 @@
 package generator
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
-	"io/ioutil"
 
 	"gopkg.in/yaml.v2"
 
