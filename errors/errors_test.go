@@ -1,102 +1,130 @@
-package errors
+package errors_test
 
 import (
 	"fmt"
 	"os"
 	"testing"
 
-	"github.com/dyweb/gommon/util/testutil"
 	asst "github.com/stretchr/testify/assert"
+
+	"github.com/dyweb/gommon/errors"
+	"github.com/dyweb/gommon/util/testutil"
 )
 
 func TestNew(t *testing.T) {
 	assert := asst.New(t)
-	err := New("don't let me go")
+	err := errors.New("don't let me go")
 	assert.NotNil(err)
 	assert.Equal("don't let me go", fmt.Sprintf("%v", err))
-	terr, ok := err.(TracedError)
+	terr, ok := err.(errors.TracedError)
 	assert.True(ok)
-	printFrames(terr.ErrorStack().Frames())
+	errors.PrintFrames(terr.ErrorStack().Frames())
 	assert.Equal(3, len(terr.ErrorStack().Frames()))
-}
-
-func freshErr() error {
-	return New("I am a fresh error")
-}
-
-func wrappedStdErr() error {
-	return Wrap(os.ErrClosed, "can't open closed file")
 }
 
 func TestWrap(t *testing.T) {
 	assert := asst.New(t)
 
-	n := Wrap(nil, "nothing")
+	n := errors.Wrap(nil, "nothing")
 	assert.Nil(n)
 
-	errw := Wrap(os.ErrClosed, "can't open closed file")
+	errw := errors.Wrap(os.ErrClosed, "can't open closed file")
 	assert.Equal("can't open closed file: file already closed", fmt.Sprintf("%v", errw))
-	terr, ok := errw.(TracedError)
+	terr, ok := errw.(errors.TracedError)
 	assert.True(ok)
 	if testutil.Dump().B() {
-		printFrames(terr.ErrorStack().Frames())
+		errors.PrintFrames(terr.ErrorStack().Frames())
 	}
 	assert.Equal(3, len(terr.ErrorStack().Frames()))
 
-	errw = Wrap(freshErr(), "wrap again")
-	terr, ok = errw.(TracedError)
+	errw = errors.Wrap(freshErr(), "wrap again")
+	terr, ok = errw.(errors.TracedError)
 	assert.True(ok)
 	if testutil.Dump().B() {
-		printFrames(terr.ErrorStack().Frames())
+		errors.PrintFrames(terr.ErrorStack().Frames())
 	}
 	assert.Equal(4, len(terr.ErrorStack().Frames()))
 
-	errw = Wrap(wrappedStdErr(), "wrap again")
-	terr, ok = errw.(TracedError)
+	errw = errors.Wrap(wrappedStdErr(), "wrap again")
+	terr, ok = errw.(errors.TracedError)
 	assert.True(ok)
 	if testutil.Dump().B() {
-		printFrames(terr.ErrorStack().Frames())
+		errors.PrintFrames(terr.ErrorStack().Frames())
 	}
 	assert.Equal(4, len(terr.ErrorStack().Frames()))
 }
 
-// TODO: test Wrapf
+func TestWrapf(t *testing.T) {
+	// TODO: need to ensure Wrap and Wrapf are same ...
+	assert := asst.New(t)
+
+	// wrap nil return nil
+	n := errors.Wrapf(nil, "nothing %d", 2)
+	assert.Nil(n)
+
+	// wrap standard error attach stack
+	errw := errors.Wrapf(os.ErrClosed, "can't open closed file %s", "gommon.yml")
+	assert.Equal("can't open closed file gommon.yml: file already closed", fmt.Sprintf("%v", errw))
+	terr, ok := errw.(errors.TracedError)
+	assert.True(ok)
+	if testutil.Dump().B() {
+		errors.PrintFrames(terr.ErrorStack().Frames())
+	}
+	assert.Equal(3, len(terr.ErrorStack().Frames()))
+
+	// wrap fresh error reuse stack
+	ferr := freshErr()
+	errw = errors.Wrapf(ferr, "wrap again %d", 2)
+	assert.Equal(ferr.(errors.TracedError).ErrorStack(), errw.(errors.TracedError).ErrorStack())
+
+	// wrap wrapped error reuse stack
+	errww := errors.Wrapf(errw, "wrap again %d", 3)
+	assert.Equal(errw.(errors.TracedError).ErrorStack(), errww.(errors.TracedError).ErrorStack())
+}
 
 func TestCause(t *testing.T) {
 	assert := asst.New(t)
-	n := Wrap(nil, "nothing")
-	assert.Nil(Cause(n))
+	n := errors.Wrap(nil, "nothing")
+	assert.Nil(errors.Cause(n))
 
-	errw := Wrap(os.ErrClosed, "can't open closed file")
-	assert.Equal(os.ErrClosed, Cause(errw))
+	errw := errors.Wrap(os.ErrClosed, "can't open closed file")
+	assert.Equal(os.ErrClosed, errors.Cause(errw))
 
-	errww := Wrap(errw, "wrap again")
-	assert.Equal(os.ErrClosed, Cause(errww))
+	errww := errors.Wrap(errw, "wrap again")
+	assert.Equal(os.ErrClosed, errors.Cause(errww))
 }
 
 func TestDirectCause(t *testing.T) {
 	assert := asst.New(t)
 
-	errw := Wrap(os.ErrClosed, "can't open closed file")
-	errww := Wrap(errw, "wrap again")
-	assert.Equal(os.ErrClosed, Cause(errww))
-	assert.Equal(os.ErrClosed, DirectCause(errw))
-	assert.NotEqual(os.ErrClosed, DirectCause(errww))
-	assert.Equal("can't open closed file", DirectCause(errww).(Wrapper).Message())
+	errw := errors.Wrap(os.ErrClosed, "can't open closed file")
+	errww := errors.Wrap(errw, "wrap again")
+	assert.Equal(os.ErrClosed, errors.Cause(errww))
+	assert.Equal(os.ErrClosed, errors.Cause(errw))
+	assert.NotEqual(os.ErrClosed, errors.DirectCause(errww))
+	assert.Equal("can't open closed file", errors.DirectCause(errww).(errors.Wrapper).Message())
 }
 
 func TestWrappedError_Message(t *testing.T) {
 	assert := asst.New(t)
 
 	msg := "mewo"
-	errw := Wrap(os.ErrClosed, msg)
-	assert.Equal(msg, errw.(Wrapper).Message())
+	errw := errors.Wrap(os.ErrClosed, msg)
+	assert.Equal(msg, errw.(errors.Wrapper).Message())
 }
 
-// TODO: we should write test in errors_test package, especially for examples ...
 func ExampleWrap() {
-	err := Wrap(os.ErrNotExist, "oops")
+	err := errors.Wrap(os.ErrNotExist, "oops")
 	fmt.Println(err)
 	// Output:
 	// oops: file does not exist
+}
+
+// stubs
+func freshErr() error {
+	return errors.New("I am a fresh error")
+}
+
+func wrappedStdErr() error {
+	return errors.Wrap(os.ErrClosed, "can't open closed file")
 }

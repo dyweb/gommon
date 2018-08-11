@@ -168,5 +168,5 @@ func formatErrors(errs []error) string {
 		buf = append(buf, errs[i].Error()...)
 		buf = append(buf, MultiErrSep...)
 	}
-	return string(buf[:len(buf)-2])
+	return string(buf[:len(buf)-2]) // -2 trim len(MultiErrSep)
 }

@@ -1,6 +1,6 @@
 // +build !race
 
-package errors
+package errors_test
 
 import (
 	"os"
@@ -8,12 +8,14 @@ import (
 	"testing"
 
 	asst "github.com/stretchr/testify/assert"
+
+	"github.com/dyweb/gommon/errors"
 )
 
 // NOTE: when adding build tag, remember to have a blank line between it and package name, otherwise it is treated as comment
 func TestMultiErr_Append(t *testing.T) {
 	assert := asst.New(t)
-	merr := NewMultiErr()
+	merr := errors.NewMultiErr()
 	nRoutine := 10
 	errPerRoutine := 20
 	var wg sync.WaitGroup

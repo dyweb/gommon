@@ -2,7 +2,7 @@ package errors
 
 import "fmt"
 
-// Causer return the underlying error, a error does not have cause should return itself.
+// Causer returns the underlying error, a error without cause should return itself.
 // It is based on the private `causer` interface in pkg/errors, so errors wrapped using pkg/errors can also be handled
 type Causer interface {
 	Cause() error
@@ -20,6 +20,94 @@ type Wrapper interface {
 type TracedError interface {
 	fmt.Formatter
 	ErrorStack() *Stack
+}
+
+// Wrap creates a WrappedError with stack and set its cause to err.
+//
+// If the error being wrapped is already a TracedError, Wrap will reuse its stack trace instead of creating a new one.
+// The error being wrapped has deeper stack than where the Wrap function is called and is closer to the root of error.
+// This is based on https://github.com/pkg/errors/pull/122 to avoid having extra interface like WithMessage and WithStack
+// like https://github.com/pkg/errors does.
+//
+// Wrap returns nil if the error you are trying to wrap is nil, thus if it is the last error checking, you can return
+// the wrap function directly in one line instead of using typical three line error check and wrap. i.e.
+//
+//      return errors.Wrap(f.Close(), "failed to close file")
+//
+//      if err := f.Close(); err != nil {
+//            return errors.Wrap(err, "failed to close file")
+//      }
+//      return nil
+//
+func Wrap(err error, msg string) error {
+	if err == nil {
+		return nil
+	}
+	var stack *Stack
+	// reuse existing stack
+	if t, ok := err.(TracedError); ok {
+		stack = t.ErrorStack()
+	} else {
+		stack = callers()
+	}
+	return &WrappedError{
+		msg:   msg,
+		cause: err,
+		stack: stack,
+	}
+}
+
+// Wrapf is Wrap with fmt.Sprintf
+func Wrapf(err error, format string, args ...interface{}) error {
+	// NOTE: copied from wrap instead of call Wrap due to caller
+	// -- copy & paste start
+	if err == nil {
+		return nil
+	}
+	var stack *Stack
+	// reuse existing stack
+	if t, ok := err.(TracedError); ok {
+		stack = t.ErrorStack()
+	} else {
+		stack = callers()
+	}
+	// --- copy & paste end
+	return &WrappedError{
+		msg:   fmt.Sprintf(format, args...),
+		cause: err,
+		stack: stack,
+	}
+}
+
+// Cause returns root cause of the error (if any), it stops at the last error that does not implement Causer interface.
+// If you want get direct cause, use DirectCause.
+// If error is nil, it will return nil. If error is not wrapped it will return the error itself.
+// error wrapped using https://github.com/pkg/errors also satisfies this interface and can be unwrapped as well.
+func Cause(err error) error {
+	if err == nil {
+		return nil
+	}
+	for err != nil {
+		causer, ok := err.(Causer)
+		if !ok {
+			break
+		}
+		err = causer.Cause()
+	}
+	return err
+}
+
+// DirectCause returns the direct cause of the error (if any). It does NOT follow the cause chain, if you want to get
+// root cause, use Cause
+func DirectCause(err error) error {
+	if err == nil {
+		return nil
+	}
+	causer, ok := err.(Causer)
+	if !ok {
+		return nil
+	}
+	return causer.Cause()
 }
 
 var (
@@ -66,85 +154,8 @@ type WrappedError struct {
 	stack *Stack
 }
 
-// Wrap attach stack to
-func Wrap(err error, msg string) error {
-	// NOTE: sometimes we call wrap without check if the error is nil, it is cleaner if it is the last statement in func
-	//
-	// i.e. return errors.Wrap(f.Close(), "failed to close file")
-	//
-	// 		if err := f.Close(); err != nil {
-	//			return errors.Wrap(err, "failed to close file")
-	//      }
-	//      return nil
-	if err == nil {
-		return nil
-	}
-	var stack *Stack
-	// reuse existing stack
-	if t, ok := err.(TracedError); ok {
-		stack = t.ErrorStack()
-	} else {
-		stack = callers()
-	}
-	return &WrappedError{
-		msg:   msg,
-		cause: err,
-		stack: stack,
-	}
-}
-
-func Wrapf(err error, format string, args ...interface{}) error {
-	// NOTE: copied from wrap instead of call Wrap due to caller
-	if err == nil {
-		return nil
-	}
-	var stack *Stack
-	// reuse existing stack
-	if t, ok := err.(TracedError); ok {
-		stack = t.ErrorStack()
-	} else {
-		stack = callers()
-	}
-	return &WrappedError{
-		msg:   fmt.Sprintf(format, args...),
-		cause: err,
-		stack: stack,
-	}
-}
-
-// Cause returns root cause of the error (if any), it stops at the last error that does not implement Causer interface.
-// If you want get direct cause, use DirectCause.
-// If error is nil, it will return nil. If error is not wrapped it will return the error itself.
-// error wrapped using github.com/pkg/errors also satisfies this interface and can be unwrapped as well.
-func Cause(err error) error {
-	if err == nil {
-		return nil
-	}
-	for err != nil {
-		causer, ok := err.(Causer)
-		if !ok {
-			break
-		}
-		err = causer.Cause()
-	}
-	return err
-}
-
-// DirectCause returns the direct cause of the error (if any). It does NOT follow the cause chain, if you want to get
-// root cause, use Cause
-func DirectCause(err error) error {
-	if err == nil {
-		return nil
-	}
-	causer, ok := err.(Causer)
-	if !ok {
-		return nil
-	}
-	return causer.Cause()
-}
-
 func (wrapped *WrappedError) Error() string {
-	return wrapped.msg + ": " + wrapped.cause.Error()
+	return wrapped.msg + ErrCauseSep + wrapped.cause.Error()
 }
 
 func (wrapped *WrappedError) ErrorStack() *Stack {

@@ -1,4 +1,4 @@
-package errors
+package errors_test
 
 import (
 	"fmt"
@@ -7,11 +7,13 @@ import (
 	"testing"
 
 	asst "github.com/stretchr/testify/assert"
+
+	"github.com/dyweb/gommon/errors"
 )
 
 func TestMultiErrSafe_Append(t *testing.T) {
 	assert := asst.New(t)
-	merr := NewMultiErrSafe()
+	merr := errors.NewMultiErrSafe()
 	nRoutine := 10
 	errPerRoutine := 20
 	var wg sync.WaitGroup
@@ -30,9 +32,9 @@ func TestMultiErrSafe_Append(t *testing.T) {
 
 func TestMultiErr_AppendReturn(t *testing.T) {
 	// NOTE: inspired by https://github.com/uber-go/multierr/issues/21
-	errs := map[string]func() MultiErr{
-		"unsafe": NewMultiErr,
-		"safe":   NewMultiErrSafe,
+	errs := map[string]func() errors.MultiErr{
+		"unsafe": errors.NewMultiErr,
+		"safe":   errors.NewMultiErrSafe,
 	}
 	for name := range errs {
 		t.Run(name, func(t *testing.T) {
@@ -46,9 +48,9 @@ func TestMultiErr_AppendReturn(t *testing.T) {
 }
 
 func TestMultiErr_Flatten(t *testing.T) {
-	errs := map[string]func() MultiErr{
-		"unsafe": NewMultiErr,
-		"safe":   NewMultiErrSafe,
+	errs := map[string]func() errors.MultiErr{
+		"unsafe": errors.NewMultiErr,
+		"safe":   errors.NewMultiErrSafe,
 	}
 	for name := range errs {
 		t.Run(name, func(t *testing.T) {
@@ -71,7 +73,7 @@ func TestMultiErr_Flatten(t *testing.T) {
 func TestMultiErr_ErrorOrNil(t *testing.T) {
 	assert := asst.New(t)
 
-	merr := NewMultiErr()
+	merr := errors.NewMultiErr()
 	assert.Nil(merr.ErrorOrNil())
 
 	merr.Append(os.ErrPermission)
@@ -79,10 +81,13 @@ func TestMultiErr_ErrorOrNil(t *testing.T) {
 }
 
 func ExampleMultiErr() {
-	err := NewMultiErr()
+	// TODO: demo the return value of append
+	err := errors.NewMultiErr()
 	err.Append(os.ErrPermission)
 	err.Append(os.ErrNotExist)
+	fmt.Println(err.Error())
 	fmt.Println(err.Errors())
 	// Output:
+	// 2 errors; permission denied; file does not exist
 	// [permission denied file does not exist]
 }
