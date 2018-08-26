@@ -36,7 +36,7 @@ func GenerateEmbed(root string) ([]byte, error) {
 	fsutil.Walk(root, ignores, func(path string, info os.FileInfo) {
 		//log.Info(path)
 		// TODO: allow config if ignore file should be included
-		//if info.Name() == ignoreFileName {
+		//if info.Name() == IgnoreFileName {
 		//	return
 		//}
 		if info.IsDir() {
@@ -67,7 +67,7 @@ func GenerateEmbed(root string) ([]byte, error) {
 func readIgnoreFile(root string) (*fsutil.Ignores, error) {
 	var err error
 	ignores := fsutil.NewIgnores(nil, nil)
-	ignoreFile := join(root, ignoreFileName)
+	ignoreFile := join(root, IgnoreFileName)
 	if fsutil.FileExists(ignoreFile) {
 		log.Debugf("found ignore file %s", ignoreFile)
 		if ignores, err = ReadIgnoreFile(ignoreFile); err != nil {

@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/dyweb/gommon/errors"
 )
@@ -131,17 +130,6 @@ func (f *EmbedFile) Close() error {
 	return nil
 }
 
-var _ os.FileInfo = (*FileInfo)(nil)
-
-// the awkward File* prefix is to export the field but avoid conflict with os.FileInfo interface ...
-type FileInfo struct {
-	FileName    string
-	FileSize    int64
-	FileMode    os.FileMode
-	FileModTime time.Time
-	FileIsDir   bool
-}
-
 func RegisterEmbedBox(name string, box EmbedBox) {
 	log.Debugf("register embed box %s", name)
 	if _, exists := registeredBoxes[name]; exists {
@@ -166,30 +154,6 @@ func NewFileInfo(info os.FileInfo) *FileInfo {
 		FileModTime: info.ModTime(),
 		FileIsDir:   info.IsDir(),
 	}
-}
-
-func (i *FileInfo) Name() string {
-	return i.FileName
-}
-
-func (i *FileInfo) Size() int64 {
-	return i.FileSize
-}
-
-func (i *FileInfo) Mode() os.FileMode {
-	return i.FileMode
-}
-
-func (i *FileInfo) ModTime() time.Time {
-	return i.FileModTime
-}
-
-func (i *FileInfo) IsDir() bool {
-	return i.FileIsDir
-}
-
-func (i *FileInfo) Sys() interface{} {
-	return nil
 }
 
 func unzip(f *zip.File) ([]byte, error) {

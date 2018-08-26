@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	ignoreFileName = ".noodleignore"
+	IgnoreFileName = ".noodleignore"
 )
 
 var log = logutil.NewPackageLogger()

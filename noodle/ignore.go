@@ -45,7 +45,7 @@ func ReadIgnore(reader io.Reader) (*fsutil.Ignores, error) {
 	return ignores, nil
 }
 
-// CleanLine remove trailing space and \n, and anything following #
+// CleanLine remove trailing space and \n, and anything following the first #
 func CleanLine(line string) string {
 	var buf []rune
 Outer:
