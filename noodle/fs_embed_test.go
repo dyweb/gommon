@@ -1,16 +1,21 @@
-package noodle
+package noodle_test
 
 import (
 	"fmt"
-	"github.com/dyweb/gommon/util/fsutil"
 	"os"
 	"testing"
+
+	"github.com/dyweb/gommon/noodle"
+	"github.com/dyweb/gommon/util/fsutil"
 )
 
 func TestGenerateEmbed(t *testing.T) {
-	t.Skip("modification time result in different binary data")
+	//t.Skip("modification time result in different binary data")
 
-	b, err := GenerateEmbed("_examples/embed/assets")
+	b, err := noodle.GenerateEmbed(noodle.EmbedConfig{
+		Root:       "_examples/embed/assets",
+		ExportName: "YangchunMian",
+	})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -50,12 +50,9 @@
   version = "v1.0.2"
 
 [[projects]]
-  digest = "1:befd7181c2f92c9f05abf17cd7e15538919f19cf7871d794cacc45a4fb99c135"
+  digest = "1:18752d0b95816a1b777505a97f71c7467a8445b8ffb55631a7bf779f6ba4fa83"
   name = "github.com/stretchr/testify"
-  packages = [
-    "assert",
-    "require",
-  ]
+  packages = ["assert"]
   pruneopts = "UT"
   revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
   version = "v1.2.2"
@@ -87,7 +84,6 @@
     "github.com/kballard/go-shellquote",
     "github.com/spf13/cobra",
     "github.com/stretchr/testify/assert",
-    "github.com/stretchr/testify/require",
     "golang.org/x/net/proxy",
     "gopkg.in/yaml.v2",
   ]

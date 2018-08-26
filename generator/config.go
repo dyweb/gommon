@@ -8,23 +8,42 @@ import (
 	"github.com/dyweb/gommon/errors"
 )
 
-type Config struct {
+type Config interface {
+	IsGo() bool
+	Render(root string) error
+}
+
+type GoConfig interface {
+	// Imports that will be put at top of file
+	Imports() []string
+	// FileName is the name the generator wants the caller to use when saving content
+	FileName() string
+	// RenderBody returns the body without imports
+	RenderBody(root string) ([]byte, error)
+}
+
+type ConfigFile struct {
+	// Loggers is helper methods on struct for gommon/log to build a tree for logger, this is subject to change
 	Loggers     []LoggerConfig     `yaml:"loggers"`
 	GoTemplates []GoTemplateConfig `yaml:"gotmpls"`
-	Shells      []ShellConfig      `yaml:"shells"`
+	// Noodles is the config for embedding assets by generating go file with a large byte slice
+	Noodles []NoodleConfig `yaml:"noodles"`
+	// Shells is shell commands to be executed
+	Shells []ShellConfig `yaml:"shells"`
 	// GoPackage override folder name for generated go file
 	GoPackage string `yaml:"go_package"`
+
 	// set when traversing the folders
 	pkg  string
 	file string
 }
 
-func NewConfig(pkg string, file string) *Config {
-	return &Config{pkg: pkg, file: file}
+func NewConfigFile(pkg string, file string) *ConfigFile {
+	return &ConfigFile{pkg: pkg, file: file}
 }
 
 // RenderGommon returns nil, nil when there is nothing to render
-func (c *Config) RenderGommon() ([]byte, error) {
+func (c *ConfigFile) RenderGommon() ([]byte, error) {
 	// header
 	header := &bytes.Buffer{}
 	fmt.Fprintf(header, Header(generatorName, c.file))
@@ -36,6 +55,7 @@ func (c *Config) RenderGommon() ([]byte, error) {
 	}
 	// body
 	body := &bytes.Buffer{}
+	// logger
 	if len(c.Loggers) > 0 {
 		fmt.Fprintln(header, "import dlog \"github.com/dyweb/gommon/log\"")
 		for _, l := range c.Loggers {
@@ -44,7 +64,7 @@ func (c *Config) RenderGommon() ([]byte, error) {
 			}
 		}
 	}
-	if len(body.Bytes()) == 0 {
+	if body.Len() == 0 {
 		return nil, nil
 	}
 	header.Write(body.Bytes())
@@ -56,30 +76,4 @@ func (c *Config) RenderGommon() ([]byte, error) {
 		//log.Debugf("formatted len %d", len(formatted))
 		return formatted, nil
 	}
-}
-
-func (c *Config) RenderGoTemplate(root string) error {
-	if len(c.GoTemplates) == 0 {
-		log.Debugf("no go template specified in file %s", c.file)
-		return nil
-	}
-	for _, t := range c.GoTemplates {
-		if err := t.Render(root); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (c *Config) RenderShell(root string) error {
-	if len(c.Shells) == 0 {
-		log.Debugf("no shell specified in file %s", c.file)
-		return nil
-	}
-	for _, s := range c.Shells {
-		if err := s.Render(root); err != nil {
-			return err
-		}
-	}
-	return nil
 }

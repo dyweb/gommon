@@ -9,14 +9,10 @@ import (
 	"github.com/dyweb/gommon/errors"
 )
 
-var registeredBowels map[string]EmbedBowel
-
 var (
 	_ http.FileSystem = (*EmbedBowel)(nil)
 	_ Bowel           = (*EmbedBowel)(nil)
 )
-
-var _ http.File = (*EmbedDir)(nil)
 
 type EmbedBowel struct {
 	Dirs  map[string]EmbedDir
@@ -29,6 +25,8 @@ type EmbedFile struct {
 	Data   []byte
 	reader *bytes.Reader
 }
+
+var _ http.File = (*EmbedDir)(nil)
 
 type EmbedDir struct {
 	FileInfo
@@ -132,24 +130,4 @@ func (f *EmbedFile) Close() error {
 	//	f.reader = nil
 	//}
 	return nil
-}
-
-func RegisterEmbedBowel(name string, box EmbedBowel) {
-	log.Debugf("register embed box %s", name)
-	if _, exists := registeredBowels[name]; exists {
-		log.Warnf("box %s already exists, overwrite it now", name)
-	}
-	registeredBowels[name] = box
-}
-
-func GetEmbedBowel(name string) (EmbedBowel, error) {
-	if box, exists := registeredBowels[name]; exists {
-		return box, nil
-	} else {
-		return box, errors.Errorf("box %s does not exist", name)
-	}
-}
-
-func init() {
-	registeredBowels = make(map[string]EmbedBowel)
 }

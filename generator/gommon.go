@@ -7,6 +7,8 @@ import (
 	"github.com/dyweb/gommon/errors"
 )
 
+// NOTE: for now gommon only has logger
+
 type LoggerConfig struct {
 	Struct   string `yaml:"struct"`
 	Receiver string `yaml:"receiver"`

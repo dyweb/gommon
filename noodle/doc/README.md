@@ -7,7 +7,8 @@
 
 ## Implementation
 
-
+Current implementation generate a go file with a huge `[]byte` and metadata as go struct, all the files are compressed
+into single zip file, folders are only kept as go struct.
 
 ## Ref
 

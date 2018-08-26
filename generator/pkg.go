@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	configFile    = "gommon.yml"
-	generatorName = "gommon"
-	generatedFile = "gommon_generated.go"
+	GommonConfigFile = "gommon.yml"
+	generatorName    = "gommon"
+	GeneratedFile    = "gommon_generated.go"
 )
 
 var log = logutil.NewPackageLogger()

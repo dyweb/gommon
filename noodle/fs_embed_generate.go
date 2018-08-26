@@ -14,8 +14,16 @@ import (
 	"github.com/dyweb/gommon/util/fsutil"
 )
 
+type EmbedConfig struct {
+	Root       string `json:"root" yaml:"root"`
+	ExportName string `json:"export_name" yaml:"export_name"`
+}
+
+// TODO: allow generate multiple bowels in one file
+
 // GenerateEmbed return code without package and the CODE GENERATED header
-func GenerateEmbed(root string) ([]byte, error) {
+func GenerateEmbed(cfg EmbedConfig) ([]byte, error) {
+	root := cfg.Root
 	var (
 		err     error
 		ignores *fsutil.Ignores
@@ -61,7 +69,7 @@ func GenerateEmbed(root string) ([]byte, error) {
 	if data, err = zipFiles(root, files); err != nil {
 		return nil, err
 	}
-	return renderTemplate(root, dirs, data)
+	return renderTemplate(cfg, dirs, data)
 }
 
 func readIgnoreFile(root string) (*fsutil.Ignores, error) {
@@ -162,7 +170,12 @@ func writeZipFile(w *zip.Writer, root string, path string, file *EmbedFile) erro
 	return nil
 }
 
-func renderTemplate(root string, dirs map[string]*EmbedDir, data []byte) ([]byte, error) {
+func renderTemplate(cfg EmbedConfig, dirs map[string]*EmbedDir, data []byte) ([]byte, error) {
+	root := cfg.Root
+	if cfg.ExportName == "" {
+		log.Debug("export name not set, using default")
+		cfg.ExportName = DefaultExportName
+	}
 	t, err := template.New("noodleembed").Parse(embedTemplate)
 	if err != nil {
 		return nil, errors.Wrap(err, "can't parse embed template")
@@ -170,12 +183,14 @@ func renderTemplate(root string, dirs map[string]*EmbedDir, data []byte) ([]byte
 	// trim root
 	trimmedDirs := make(map[string]*EmbedDir)
 	for p, d := range dirs {
-		trimmedDirs[strings.TrimLeft(p, root)] = d
+		// NOTE: use TrimPrefix instead TrimLeft
+		trimmedDirs[strings.TrimPrefix(p, root)] = d
 	}
 	buf := &bytes.Buffer{}
 	if err := t.Execute(buf, map[string]interface{}{
-		"dir":  trimmedDirs,
-		"data": data,
+		"dir":        trimmedDirs,
+		"data":       data,
+		"exportName": cfg.ExportName,
 	}); err != nil {
 		return nil, errors.Wrap(err, "can't execute template")
 	}

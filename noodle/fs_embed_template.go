@@ -7,7 +7,8 @@ import (
 	"github.com/dyweb/gommon/noodle"
 )
 
-func init() {
+// GetNoodle{{ .exportName }} returns an extracted EmbedBowl
+func GetNoodle{{ .exportName }} () (noodle.EmbedBowel, error){
 
 dirs := map[string]noodle.EmbedDir{
 {{- range $path, $dir := .dir -}}
@@ -34,12 +35,14 @@ dirs := map[string]noodle.EmbedDir{
 {{- end -}}
 }
 
-box := noodle.EmbedBowel{
-	Dirs: dirs,
-	Data: {{ printf "%#v" .data }},
-}
-
-noodle.RegisterEmbedBowel("test", box)
-
+	data := {{ printf "%#v" .data }}
+	bowl := noodle.EmbedBowel{
+		Dirs: dirs,
+		Data: data,
+	}
+	if err := bowl.ExtractFiles(); err != nil {
+		return bowl, err
+	}
+    return bowl, nil
 }
 `
