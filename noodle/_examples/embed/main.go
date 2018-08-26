@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	box, err := noodle.GetEmbedBox("test")
+	box, err := noodle.GetEmbedBowel("test")
 	if err != nil {
 		log.Fatal(err)
 	}

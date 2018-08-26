@@ -3,15 +3,16 @@ package noodle // import "github.com/dyweb/gommon/noodle"
 
 import (
 	"github.com/dyweb/gommon/util/logutil"
-	"path/filepath"
+	"net/http"
 )
 
 const (
-	IgnoreFileName = ".noodleignore"
+	DefaultIgnoreFileName = ".noodleignore"
 )
 
 var log = logutil.NewPackageLogger()
 
-func join(elem ...string) string {
-	return filepath.Join(elem...)
+// Bowel is the container for different types of noodles
+type Bowel interface {
+	http.FileSystem
 }

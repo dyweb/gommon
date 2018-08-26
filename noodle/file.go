@@ -17,6 +17,16 @@ type FileInfo struct {
 	FileIsDir   bool
 }
 
+func NewFileInfo(info os.FileInfo) *FileInfo {
+	return &FileInfo{
+		FileName:    info.Name(),
+		FileSize:    info.Size(),
+		FileMode:    info.Mode(),
+		FileModTime: info.ModTime(),
+		FileIsDir:   info.IsDir(),
+	}
+}
+
 func (i *FileInfo) Name() string {
 	return i.FileName
 }

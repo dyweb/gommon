@@ -5,7 +5,10 @@ import (
 	"os"
 )
 
-var _ http.FileSystem = (*LocalFs)(nil)
+var (
+	_ http.FileSystem = (*LocalFs)(nil)
+	_ Bowel           = (*LocalFs)(nil)
+)
 
 type LocalFs struct {
 	root    string

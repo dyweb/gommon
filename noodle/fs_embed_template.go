@@ -34,12 +34,12 @@ dirs := map[string]noodle.EmbedDir{
 {{- end -}}
 }
 
-box := noodle.EmbedBox{
+box := noodle.EmbedBowel{
 	Dirs: dirs,
 	Data: {{ printf "%#v" .data }},
 }
 
-noodle.RegisterEmbedBox("test", box)
+noodle.RegisterEmbedBowel("test", box)
 
 }
 `

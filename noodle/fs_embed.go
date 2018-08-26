@@ -3,19 +3,22 @@ package noodle
 import (
 	"archive/zip"
 	"bytes"
-	"io/ioutil"
 	"net/http"
 	"os"
 
 	"github.com/dyweb/gommon/errors"
 )
 
-var registeredBoxes map[string]EmbedBox
+var registeredBowels map[string]EmbedBowel
 
-var _ http.FileSystem = (*EmbedBox)(nil)
+var (
+	_ http.FileSystem = (*EmbedBowel)(nil)
+	_ Bowel           = (*EmbedBowel)(nil)
+)
+
 var _ http.File = (*EmbedDir)(nil)
 
-type EmbedBox struct {
+type EmbedBowel struct {
 	Dirs  map[string]EmbedDir
 	Data  []byte
 	files map[string]EmbedFile
@@ -49,7 +52,7 @@ func (d *EmbedDir) Close() error {
 }
 
 func (d *EmbedDir) Readdir(count int) ([]os.FileInfo, error) {
-	// TODO: disable list dir
+	// TODO: allow disable list dir
 	log.Infof("readdir %d", count)
 	files := make([]os.FileInfo, 0, len(d.Entries))
 	// FIXED: learn this the hard way .. https://github.com/dyweb/gommon/issues/50
@@ -65,7 +68,7 @@ func (d *EmbedDir) Readdir(count int) ([]os.FileInfo, error) {
 	return files, nil
 }
 
-func (b *EmbedBox) Open(name string) (http.File, error) {
+func (b *EmbedBowel) Open(name string) (http.File, error) {
 	// check dir first
 	log.Infof("open %s", name)
 	// trim /
@@ -81,7 +84,7 @@ func (b *EmbedBox) Open(name string) (http.File, error) {
 	return nil, os.ErrNotExist
 }
 
-func (b *EmbedBox) ExtractFiles() error {
+func (b *EmbedBowel) ExtractFiles() error {
 	r, err := zip.NewReader(bytes.NewReader(b.Data), int64(len(b.Data)))
 	if err != nil {
 		errors.Wrap(err, "can't read zipped data")
@@ -119,7 +122,8 @@ func (f *EmbedFile) Stat() (os.FileInfo, error) {
 }
 
 func (f *EmbedFile) Readdir(count int) ([]os.FileInfo, error) {
-	return nil, os.ErrNotExist
+	// TODO: what's the correct error when Readdir is called on File
+	return nil, os.ErrInvalid
 }
 
 func (f *EmbedFile) Close() error {
@@ -130,45 +134,22 @@ func (f *EmbedFile) Close() error {
 	return nil
 }
 
-func RegisterEmbedBox(name string, box EmbedBox) {
+func RegisterEmbedBowel(name string, box EmbedBowel) {
 	log.Debugf("register embed box %s", name)
-	if _, exists := registeredBoxes[name]; exists {
+	if _, exists := registeredBowels[name]; exists {
 		log.Warnf("box %s already exists, overwrite it now", name)
 	}
-	registeredBoxes[name] = box
+	registeredBowels[name] = box
 }
 
-func GetEmbedBox(name string) (EmbedBox, error) {
-	if box, exists := registeredBoxes[name]; exists {
+func GetEmbedBowel(name string) (EmbedBowel, error) {
+	if box, exists := registeredBowels[name]; exists {
 		return box, nil
 	} else {
 		return box, errors.Errorf("box %s does not exist", name)
 	}
 }
 
-func NewFileInfo(info os.FileInfo) *FileInfo {
-	return &FileInfo{
-		FileName:    info.Name(),
-		FileSize:    info.Size(),
-		FileMode:    info.Mode(),
-		FileModTime: info.ModTime(),
-		FileIsDir:   info.IsDir(),
-	}
-}
-
-func unzip(f *zip.File) ([]byte, error) {
-	r, err := f.Open()
-	if err != nil {
-		return nil, errors.Wrap(err, "can't open file inside zip")
-	}
-	if b, err := ioutil.ReadAll(r); err != nil {
-		return nil, errors.Wrap(err, "can't read file content")
-	} else {
-		r.Close()
-		return b, nil
-	}
-}
-
 func init() {
-	registeredBoxes = make(map[string]EmbedBox)
+	registeredBowels = make(map[string]EmbedBowel)
 }
