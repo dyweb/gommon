@@ -7,14 +7,15 @@ import (
 
 	"github.com/dyweb/gommon/noodle"
 	"github.com/dyweb/gommon/util/fsutil"
+	"github.com/dyweb/gommon/util/testutil"
 )
 
 func TestGenerateEmbed(t *testing.T) {
-	//t.Skip("modification time result in different binary data")
+	testutil.RunIf(t, testutil.IsTravis())
 
 	b, err := noodle.GenerateEmbed(noodle.EmbedConfig{
-		Root:       "_examples/embed/assets",
-		ExportName: "YangchunMian",
+		Root: "_examples/embed/assets",
+		Name: "YangchunMian",
 	})
 	if err != nil {
 		t.Fatal(err)

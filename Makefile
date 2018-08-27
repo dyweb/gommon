@@ -29,6 +29,11 @@ docker-push    push runner image to docker registry
 endef
 export GOMMON_MAKEFILE_HELP_MSG
 
+# TODO: might have a help verbose to and put build and docker commands in it
+.PHONY: help
+help:
+	@echo "$$GOMMON_MAKEFILE_HELP_MSG"
+
 # -- build vars ---
 PKGS=./errors/... ./generator/... ./log/... ./noodle/... ./requests/... ./structure/... ./util/...
 PKGST=./cmd ./errors ./generator ./log ./noodle ./requests ./structure ./util
@@ -39,13 +44,6 @@ CURRENT_USER = $(USER)
 FLAGS = -X main.version=$(VERSION) -X main.commit=$(BUILD_COMMIT) -X main.buildTime=$(BUILD_TIME) -X main.buildUser=$(CURRENT_USER)
 # -- build vars ---
 
-# TODO: might have a help verbose to and put build and docker commands in it
-.PHONY: help
-help:
-	@echo "$$GOMMON_MAKEFILE_HELP_MSG"
-
-# TODO: define help messages
-
 .PHONY: install
 install:
 	go install -ldflags "$(FLAGS)" ./cmd/gommon
@@ -54,6 +52,11 @@ install:
 fmt:
 	gofmt -d -l -w $(PKGST)
 
+.PHONY: generate
+generate:
+	gommon generate -v
+
+# --- test ---
 .PHONY: test test-cover test-cover-html test-race test-log
 
 test:
@@ -71,6 +74,7 @@ test-race:
 
 test-log:
 	go test -v -cover ./log/...
+# --- test ---
 
 # TODO: refer tools used in https://github.com/360EntSecGroup-Skylar/goreporter
 .PHONY: vet
@@ -82,9 +86,11 @@ doc:
 	xdg-open http://localhost:6060/pkg/github.com/dyweb/gommon &
 	godoc -http=":6060"
 
+# TODO: ignore example, test, legacy etc.
+# https://github.com/Aaronepower/tokei
 .PHONY: loc
 loc:
-	cloc --exclude-dir=vendor,.idea,playground,legacy .
+	tokei .
 
 # --- dependency management ---
 .PHONY: dep-install dep-update
