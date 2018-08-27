@@ -12,6 +12,7 @@ import (
 
 	"github.com/dyweb/gommon/errors"
 	"github.com/dyweb/gommon/util/fsutil"
+	"github.com/dyweb/gommon/util/genutil"
 )
 
 // Generate walks all sub directories and generate files based on gommon.yml
@@ -62,7 +63,7 @@ func GenerateSingle(file string) error {
 	}
 	if body.Len() != 0 {
 		var header bytes.Buffer
-		header.WriteString(DefaultHeader(file))
+		header.WriteString(genutil.DefaultHeader(file))
 		header.WriteString("package " + pkg + "\n\n")
 		formatted, err := format.Source(header.Bytes())
 		if err != nil {

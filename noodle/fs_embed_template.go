@@ -1,13 +1,8 @@
 package noodle
 
 var embedTemplate = `
-import (
-	"time"
 
-	"github.com/dyweb/gommon/noodle"
-)
-
-// GetNoodle{{ .name }} returns an extracted EmbedBowl
+// GetNoodle{{ .name }} returns an extracted EmbedBowl generated from {{ .src }}
 func GetNoodle{{ .name }} () (noodle.EmbedBowel, error){
 
 dirs := map[string]noodle.EmbedDir{

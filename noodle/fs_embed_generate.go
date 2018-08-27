@@ -12,17 +12,49 @@ import (
 
 	"github.com/dyweb/gommon/errors"
 	"github.com/dyweb/gommon/util/fsutil"
+	"github.com/dyweb/gommon/util/genutil"
 )
+
+const generator = "gommon/noodle"
 
 type EmbedConfig struct {
 	Root string `json:"root" yaml:"root"`
 	Name string `json:"name" yaml:"name"`
 }
 
-// TODO: allow generate multiple bowels in one file
+// GenerateEmbeds return a formatted go file, it's header + package + GenerateEmbedPartial
+// You can specify multiple cfg to have several folders bundled into a single file
+func GenerateEmbeds(cfgs []EmbedConfig, pkg string) ([]byte, error) {
+	var srcs []string
+	for _, cfg := range cfgs {
+		srcs = append(srcs, cfg.Root)
+	}
+	var buf bytes.Buffer
+	buf.WriteString(genutil.Header(generator, strings.Join(srcs, ",")))
+	buf.WriteString("package " + pkg)
+	buf.WriteString(`
+import (
+	"time"
+	
+	"github.com/dyweb/gommon/noodle"
+)
+`)
+	for _, cfg := range cfgs {
+		if b, err := GenerateEmbedPartial(cfg); err != nil {
+			return nil, err
+		} else {
+			buf.Write(b)
+		}
+	}
+	b, err := format.Source(buf.Bytes())
+	if err != nil {
+		return nil, errors.Wrap(err, "can't format go code")
+	}
+	return b, nil
+}
 
-// GenerateEmbed return code without package and the CODE GENERATED header
-func GenerateEmbed(cfg EmbedConfig) ([]byte, error) {
+// GenerateEmbedPartial return code WITHOUT header and import, use GenerateEmbeds if you want a full go file
+func GenerateEmbedPartial(cfg EmbedConfig) ([]byte, error) {
 	root := cfg.Root
 	var (
 		err     error
@@ -191,13 +223,10 @@ func renderTemplate(cfg EmbedConfig, dirs map[string]*EmbedDir, data []byte) ([]
 		"dir":  trimmedDirs,
 		"data": data,
 		"name": cfg.Name,
+		"src":  cfg.Root,
 	}); err != nil {
 		return nil, errors.Wrap(err, "can't execute template")
 	}
 	//log.Info(buf.String())
-	if b, err := format.Source(buf.Bytes()); err != nil {
-		return nil, errors.Wrap(err, "can't format go code")
-	} else {
-		return b, nil
-	}
+	return buf.Bytes(), nil
 }

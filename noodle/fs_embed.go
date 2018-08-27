@@ -50,8 +50,7 @@ func (d *EmbedDir) Close() error {
 }
 
 func (d *EmbedDir) Readdir(count int) ([]os.FileInfo, error) {
-	// TODO: allow disable list dir
-	log.Infof("readdir %d", count)
+	log.Debugf("readdir %d", count)
 	files := make([]os.FileInfo, 0, len(d.Entries))
 	// FIXED: learn this the hard way .. https://github.com/dyweb/gommon/issues/50
 	// the element is range syntax is created when loop start and it is reused between iterations, thus same pointer
@@ -68,11 +67,13 @@ func (d *EmbedDir) Readdir(count int) ([]os.FileInfo, error) {
 
 func (b *EmbedBowel) Open(name string) (http.File, error) {
 	// check dir first
-	log.Infof("open %s", name)
+	log.Debugf("open %s", name)
 	// trim /
 	name = name[1:]
 	if d, exists := b.Dirs[name]; exists {
-		log.Infof("%s entries %d", name, len(d.Entries))
+		// TODO: allow disable list dir here
+
+		log.Debugf("%s entries %d", name, len(d.Entries))
 		return &d, nil
 	}
 	// check file
