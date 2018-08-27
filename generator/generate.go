@@ -2,6 +2,7 @@ package generator
 
 import (
 	"bytes"
+	"go/format"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -51,36 +52,34 @@ func GenerateSingle(file string) error {
 	}
 
 	// gommon
-	var buf bytes.Buffer
+	var body bytes.Buffer
 	for _, l := range cfg.Loggers {
-		b, err := l.RenderBody(dir)
+		b, err := l.Render()
 		if err != nil {
 			return err
 		}
-		buf.Write(b)
+		body.Write(b)
 	}
-	if buf.Len() != 0 {
-		// TODO: have the imports
-		writeGoFile(pkg, nil, buf.Bytes(), file, join(dir, DefaultGeneratedFile))
+	if body.Len() != 0 {
+		var header bytes.Buffer
+		header.WriteString(DefaultHeader(file))
+		header.WriteString("package " + pkg + "\n\n")
+		formatted, err := format.Source(header.Bytes())
+		if err != nil {
+			return errors.Wrap(err, "error format generated go code")
+		}
+		if fsutil.WriteFile(join(dir, DefaultGeneratedFile), formatted); err != nil {
+			return errors.Wrap(err, "can write generated file to disk")
+		}
+		log.Debugf("generated %s from %s", join(dir, DefaultGeneratedFile), file)
 	}
-
-	// TODO: write package, imports and write file
 
 	// TODO: noodle
-	buf.Reset()
 
 	// gotmpl
 	for _, tpl := range cfg.GoTemplates {
-		if tpl.IsGo() {
-			b, err := tpl.RenderBody(dir)
-			if err != nil {
-				return err
-			}
-			// TODO: write imports (NO package) and write file
-		} else {
-			if err := tpl.Render(dir); err != nil {
-				return err
-			}
+		if err := tpl.Render(dir); err != nil {
+			return err
 		}
 	}
 

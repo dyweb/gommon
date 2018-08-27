@@ -2,6 +2,7 @@
 package generator // import "github.com/dyweb/gommon/generator"
 
 import (
+	dlog "github.com/dyweb/gommon/log"
 	"github.com/dyweb/gommon/util/logutil"
 )
 
@@ -10,38 +11,18 @@ const (
 	PkgName              = "gommon"
 	GommonConfigFile     = "gommon.yml"
 	Name                 = "gommon"
-	GeneratedFile        = "gommon_generated.go"
 	DefaultGeneratedFile = "gommon_generated.go"
 )
 
 var log = logutil.NewPackageLogger()
 
-type Config interface {
-	IsGo() bool
-	Render(root string) error
-}
-
-type Import struct {
-	Pkg   string
-	Alias string
-}
-
-type GoConfig interface {
-	// Imports that will be put at top of file
-	Imports() []Import
-	// FileName is the name the generator wants the caller to use when saving content
-	FileName() string
-	// RenderBody returns the body without imports
-	RenderBody(root string) ([]byte, error)
-}
-
 type ConfigFile struct {
 	// Loggers is helper methods on struct for gommon/log to build a tree for logger, this is subject to change
-	Loggers []LoggerConfig `yaml:"loggers"`
+	Loggers []dlog.StructLoggerConfig `yaml:"loggers"`
 	// GoTemplates is templates written in go's text/template format, they are mainly used to generate go source file
 	GoTemplates []GoTemplateConfig `yaml:"gotmpls"`
 	// Noodles is the config for embedding assets by generating go file with a large byte slice
-	Noodles []NoodleConfig `yaml:"noodles"`
+	//Noodles []NoodleConfig `yaml:"noodles"`
 	// Shells is shell commands to be executed
 	Shells []ShellConfig `yaml:"shells"`
 	// GoPackage override folder name for generated go file

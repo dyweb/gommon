@@ -10,8 +10,6 @@ import (
 	"github.com/dyweb/gommon/util/fsutil"
 )
 
-var _ Config = (*ShellConfig)(nil)
-
 // ShellConfig is shell command executed by gommon
 // https://github.com/dyweb/gommon/issues/53
 type ShellConfig struct {
@@ -24,11 +22,6 @@ type ShellConfig struct {
 	Shell bool `yaml:"shell"`
 	// Cd is true, switch to the folder of config file when executing command
 	Cd bool `yaml:"cd"`
-}
-
-// IsGo always returns false
-func (c *ShellConfig) IsGo() bool {
-	return false
 }
 
 // Render execute the shell command, redirect stdin/out/err and block until it is finished

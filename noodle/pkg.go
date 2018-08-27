@@ -8,8 +8,7 @@ import (
 
 const (
 	DefaultIgnoreFileName = ".noodleignore"
-	// DefaultExportName is the default name when export data as package level variable in generated go file
-	DefaultExportName = "Bowel"
+	DefaultName           = "Bowel"
 )
 
 var log = logutil.NewPackageLogger()

@@ -7,8 +7,8 @@ import (
 	"github.com/dyweb/gommon/noodle"
 )
 
-// GetNoodle{{ .exportName }} returns an extracted EmbedBowl
-func GetNoodle{{ .exportName }} () (noodle.EmbedBowel, error){
+// GetNoodle{{ .name }} returns an extracted EmbedBowl
+func GetNoodle{{ .name }} () (noodle.EmbedBowel, error){
 
 dirs := map[string]noodle.EmbedDir{
 {{- range $path, $dir := .dir -}}

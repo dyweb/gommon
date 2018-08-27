@@ -15,8 +15,8 @@ import (
 )
 
 type EmbedConfig struct {
-	Root       string `json:"root" yaml:"root"`
-	ExportName string `json:"export_name" yaml:"export_name"`
+	Root string `json:"root" yaml:"root"`
+	Name string `json:"name" yaml:"name"`
 }
 
 // TODO: allow generate multiple bowels in one file
@@ -172,9 +172,9 @@ func writeZipFile(w *zip.Writer, root string, path string, file *EmbedFile) erro
 
 func renderTemplate(cfg EmbedConfig, dirs map[string]*EmbedDir, data []byte) ([]byte, error) {
 	root := cfg.Root
-	if cfg.ExportName == "" {
+	if cfg.Name == "" {
 		log.Debug("export name not set, using default")
-		cfg.ExportName = DefaultExportName
+		cfg.Name = DefaultName
 	}
 	t, err := template.New("noodleembed").Parse(embedTemplate)
 	if err != nil {
@@ -188,9 +188,9 @@ func renderTemplate(cfg EmbedConfig, dirs map[string]*EmbedDir, data []byte) ([]
 	}
 	buf := &bytes.Buffer{}
 	if err := t.Execute(buf, map[string]interface{}{
-		"dir":        trimmedDirs,
-		"data":       data,
-		"exportName": cfg.ExportName,
+		"dir":  trimmedDirs,
+		"data": data,
+		"name": cfg.Name,
 	}); err != nil {
 		return nil, errors.Wrap(err, "can't execute template")
 	}
