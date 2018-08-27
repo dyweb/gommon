@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"bytes"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -33,11 +34,6 @@ func Generate(root string) error {
 
 // GenerateSingle generates based on a single gommon.yml
 func GenerateSingle(file string) error {
-	var (
-		err      error
-		rendered []byte
-	)
-
 	dir := filepath.Dir(file)
 	segments := strings.Split(dir, string(os.PathSeparator))
 	pkg := segments[len(segments)-1]
@@ -50,20 +46,49 @@ func GenerateSingle(file string) error {
 	if err = yaml.Unmarshal(b, &cfg); err != nil {
 		return errors.Wrap(err, "can't decode config file as YAML")
 	}
-
-	// gommon, logger
-	if rendered, err = cfg.RenderGommon(); err != nil {
-		return errors.Wrap(err, "can't render based on config")
+	if cfg.GoPackage != "" {
+		pkg = cfg.GoPackage
 	}
-	if len(rendered) != 0 {
-		//log.Debugf("%s rendered length %d", file, len(rendered))
-		if err = fsutil.WriteFile(join(dir, GeneratedFile), rendered); err != nil {
-			return errors.Wrap(err, "can't write rendered gommon file")
+
+	// gommon
+	var buf bytes.Buffer
+	for _, l := range cfg.Loggers {
+		b, err := l.RenderBody(dir)
+		if err != nil {
+			return err
 		}
-		log.Debugf("generated %s from %s", join(dir, GeneratedFile), file)
-	} else {
-		// FIXME: (at15) this log is not accurate, gommon will have more than just logger identity
-		log.Debugf("%s does not have gommon logger config", dir)
+		buf.Write(b)
+	}
+	if buf.Len() != 0 {
+		// TODO: have the imports
+		writeGoFile(pkg, nil, buf.Bytes(), file, join(dir, DefaultGeneratedFile))
+	}
+
+	// TODO: write package, imports and write file
+
+	// TODO: noodle
+	buf.Reset()
+
+	// gotmpl
+	for _, tpl := range cfg.GoTemplates {
+		if tpl.IsGo() {
+			b, err := tpl.RenderBody(dir)
+			if err != nil {
+				return err
+			}
+			// TODO: write imports (NO package) and write file
+		} else {
+			if err := tpl.Render(dir); err != nil {
+				return err
+			}
+		}
+	}
+
+	// shell
+	for _, s := range cfg.Shells {
+		if err := s.Render(dir); err != nil {
+			return err
+		}
 	}
 
 	return nil

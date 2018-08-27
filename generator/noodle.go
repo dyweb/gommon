@@ -18,10 +18,10 @@ func (c *NoodleConfig) Render(root string) error {
 	return errors.New("not implemented")
 }
 
-func (c *NoodleConfig) Imports() []string {
-	return []string{
-		"time",
-		"github.com/dyweb/gommon/noodle",
+func (c *NoodleConfig) Imports() []Import {
+	return []Import{
+		{"time", ""},
+		{"github.com/dyweb/gommon/noodle", ""},
 	}
 }
 

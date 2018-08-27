@@ -27,7 +27,7 @@ func (c *GoTemplateConfig) IsGo() bool {
 }
 
 // Imports is always empty, user should write imports in the template
-func (c *GoTemplateConfig) Imports() []string {
+func (c *GoTemplateConfig) Imports() []Import {
 	return nil
 }
 
@@ -53,8 +53,7 @@ func (c *GoTemplateConfig) Render(root string) error {
 		return err
 	}
 	var buf bytes.Buffer
-	buf.WriteString(Header(generatorName, join(root, c.Src)))
-	buf.Write([]byte("\n"))
+	buf.WriteString(DefaultHeader(join(root, c.Src)))
 	buf.Write(b)
 	if err = fsutil.WriteFile(join(root, c.Dst), buf.Bytes()); err != nil {
 		return err

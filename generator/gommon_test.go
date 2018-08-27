@@ -1,10 +1,10 @@
 package generator
 
 import (
-	"bytes"
 	"testing"
 
 	asst "github.com/stretchr/testify/assert"
+	requir "github.com/stretchr/testify/require"
 )
 
 func TestLoggerConfig_RenderTo(t *testing.T) {
@@ -43,10 +43,11 @@ func (c *YAMLConfig) LoggerIdentity(justCallMe func() *dlog.Identity) *dlog.Iden
 	for _, cfg := range cfgs {
 		t.Run(cfg.name, func(t *testing.T) {
 			assert := asst.New(t)
+			require := requir.New(t)
 
-			var b bytes.Buffer
-			cfg.c.RenderTo(&b)
-			assert.Equal(cfg.rendered, string(b.Bytes()))
+			b, err := cfg.c.RenderBody("")
+			require.Nil(err)
+			assert.Equal(cfg.rendered, string(b))
 		})
 	}
 }
