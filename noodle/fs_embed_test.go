@@ -13,8 +13,8 @@ import (
 )
 
 func TestGenerateEmbed(t *testing.T) {
-	//testutil.RunIf(t, testutil.IsTravis())
-	testutil.SkipIf(t, testutil.IsTravis())
+	testutil.RunIf(t, testutil.IsTravis())
+	//testutil.SkipIf(t, testutil.IsTravis())
 
 	require := requir.New(t)
 

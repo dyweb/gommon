@@ -72,7 +72,6 @@ func (b *EmbedBowel) Open(name string) (http.File, error) {
 	name = name[1:]
 	if d, exists := b.Dirs[name]; exists {
 		// TODO: allow disable list dir here
-
 		log.Debugf("%s entries %d", name, len(d.Entries))
 		return &d, nil
 	}

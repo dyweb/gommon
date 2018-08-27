@@ -1,5 +1,5 @@
 // Package noodle helps embedding static assets into go binary, it supports using ignore file
-package noodle // import "github.com/dyweb/gommon/noodle"
+package noodle
 
 import (
 	"github.com/dyweb/gommon/util/logutil"

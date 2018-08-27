@@ -1,4 +1,4 @@
-package util
+package envutil
 
 import (
 	"os"
@@ -7,10 +7,12 @@ import (
 	asst "github.com/stretchr/testify/assert"
 )
 
+// TODO: test LoadDotEnv
+
 func TestEnvAsMap(t *testing.T) {
 	assert := asst.New(t)
 	os.Setenv("gommondummy", "foo=bar")
-	envMap := EnvAsMap()
+	envMap := EnvMap()
 	//t.Log(envMap)
 	assert.Equal("foo=bar", envMap["gommondummy"])
 }
