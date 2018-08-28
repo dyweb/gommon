@@ -8,9 +8,12 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/dyweb/gommon/errors"
 	"github.com/dyweb/gommon/generator"
 	dlog "github.com/dyweb/gommon/log"
 	"github.com/dyweb/gommon/log/handlers/cli"
+	"github.com/dyweb/gommon/noodle"
+	"github.com/dyweb/gommon/util/fsutil"
 	"github.com/dyweb/gommon/util/logutil"
 )
 
@@ -24,7 +27,6 @@ var (
 	goVersion = runtime.Version()
 )
 
-// TODO: allow testing common gommon features like config, requests, runner
 func main() {
 	// TODO: most code here are copied from go.ice's cli package, dependency management might break if we import go.ice which also import gommon
 	rootCmd := &cobra.Command{
@@ -42,7 +44,9 @@ func main() {
 			os.Exit(1)
 		},
 	}
+	// global flags
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+	// ver
 	versionCmd := &cobra.Command{
 		Use:   "version",
 		Short: "print version",
@@ -59,7 +63,19 @@ func main() {
 			}
 		},
 	}
-	genCmd := &cobra.Command{
+	// sub commands
+	rootCmd.AddCommand(
+		versionCmd,
+		genCmd(),
+	)
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+
+func genCmd() *cobra.Command {
+	gen := &cobra.Command{
 		Use:   "generate",
 		Short: "generate code based on gommon.yml",
 		Run: func(cmd *cobra.Command, args []string) {
@@ -70,11 +86,53 @@ func main() {
 			}
 		},
 	}
-	rootCmd.AddCommand(versionCmd, genCmd)
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+	root := ""
+	name := ""
+	pkg := ""
+	output := ""
+	// TODO: might put noodle as its own top level command?
+	noodleCmd := &cobra.Command{
+		Use:   "noodle",
+		Short: "bundle static assets as a single go file",
+		Run: func(cmd *cobra.Command, args []string) {
+			checks := map[string]string{
+				"root":   root,
+				"name":   name,
+				"pkg":    pkg,
+				"output": output,
+			}
+			merr := errors.NewMultiErr()
+			for k, v := range checks {
+				if v == "" {
+					merr.Append(errors.Errorf("%s is required", k))
+				}
+			}
+			if merr.HasError() {
+				log.Fatal(merr.Error())
+				return
+			}
+			cfg := noodle.EmbedConfig{
+				Root: root,
+				Name: name,
+			}
+			b, err := noodle.GenerateEmbeds([]noodle.EmbedConfig{cfg}, pkg)
+			if err != nil {
+				log.Fatal(err)
+				return
+			}
+			if err := fsutil.WriteFile(output, b); err != nil {
+				log.Fatal(err)
+				return
+			}
+			log.Infof("generated %s from %s with package %s and name %s", output, root, pkg, name)
+		},
 	}
+	noodleCmd.Flags().StringVar(&root, "root", "", "path of assets folder")
+	noodleCmd.Flags().StringVar(&name, "name", "Asset", "name of generate ")
+	noodleCmd.Flags().StringVar(&pkg, "pkg", "gen", "go package of generated file")
+	noodleCmd.Flags().StringVar(&output, "output", "noodle.go", "path for generated file")
+	gen.AddCommand(noodleCmd)
+	return gen
 }
 
 func init() {

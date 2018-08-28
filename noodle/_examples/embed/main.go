@@ -26,7 +26,7 @@ func main() {
 		root = http.Dir(localDir)
 		//root = noodle.NewLocal("assets")
 	} else {
-		bowel1, err := gen.GetNoodleYangchunMian()
+		bowel1, err := gen.GetNoodleYangChunMian()
 		if err != nil {
 			log.Fatal(err)
 		}
