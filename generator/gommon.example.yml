@@ -20,5 +20,11 @@ shells:
   shell: false
   cd: false
 noodles:
-- root: "assets"
-  export_name: "Assets"
+- src: "assets"
+  dst: "noodle.go"
+  name: "Assets"
+  package: "gen"
+- src: "third_party"
+  dst: "noodle.go"
+  name: "ThirdParty"
+  package: "gen"

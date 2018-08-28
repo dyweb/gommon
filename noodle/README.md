@@ -4,8 +4,24 @@
 
 See [example](_examples/embed) [Makefile](_examples/embed/Makefile) and [main.go](_examples/embed/main.go)
 
+Generate from a single folder, using `gommon generat noodle`
+
 ````bash
 gommon generate noodle --root assets --output gen/noodle.go --pkg gen --name YangChunMian
+````
+
+Generate multiple folders into one file, use `gommon.yml`
+
+````yaml
+noodles:
+- src: "assets"
+  dst: "gen/noodle.go"
+  name: "Assets"
+  package: "gen"
+- src: "third_party"
+  dst: "gen/noodle.go"
+  name: "ThirdParty"
+  package: "gen"
 ````
 
 ````go

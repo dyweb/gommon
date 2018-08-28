@@ -18,16 +18,42 @@ import (
 const generator = "gommon/noodle"
 
 type EmbedConfig struct {
-	Root string `json:"root" yaml:"root"`
-	Name string `json:"name" yaml:"name"`
+	Src     string `json:"src" yaml:"src"`
+	Dst     string `json:"dst" yaml:"dst"`
+	Name    string `json:"name" yaml:"name"`
+	Package string `json:"package" yaml:"package"`
 }
 
-// GenerateEmbeds return a formatted go file, it's header + package + GenerateEmbedPartial
-// You can specify multiple cfg to have several folders bundled into a single file
-func GenerateEmbeds(cfgs []EmbedConfig, pkg string) ([]byte, error) {
+// GenerateEmbedFile generates contents from cfg.Src and save it to a single go file in cfg.Dst.
+// It's a wrapper around GenerateEmbedBytes
+func GenerateEmbedFile(cfg EmbedConfig) error {
+	if cfg.Dst == "" {
+		return errors.New("empty dst in config")
+	}
+	b, err := GenerateEmbedBytes([]EmbedConfig{cfg})
+	if err != nil {
+		return nil
+	}
+	return fsutil.WriteFile(cfg.Dst, b)
+}
+
+// GenerateEmbedBytes return a single formatted go file as bytes from multiple source directories.
+// Use GenerateEmbedFile if you just have one source directory and want to write to file directly.
+// it's header + package + []GenerateEmbedPartial
+func GenerateEmbedBytes(cfgs []EmbedConfig) ([]byte, error) {
+	if len(cfgs) == 0 {
+		return nil, errors.New("config list is empty")
+	}
+	pkg := cfgs[0].Package
 	var srcs []string
 	for _, cfg := range cfgs {
-		srcs = append(srcs, cfg.Root)
+		if cfg.Src == "" {
+			return nil, errors.New("empty src in config")
+		}
+		if pkg != cfg.Package {
+			return nil, errors.Errorf("different package name among configs, %s != %s", pkg, cfg.Package)
+		}
+		srcs = append(srcs, cfg.Src)
 	}
 	var buf bytes.Buffer
 	buf.WriteString(genutil.Header(generator, strings.Join(srcs, ",")))
@@ -53,9 +79,9 @@ import (
 	return b, nil
 }
 
-// GenerateEmbedPartial return code WITHOUT header and import, use GenerateEmbeds if you want a full go file
+// GenerateEmbedPartial return code WITHOUT header and import, use GenerateEmbedBytes if you want a full go file
 func GenerateEmbedPartial(cfg EmbedConfig) ([]byte, error) {
-	root := cfg.Root
+	root := cfg.Src
 	var (
 		err     error
 		ignores *fsutil.Ignores
@@ -203,7 +229,7 @@ func writeZipFile(w *zip.Writer, root string, path string, file *EmbedFile) erro
 }
 
 func renderTemplate(cfg EmbedConfig, dirs map[string]*EmbedDir, data []byte) ([]byte, error) {
-	root := cfg.Root
+	root := cfg.Src
 	if cfg.Name == "" {
 		log.Debug("export name not set, using default")
 		cfg.Name = DefaultName
@@ -223,7 +249,7 @@ func renderTemplate(cfg EmbedConfig, dirs map[string]*EmbedDir, data []byte) ([]
 		"dir":  trimmedDirs,
 		"data": data,
 		"name": cfg.Name,
-		"src":  cfg.Root,
+		"src":  cfg.Src,
 	}); err != nil {
 		return nil, errors.Wrap(err, "can't execute template")
 	}

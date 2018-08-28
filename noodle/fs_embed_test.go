@@ -12,22 +12,24 @@ import (
 	"github.com/dyweb/gommon/util/testutil"
 )
 
-func TestGenerateEmbed(t *testing.T) {
+func TestGenerateEmbedBytes(t *testing.T) {
 	testutil.RunIf(t, testutil.IsTravis())
 	//testutil.SkipIf(t, testutil.IsTravis())
 
 	require := requir.New(t)
 
-	b, err := noodle.GenerateEmbeds([]noodle.EmbedConfig{
+	b, err := noodle.GenerateEmbedBytes([]noodle.EmbedConfig{
 		{
-			Root: "_examples/embed/assets",
-			Name: "YangchunMian",
+			Src:     "_examples/embed/assets",
+			Name:    "YangchunMian",
+			Package: "gen",
 		},
 		{
-			Root: "_examples/embed/third_party",
-			Name: "BieRenJiaDeMian",
+			Src:     "_examples/embed/third_party",
+			Name:    "BieRenJiaDeMian",
+			Package: "gen",
 		},
-	}, "gen")
+	})
 	require.Nil(err)
 	fsutil.WriteFile("_examples/embed/gen/noodle.go", b)
 }

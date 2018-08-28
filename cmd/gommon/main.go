@@ -13,7 +13,6 @@ import (
 	dlog "github.com/dyweb/gommon/log"
 	"github.com/dyweb/gommon/log/handlers/cli"
 	"github.com/dyweb/gommon/noodle"
-	"github.com/dyweb/gommon/util/fsutil"
 	"github.com/dyweb/gommon/util/logutil"
 )
 
@@ -76,8 +75,9 @@ func main() {
 
 func genCmd() *cobra.Command {
 	gen := &cobra.Command{
-		Use:   "generate",
-		Short: "generate code based on gommon.yml",
+		Use:     "generate",
+		Aliases: []string{"gen"},
+		Short:   "generate code based on gommon.yml",
 		Run: func(cmd *cobra.Command, args []string) {
 			root := "."
 			if err := generator.Generate(root); err != nil {
@@ -92,8 +92,10 @@ func genCmd() *cobra.Command {
 	output := ""
 	// TODO: might put noodle as its own top level command?
 	noodleCmd := &cobra.Command{
-		Use:   "noodle",
-		Short: "bundle static assets as a single go file",
+		Use: "noodle",
+		Short: "bundle static assets in one directory as a single go file, " +
+			"it does not support bundle multiple file into one directory",
+		Example: "gommon generate noodle --root assets --output gen/noodle.go --pkg gen --name Assets",
 		Run: func(cmd *cobra.Command, args []string) {
 			checks := map[string]string{
 				"root":   root,
@@ -112,15 +114,12 @@ func genCmd() *cobra.Command {
 				return
 			}
 			cfg := noodle.EmbedConfig{
-				Root: root,
-				Name: name,
+				Src:     root,
+				Name:    name,
+				Dst:     output,
+				Package: pkg,
 			}
-			b, err := noodle.GenerateEmbeds([]noodle.EmbedConfig{cfg}, pkg)
-			if err != nil {
-				log.Fatal(err)
-				return
-			}
-			if err := fsutil.WriteFile(output, b); err != nil {
+			if err := noodle.GenerateEmbedFile(cfg); err != nil {
 				log.Fatal(err)
 				return
 			}

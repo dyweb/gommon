@@ -3,6 +3,7 @@ package generator // import "github.com/dyweb/gommon/generator"
 
 import (
 	dlog "github.com/dyweb/gommon/log"
+	"github.com/dyweb/gommon/noodle"
 	"github.com/dyweb/gommon/util/logutil"
 )
 
@@ -22,7 +23,7 @@ type ConfigFile struct {
 	// GoTemplates is templates written in go's text/template format, they are mainly used to generate go source file
 	GoTemplates []GoTemplateConfig `yaml:"gotmpls"`
 	// Noodles is the config for embedding assets by generating go file with a large byte slice
-	//Noodles []NoodleConfig `yaml:"noodles"`
+	Noodles []noodle.EmbedConfig `yaml:"noodles"`
 	// Shells is shell commands to be executed
 	Shells []ShellConfig `yaml:"shells"`
 	// GoPackage override folder name for generated go file

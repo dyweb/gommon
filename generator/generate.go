@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/dyweb/gommon/errors"
+	"github.com/dyweb/gommon/noodle"
 	"github.com/dyweb/gommon/util/fsutil"
 	"github.com/dyweb/gommon/util/genutil"
 )
@@ -70,12 +71,38 @@ func GenerateSingle(file string) error {
 			return errors.Wrap(err, "error format generated go code")
 		}
 		if fsutil.WriteFile(join(dir, DefaultGeneratedFile), formatted); err != nil {
-			return errors.Wrap(err, "can write generated file to disk")
+			return errors.Wrap(err, "error write generated file to disk")
 		}
 		log.Debugf("generated %s from %s", join(dir, DefaultGeneratedFile), file)
 	}
 
-	// TODO: noodle
+	// noodle
+	dstIndex := make(map[string][]noodle.EmbedConfig)
+	for _, cfg := range cfg.Noodles {
+		// update src and dst because the cwd is different, user may write gommon.yaml in assets folder
+		// but run gommon in project root, using os.Chdir will make the logic hard to parallel
+		cfg.Src = join(dir, cfg.Src)
+		cfg.Dst = join(dir, cfg.Dst)
+		sameDst, ok := dstIndex[cfg.Dst]
+		if !ok {
+			dstIndex[cfg.Dst] = []noodle.EmbedConfig{cfg}
+		} else {
+			dstIndex[cfg.Dst] = append(sameDst, cfg)
+		}
+	}
+	// all the config that has same dst will be generated together
+	// TODO: maybe should have put this logic in noodle package ...
+	for dst, cfgs := range dstIndex {
+		b, err := noodle.GenerateEmbedBytes(cfgs)
+		if err != nil {
+			return errors.Wrap(err, "error generate assets bundle using noodle")
+		}
+		if err := fsutil.WriteFile(dst, b); err != nil {
+			return errors.Wrap(err, "error write generated file to disk")
+		}
+		// TODO: log all the sources
+		log.Debugf("noodle generated %s from %d folders", dst, len(cfgs))
+	}
 
 	// gotmpl
 	for _, tpl := range cfg.GoTemplates {
