@@ -4,6 +4,7 @@ Static file serving in standard library
 
 - `net/http/fs.go` [serveFile](https://golang.org/src/net/http/fs.go#L182)
    - the logic the path need to be a directory, then it will call `Open` with `name
+   - `index.html` is handled in `http.FileServer` not `http.Dir`, `serveFile` will try `index.html`
 
 ````go
 func (d Dir) Open(name string) (File, error) {

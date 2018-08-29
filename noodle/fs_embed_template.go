@@ -1,13 +1,9 @@
 package noodle
 
 var embedTemplate = `
-import (
-	"time"
 
-	"github.com/dyweb/gommon/noodle"
-)
-
-func init() {
+// GetNoodle{{ .name }} returns an extracted EmbedBowl generated from {{ .src }}
+func GetNoodle{{ .name }} () (noodle.EmbedBowel, error){
 
 dirs := map[string]noodle.EmbedDir{
 {{- range $path, $dir := .dir -}}
@@ -34,12 +30,14 @@ dirs := map[string]noodle.EmbedDir{
 {{- end -}}
 }
 
-box := noodle.EmbedBox{
-	Dirs: dirs,
-	Data: {{ printf "%#v" .data }},
-}
-
-noodle.RegisterEmbedBox("test", box)
-
+	data := {{ printf "%#v" .data }}
+	bowl := noodle.EmbedBowel{
+		Dirs: dirs,
+		Data: data,
+	}
+	if err := bowl.ExtractFiles(); err != nil {
+		return bowl, err
+	}
+    return bowl, nil
 }
 `

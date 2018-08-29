@@ -35,6 +35,7 @@ console.log({'a': 123});
 	return NewFs(index, index2, css, js)
 }
 
+// Deprecated: Example showing how to write a http.FileSystem implementation
 // NOTE: need go run main.go data_hand_written.go ....
 func main() {
 

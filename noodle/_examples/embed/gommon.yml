@@ -1,0 +1,9 @@
+noodles:
+- src: "assets"
+  dst: "gen/noodle.go"
+  name: "Assets"
+  package: "gen"
+- src: "third_party"
+  dst: "gen/noodle.go"
+  name: "ThirdParty"
+  package: "gen"

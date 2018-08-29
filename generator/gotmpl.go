@@ -8,6 +8,7 @@ import (
 
 	"github.com/dyweb/gommon/errors"
 	"github.com/dyweb/gommon/util/fsutil"
+	"github.com/dyweb/gommon/util/genutil"
 )
 
 type GoTemplateConfig struct {
@@ -31,8 +32,7 @@ func (c *GoTemplateConfig) Render(root string) error {
 	if t, err = template.New(c.Src).Parse(string(b)); err != nil {
 		return errors.Wrap(err, "can't parse template")
 	}
-	buf.WriteString(Header(generatorName, join(root, c.Src)))
-	buf.Write([]byte("\n"))
+	buf.WriteString(genutil.DefaultHeader(join(root, c.Src)))
 	if err = t.Execute(&buf, c.Data); err != nil {
 		return errors.Wrap(err, "can't render template")
 	}

@@ -1,17 +1,19 @@
 // Package noodle helps embedding static assets into go binary, it supports using ignore file
-package noodle // import "github.com/dyweb/gommon/noodle"
+package noodle
 
 import (
 	"github.com/dyweb/gommon/util/logutil"
-	"path/filepath"
+	"net/http"
 )
 
 const (
-	ignoreFileName = ".noodleignore"
+	DefaultIgnoreFileName = ".noodleignore"
+	DefaultName           = "Bowel"
 )
 
 var log = logutil.NewPackageLogger()
 
-func join(elem ...string) string {
-	return filepath.Join(elem...)
+// Bowel is the container for different types of noodles
+type Bowel interface {
+	http.FileSystem
 }

@@ -1,35 +1,39 @@
 package main
 
 import (
-	"archive/zip"
-	"bytes"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 
-	"github.com/dyweb/gommon/noodle"
-	_ "github.com/dyweb/gommon/noodle/_examples/embed/gen"
+	"github.com/dyweb/gommon/noodle/_examples/embed/gen"
 )
 
+// use local folder dev, use embed when prod
 func main() {
-	box, err := noodle.GetEmbedBox("test")
-	if err != nil {
-		log.Fatal(err)
+	mode := "dev"
+	if len(os.Args) > 1 {
+		if strings.HasPrefix(os.Args[1], "p") {
+			mode = "prod"
+		}
 	}
-	log.Println(len(box.Dirs))
-	zipReader, err := zip.NewReader(bytes.NewReader(box.Data), int64(len(box.Data)))
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, f := range zipReader.File {
-		log.Println(f.Name)
-	}
-	if err := box.ExtractFiles(); err != nil {
-		log.Fatal(err)
+	var root http.FileSystem
+	if mode == "dev" {
+		// NOTE: if you are running it in IDE, use the following full path instead of relative path
+		//localDir := os.Getenv("GOPATH") + "/src/github.com/dyweb/gommon/noodle/_examples/embed/assets"
+		localDir := "assets"
+		root = http.Dir(localDir)
+		//root = noodle.NewLocal("assets")
+	} else {
+		bowel1, err := gen.GetNoodleAssets()
+		if err != nil {
+			log.Fatal(err)
+		}
+		root = &bowel1
 	}
 	addr := ":8080"
-	var root http.FileSystem
-	root = &box
-	fmt.Printf("listen on %s\n", addr)
-	http.ListenAndServe(addr, http.FileServer(root))
+	fmt.Printf("listen on %s in %s mode\n", addr, mode)
+	fmt.Printf("use http://localhost:8080/index.html")
+	log.Fatal(http.ListenAndServe(addr, http.FileServer(root)))
 }

@@ -3,20 +3,18 @@ package noodle
 import (
 	"archive/zip"
 	"bytes"
-	"io/ioutil"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/dyweb/gommon/errors"
 )
 
-var registeredBoxes map[string]EmbedBox
+var (
+	_ http.FileSystem = (*EmbedBowel)(nil)
+	_ Bowel           = (*EmbedBowel)(nil)
+)
 
-var _ http.FileSystem = (*EmbedBox)(nil)
-var _ http.File = (*EmbedDir)(nil)
-
-type EmbedBox struct {
+type EmbedBowel struct {
 	Dirs  map[string]EmbedDir
 	Data  []byte
 	files map[string]EmbedFile
@@ -27,6 +25,8 @@ type EmbedFile struct {
 	Data   []byte
 	reader *bytes.Reader
 }
+
+var _ http.File = (*EmbedDir)(nil)
 
 type EmbedDir struct {
 	FileInfo
@@ -50,8 +50,7 @@ func (d *EmbedDir) Close() error {
 }
 
 func (d *EmbedDir) Readdir(count int) ([]os.FileInfo, error) {
-	// TODO: disable list dir
-	log.Infof("readdir %d", count)
+	log.Debugf("readdir %d", count)
 	files := make([]os.FileInfo, 0, len(d.Entries))
 	// FIXED: learn this the hard way .. https://github.com/dyweb/gommon/issues/50
 	// the element is range syntax is created when loop start and it is reused between iterations, thus same pointer
@@ -66,13 +65,14 @@ func (d *EmbedDir) Readdir(count int) ([]os.FileInfo, error) {
 	return files, nil
 }
 
-func (b *EmbedBox) Open(name string) (http.File, error) {
+func (b *EmbedBowel) Open(name string) (http.File, error) {
 	// check dir first
-	log.Infof("open %s", name)
+	log.Debugf("open %s", name)
 	// trim /
 	name = name[1:]
 	if d, exists := b.Dirs[name]; exists {
-		log.Infof("%s entries %d", name, len(d.Entries))
+		// TODO: allow disable list dir here
+		log.Debugf("%s entries %d", name, len(d.Entries))
 		return &d, nil
 	}
 	// check file
@@ -82,7 +82,7 @@ func (b *EmbedBox) Open(name string) (http.File, error) {
 	return nil, os.ErrNotExist
 }
 
-func (b *EmbedBox) ExtractFiles() error {
+func (b *EmbedBowel) ExtractFiles() error {
 	r, err := zip.NewReader(bytes.NewReader(b.Data), int64(len(b.Data)))
 	if err != nil {
 		errors.Wrap(err, "can't read zipped data")
@@ -120,7 +120,8 @@ func (f *EmbedFile) Stat() (os.FileInfo, error) {
 }
 
 func (f *EmbedFile) Readdir(count int) ([]os.FileInfo, error) {
-	return nil, os.ErrNotExist
+	// TODO: what's the correct error when Readdir is called on File
+	return nil, os.ErrInvalid
 }
 
 func (f *EmbedFile) Close() error {
@@ -129,82 +130,4 @@ func (f *EmbedFile) Close() error {
 	//	f.reader = nil
 	//}
 	return nil
-}
-
-var _ os.FileInfo = (*FileInfo)(nil)
-
-// the awkward File* prefix is to export the field but avoid conflict with os.FileInfo interface ...
-type FileInfo struct {
-	FileName    string
-	FileSize    int64
-	FileMode    os.FileMode
-	FileModTime time.Time
-	FileIsDir   bool
-}
-
-func RegisterEmbedBox(name string, box EmbedBox) {
-	log.Debugf("register embed box %s", name)
-	if _, exists := registeredBoxes[name]; exists {
-		log.Warnf("box %s already exists, overwrite it now", name)
-	}
-	registeredBoxes[name] = box
-}
-
-func GetEmbedBox(name string) (EmbedBox, error) {
-	if box, exists := registeredBoxes[name]; exists {
-		return box, nil
-	} else {
-		return box, errors.Errorf("box %s does not exist", name)
-	}
-}
-
-func NewFileInfo(info os.FileInfo) *FileInfo {
-	return &FileInfo{
-		FileName:    info.Name(),
-		FileSize:    info.Size(),
-		FileMode:    info.Mode(),
-		FileModTime: info.ModTime(),
-		FileIsDir:   info.IsDir(),
-	}
-}
-
-func (i *FileInfo) Name() string {
-	return i.FileName
-}
-
-func (i *FileInfo) Size() int64 {
-	return i.FileSize
-}
-
-func (i *FileInfo) Mode() os.FileMode {
-	return i.FileMode
-}
-
-func (i *FileInfo) ModTime() time.Time {
-	return i.FileModTime
-}
-
-func (i *FileInfo) IsDir() bool {
-	return i.FileIsDir
-}
-
-func (i *FileInfo) Sys() interface{} {
-	return nil
-}
-
-func unzip(f *zip.File) ([]byte, error) {
-	r, err := f.Open()
-	if err != nil {
-		return nil, errors.Wrap(err, "can't open file inside zip")
-	}
-	if b, err := ioutil.ReadAll(r); err != nil {
-		return nil, errors.Wrap(err, "can't read file content")
-	} else {
-		r.Close()
-		return b, nil
-	}
-}
-
-func init() {
-	registeredBoxes = make(map[string]EmbedBox)
 }

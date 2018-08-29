@@ -10,20 +10,32 @@ import (
 	"github.com/dyweb/gommon/util/fsutil"
 )
 
+// ShellConfig is shell command executed by gommon
 // https://github.com/dyweb/gommon/issues/53
 type ShellConfig struct {
-	Code  string `yaml:"code"`
-	Shell bool   `yaml:"shell"`
-	Cd    bool   `yaml:"cd"`
+	// Code is the command to be executed, Command will overwrite it if presented,
+	// it is kept for backward compatibility
+	Code    string `yaml:"code"`
+	Command string `yaml:"command"`
+
+	// Shell is true, use sh -c, otherwise use exec on the first segment after split
+	Shell bool `yaml:"shell"`
+	// Cd is true, switch to the folder of config file when executing command
+	Cd bool `yaml:"cd"`
 }
 
+// Render execute the shell command, redirect stdin/out/err and block until it is finished
 func (c *ShellConfig) Render(root string) error {
-	log.Debugf("cmd %s shell %t cd %t", c.Code, c.Shell, c.Cd)
+	command := c.Code
+	if c.Command != "" {
+		command = c.Command
+	}
+	log.Debugf("cmd %s shell %t cd %t", command, c.Shell, c.Cd)
 	var cmd *exec.Cmd
 	if c.Shell {
-		cmd = exec.Command("sh", "-c", c.Code)
+		cmd = exec.Command("sh", "-c", command)
 	} else {
-		if segments, err := shellquote.Split(c.Code); err != nil {
+		if segments, err := shellquote.Split(command); err != nil {
 			return errors.Wrap(err, "can't split command into []string")
 		} else {
 			cmd = exec.Command(segments[0], segments[1:]...)

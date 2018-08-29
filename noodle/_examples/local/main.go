@@ -2,10 +2,16 @@ package main
 
 import (
 	"fmt"
-	"github.com/dyweb/gommon/noodle"
 	"net/http"
 	"os"
+
+	"github.com/dyweb/gommon/noodle"
 )
+
+// Compare three different types of http.FileSystem implementation
+// - default
+// - local, disabled directory and index.html
+// - local-unsafe, same as default
 
 func main() {
 	fs := "default"
@@ -28,5 +34,4 @@ func main() {
 		panic("unknown fs")
 	}
 	http.ListenAndServe(addr, http.FileServer(root))
-
 }
