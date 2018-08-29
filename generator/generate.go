@@ -66,6 +66,9 @@ func GenerateSingle(file string) error {
 		var header bytes.Buffer
 		header.WriteString(genutil.DefaultHeader(file))
 		header.WriteString("package " + pkg + "\n\n")
+		// FIXME: (piguo) the import is hard coded
+		header.WriteString("import dlog \"github.com/dyweb/gommon/log\"")
+		header.Write(body.Bytes())
 		formatted, err := format.Source(header.Bytes())
 		if err != nil {
 			return errors.Wrap(err, "error format generated go code")
