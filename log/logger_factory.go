@@ -1,5 +1,13 @@
 package log
 
+// used for benchmark test
+func NewTestLogger(level Level) *Logger {
+	l := &Logger{
+		level: level,
+	}
+	return l
+}
+
 func NewApplicationLogger() *Logger {
 	l := NewPackageLoggerWithSkip(1)
 	l.id.Type = ApplicationLogger

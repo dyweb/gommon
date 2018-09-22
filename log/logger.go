@@ -42,6 +42,7 @@ func (l *Logger) SetLevel(level Level) {
 	l.mu.Unlock()
 }
 
+// TODO: return itself to allow chaining
 func (l *Logger) SetHandler(h Handler) {
 	l.mu.Lock()
 	l.h = h
