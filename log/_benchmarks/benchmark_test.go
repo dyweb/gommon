@@ -1,15 +1,16 @@
 package benchmarks
 
 import (
-	"github.com/dyweb/gommon/log/handlers/json"
-	"github.com/rs/zerolog"
 	"io/ioutil"
 	"testing"
+
+	"github.com/rs/zerolog"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
 	dlog "github.com/dyweb/gommon/log"
+	"github.com/dyweb/gommon/log/handlers/json"
 )
 
 type ZapDiscard struct {
@@ -53,6 +54,7 @@ func newZerolog() zerolog.Logger {
 //}
 
 func BenchmarkWithoutFieldsJSON(b *testing.B) {
+	b.ReportAllocs()
 	b.Logf("logging without fields and without printf, use json output")
 	msg := "TODO: is fixed length msg really a good idea, we should give dynamic length with is more real world"
 	b.Run("gommon", func(b *testing.B) {

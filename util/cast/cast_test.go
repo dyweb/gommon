@@ -1,8 +1,9 @@
 package cast
 
 import (
-	asst "github.com/stretchr/testify/assert"
 	"testing"
+
+	asst "github.com/stretchr/testify/assert"
 )
 
 type userConfig struct {

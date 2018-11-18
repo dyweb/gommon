@@ -2,11 +2,13 @@ package json
 
 import (
 	"bytes"
-	"github.com/dyweb/gommon/log"
 	"testing"
 	"time"
 
+	"github.com/dyweb/gommon/log"
+
 	"encoding/json"
+
 	asst "github.com/stretchr/testify/assert"
 )
 

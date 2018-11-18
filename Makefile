@@ -50,7 +50,7 @@ install:
 
 .PHONY: fmt
 fmt:
-	gofmt -d -l -w $(PKGST)
+	goimports -d -l -w $(PKGST)
 
 .PHONY: generate
 generate:

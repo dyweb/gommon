@@ -5,10 +5,11 @@ TODO: support escape
 package json // import "github.com/dyweb/gommon/log/handlers/json"
 
 import (
-	"github.com/dyweb/gommon/log"
 	"io"
 	"strconv"
 	"time"
+
+	"github.com/dyweb/gommon/log"
 )
 
 var _ log.Handler = (*Handler)(nil)
