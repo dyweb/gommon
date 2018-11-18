@@ -1,0 +1,3 @@
+*.out
+# binary generated for profile
+*.test

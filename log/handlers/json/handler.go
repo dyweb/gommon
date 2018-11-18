@@ -25,13 +25,18 @@ func New(w io.Writer) *Handler {
 }
 
 func (h *Handler) HandleLog(level log.Level, time time.Time, msg string) {
-	b := formatHead(level, time, msg)
+	// FIXME: the hard coded 50 is not correct, it depends on source and fields etc.
+	// TODO: I think this make can only be optimized by using a buffer pool and
+	// we should have buffer pool for different
+	b := make([]byte, 0, 50+len(msg))
+	b = formatHead(b, level, time.Unix(), msg)
 	b = append(b, "}\n"...)
 	h.w.Write(b)
 }
 
 func (h *Handler) HandleLogWithSource(level log.Level, time time.Time, msg string, source string) {
-	b := formatHead(level, time, msg)
+	b := make([]byte, 0, 50+len(source)+len(msg))
+	b = formatHead(b, level, time.Unix(), msg)
 	b = append(b, `,"s":"`...)
 	b = append(b, source...)
 	b = append(b, "\"}\n"...)
@@ -39,7 +44,8 @@ func (h *Handler) HandleLogWithSource(level log.Level, time time.Time, msg strin
 }
 
 func (h *Handler) HandleLogWithFields(level log.Level, time time.Time, msg string, fields log.Fields) {
-	b := formatHead(level, time, msg)
+	b := make([]byte, 0, 50+len(msg))
+	b = formatHead(b, level, time.Unix(), msg)
 	b = append(b, ',')
 	b = formatFields(b, fields)
 	b = append(b, "}\n"...)
@@ -47,7 +53,8 @@ func (h *Handler) HandleLogWithFields(level log.Level, time time.Time, msg strin
 }
 
 func (h *Handler) HandleLogWithSourceFields(level log.Level, time time.Time, msg string, source string, fields log.Fields) {
-	b := formatHead(level, time, msg)
+	b := make([]byte, 0, 50+len(msg))
+	b = formatHead(b, level, time.Unix(), msg)
 	b = append(b, `,"s":"`...)
 	b = append(b, source...)
 	b = append(b, `",`...)
@@ -62,16 +69,15 @@ func (h *Handler) Flush() {
 	}
 }
 
-func formatHead(level log.Level, time time.Time, msg string) []byte {
-	b := make([]byte, 0, 5+4+10+len(msg))
-	b = append(b, `{"l":"`...)
-	b = append(b, level.String()...)
-	b = append(b, `","t":`...)
-	b = strconv.AppendInt(b, time.Unix(), 10)
-	b = append(b, `,"m":"`...)
-	b = append(b, msg...)
-	b = append(b, '"')
-	return b
+func formatHead(dst []byte, level log.Level, time int64, msg string) []byte {
+	dst = append(dst, `{"l":"`...)
+	dst = append(dst, level.String()...)
+	dst = append(dst, `","t":`...)
+	dst = strconv.AppendInt(dst, time, 10)
+	dst = append(dst, `,"m":"`...)
+	dst = append(dst, msg...)
+	dst = append(dst, '"')
+	return dst
 }
 
 func formatFields(b []byte, fields log.Fields) []byte {
