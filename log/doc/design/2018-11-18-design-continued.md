@@ -7,11 +7,29 @@ about what is on heap and what is on stack
 Continue on [2018-09-05](2018-09-05-clean-up.md) the basic steps are following
 
 - finish benchmark regardless of results
-  - try many log libraries in all the ways they allowed, structured, printf
+  - try many log libraries in all the ways they allowed, structured, printf, try their interface and see their output
     - zap
     - zerolog
     - glog?
     - stdlog
     - logrus
     - apex/log
-  - if there are trivial optimization, optimize along the way (though the may be in vain once we decided to change the public interface)
+  - if there are trivial optimization, optimize (or just keep track) along the way (though the may be in vain once we decided to change the public interface)
+- list what are the use cases for gommon/log
+- generate the modification plan
+- execute plan
+- another round of benchmark
+
+## Using other logging libraries
+
+
+### Zap
+
+Keep context (attach fields)
+
+`logger.With(zap.Int("count", 1))`
+
+- it will clone and return a new logger when adding new fields
+  - also clone a core and encode fields right away into the core
+  - core (similar to handler) **encode context data** (fields) to avoid encode it several times (exchange space for speed)
+  - thus it will have duplicated fields if give same key with different data
