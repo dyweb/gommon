@@ -6,20 +6,20 @@ import (
 
 	stdlog "log"
 
-	// zerolog
-	"github.com/rs/zerolog"
-
 	// zap
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	// logrus
-	"github.com/sirupsen/logrus"
+	// zerolog
+	"github.com/rs/zerolog"
 
 	// apex
 	apexlog "github.com/apex/log"
 	apexlogconsole "github.com/apex/log/handlers/cli" // TODO: this relies on so many color packages ....
 	apexlogjson "github.com/apex/log/handlers/json"
+
+	// logrus
+	"github.com/sirupsen/logrus"
 
 	// klog, fork of glog by k8s
 	"k8s.io/klog"
