@@ -21,6 +21,9 @@ import (
 	apexlogconsole "github.com/apex/log/handlers/cli" // TODO: this relies on so many color packages ....
 	apexlogjson "github.com/apex/log/handlers/json"
 
+	// klog, fork of glog by k8s
+	"k8s.io/klog"
+
 	dlog "github.com/dyweb/gommon/log"
 	"github.com/dyweb/gommon/log/handlers/json"
 )
@@ -102,14 +105,106 @@ func newLogrusConsoleLogger(lvl logrus.Level) *logrus.Logger {
 	}
 }
 
-//func BechmarkDisabledWithoutFieldsJSON(b *testing.B) {
-//
-//}
+// disabled should have not allocation
+func BenchmarkDisabledLevelNoFormat(b *testing.B) {
+	b.Log("logging at a disabled level")
+	msg := "If you support level you should not see me and should not cause allocation, I know I talk too much"
+	b.Run("gommon", func(b *testing.B) {
+		logger := dlog.NewTestLogger(dlog.ErrorLevel)
+		logger.SetHandler(dlog.NewIOHandler(ioutil.Discard))
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				// TODO: it has 16B allocation due to parameter is interface, size of interface is int64(type), int64(ptr)
+				// https://research.swtch.com/interfaces
+				logger.Info(msg)
+			}
+		})
+	})
+	b.Run("gommon.check", func(b *testing.B) {
+		logger := dlog.NewTestLogger(dlog.ErrorLevel)
+		logger.SetHandler(dlog.NewIOHandler(ioutil.Discard))
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				if logger.IsInfoEnabled() {
+					logger.Info(msg)
+				}
+			}
+		})
+	})
+	b.Run("zap", func(b *testing.B) {
+		logger := newZapConsoleLogger(zap.ErrorLevel)
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info(msg)
+			}
+		})
+	})
+	b.Run("zap.check", func(b *testing.B) {
+		logger := newZapConsoleLogger(zap.ErrorLevel)
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				if m := logger.Check(zap.InfoLevel, msg); m != nil {
+					m.Write()
+				}
+			}
+		})
+	})
+	b.Run("zap.sugar", func(b *testing.B) {
+		logger := newZapConsoleLogger(zap.ErrorLevel).Sugar()
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info(msg)
+			}
+		})
+	})
+	b.Run("zerolog", func(b *testing.B) {
+		logger := newZerologConsoleLogger().Level(zerolog.ErrorLevel)
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info().Msg(msg)
+			}
+		})
+	})
+	b.Run("apex", func(b *testing.B) {
+		logger := newApexConsoleLogger(apexlog.ErrorLevel)
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info(msg)
+			}
+		})
+	})
+	b.Run("logrus", func(b *testing.B) {
+		logger := newLogrusConsoleLogger(logrus.ErrorLevel)
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info(msg)
+			}
+		})
+	})
+	//b.Run("klog", func(b *testing.B) {
+	//	// TODO: it seems glog can't create individual logger instance?
+	//	klog.SetOutput(ioutil.Discard)
+	//	//klog.InitFlags()
+	//	b.RunParallel(func(pb *testing.PB) {
+	//		for pb.Next() {
+	//			klog.Info(msg)
+	//		}
+	//	})
+	//})
+}
 
-// TODO: this also don't call *f method
+// TODO: besides no fields, it also don't call *f method
 func BenchmarkWithoutFieldsText(b *testing.B) {
 	b.ReportAllocs()
-	b.Log("logging a single line text like stdlog without format")
+	b.Log("logging a single line text like stdlog without format and fields")
 	msg := "TODO: is fixed length msg really a good idea, we should give dynamic length with is more real world"
 
 	b.Run("gommon", func(b *testing.B) {
@@ -173,6 +268,15 @@ func BenchmarkWithoutFieldsText(b *testing.B) {
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
 				logger.Info(msg)
+			}
+		})
+	})
+	b.Run("klog", func(b *testing.B) {
+		// TODO: it seems glog can't create individual logger instance?
+		klog.SetOutput(ioutil.Discard)
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				klog.Info(msg)
 			}
 		})
 	})

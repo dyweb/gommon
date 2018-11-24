@@ -42,22 +42,27 @@ func TestZapJson(t *testing.T) {
 		// {"level":"info","ts":1542778510834708500,"logger":"jack","msg":"this is a named message"}
 		logger.Named("jack").Named("marry").Info("what's my name")
 		// {"level":"info","ts":1542781224287444070,"logger":"jack.marry","msg":"what's my name"}
-		logger.With(zap.Int("count", 1), zap.String("str", `"need escape"`)).Info("ha")
-		// {"level":"info","ts":1542779234131875417,"msg":"ha","count":1,"str":"\"need escape\""}
-		ctxLogger := logger.With(zap.Int("count", 1))
-		ctxLogger.Info("this is the log")
-		// {"level":"info","ts":1542779282702624079,"msg":"this is the log","count":1}
-		ctxLogger.With(zap.Bool("b", true)).Info("yep")
-		// {"level":"info","ts":1542779322646305013,"msg":"yep","count":1,"b":true}
-		// NOTE: it will have duplicated key
-		ctxLogger.With(zap.Bool("a", true), zap.Bool("a", false)).Info("dup?")
-		// {"level":"info","ts":1542783708445651389,"msg":"dup?","count":1,"a":true,"a":false}
-		// TODO: https://github.com/sandipb/zap-examples/tree/master/src/customlogger#changing-logger-behavior-on-the-fly
-		// things like AddCaller, AddStacktrace seems no longer exists
+
+		t.Run("context", func(t *testing.T) {
+			logger.With(zap.Int("count", 1), zap.String("str", `"need escape"`)).Info("ha")
+			// {"level":"info","ts":1542779234131875417,"msg":"ha","count":1,"str":"\"need escape\""}
+			ctxLogger := logger.With(zap.Int("count", 1))
+			ctxLogger.Info("this is the log")
+			// {"level":"info","ts":1542779282702624079,"msg":"this is the log","count":1}
+			ctxLogger.With(zap.Bool("b", true)).Info("yep")
+			// {"level":"info","ts":1542779322646305013,"msg":"yep","count":1,"b":true}
+
+			// NOTE: it will have duplicated key
+			ctxLogger.With(zap.Bool("a", true), zap.Bool("a", false)).Info("dup?")
+			// {"level":"info","ts":1542783708445651389,"msg":"dup?","count":1,"a":true,"a":false}
+
+			// TODO: https://github.com/sandipb/zap-examples/tree/master/src/customlogger#changing-logger-behavior-on-the-fly
+			// things like AddCaller, AddStacktrace seems no longer exists
+		})
 	})
 }
 
-func TestZapConsole(t *testing.T)  {
+func TestZapConsole(t *testing.T) {
 	logger, err := zap.NewDevelopment()
 	if err != nil {
 		t.Fatal(err)

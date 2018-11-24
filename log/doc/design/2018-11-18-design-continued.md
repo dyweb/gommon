@@ -22,6 +22,9 @@ Continue on [2018-09-05](2018-09-05-clean-up.md) the basic steps are following
 
 ## Using other logging libraries
 
+- use fields to add context
+- pass context down (i.e. store context in logger)
+- source, file and line number
 
 ### Zap
 
