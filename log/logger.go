@@ -20,15 +20,14 @@ import (
 // If you want to mix two styles, call fmt.Sprintf before calling DebugF,
 // 	logger.DebugF(fmt.Sprintf("id is %d", id), log.Fields{log.Str("foo", "bar")})
 type Logger struct {
-	mu    sync.RWMutex
-	h     Handler
-	level Level
-	// TODO: Fields in logger are never used, we are using DebugF to pass temporary fields
-	// which does not allow inherit fields from parent logger
-	//fields   Fields
-	children map[string][]*Logger
+	mu       sync.RWMutex
+	h        Handler
+	level    Level
 	source   bool
-	id       *Identity
+	children map[string][]*Logger
+
+	//fields Fields
+	id *Identity // use nil so we can have logger without identity
 }
 
 func (l *Logger) Level() Level {
@@ -63,8 +62,11 @@ func (l *Logger) DisableSource() {
 
 // Identity returns the identity set when the logger is created.
 // NOTE: caller can modify the identity because all fields are public, but they should NOT do this
-func (l *Logger) Identity() *Identity {
-	return l.id
+func (l *Logger) Identity() Identity {
+	if l.id == nil {
+		return UnknownIdentity
+	}
+	return *l.id
 }
 
 // Panic calls panic after it writes and flushes the log

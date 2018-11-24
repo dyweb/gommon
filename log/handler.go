@@ -24,7 +24,6 @@ type Handler interface {
 	HandleLogWithSource(level Level, time time.Time, msg string, source string)
 	// HandleLogWithFields accepts fields with type hint,
 	// implementation should inspect the type field instead of using reflection
-	// TODO: pass pointer for fields?
 	HandleLogWithFields(level Level, time time.Time, msg string, fields Fields)
 	// HandleLogWithSourceFields accepts both source and fields
 	HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields)

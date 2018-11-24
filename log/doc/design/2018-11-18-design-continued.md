@@ -26,6 +26,12 @@ Continue on [2018-09-05](2018-09-05-clean-up.md) the basic steps are following
 - pass context down (i.e. store context in logger)
 - source, file and line number
 
+For adding context, there are two ways in existing library
+
+- 'fast' libraries encode context to byte slice right away (result in they can't remove duplicated fields and sort fields added later)
+- create an entry that holds both fields and reference to logger, attach all the logging methods `Debug` to the entry
+  - logger's `Debug` is just `newEntry().Debug`
+
 ### Zap
 
 Keep context (attach fields)
@@ -36,3 +42,21 @@ Keep context (attach fields)
   - also clone a core and encode fields right away into the core
   - core (similar to handler) **encode context data** (fields) to avoid encode it several times (exchange space for speed)
   - thus it will have duplicated fields if give same key with different data
+  
+### Zerolog
+
+`logger.With().Str("k", "v").Logger()`
+
+- when `Str` is called, it will encode field and append to `[]byte`
+
+### Apex
+
+`logger.WithField("f1", "v1").Info("have field")`
+
+- same as logrus
+
+### Logrus
+
+`logger.WithField("f1", "v1").Info("have field")`
+
+- create a new entry that hold pointer to logger, add fields to the new entry

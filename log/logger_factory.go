@@ -25,24 +25,27 @@ func NewPackageLogger() *Logger {
 }
 
 func NewPackageLoggerWithSkip(skip int) *Logger {
+	id := NewIdentityFromCaller(skip + 1)
 	l := &Logger{
-		id: NewIdentityFromCaller(skip + 1),
+		id: &id,
 	}
 	return newLogger(nil, l)
 }
 
 func NewFunctionLogger(packageLogger *Logger) *Logger {
+	id := NewIdentityFromCaller(1)
 	l := &Logger{
-		id: NewIdentityFromCaller(1),
+		id: &id,
 	}
 	return newLogger(packageLogger, l)
 }
 
 func NewStructLogger(packageLogger *Logger, loggable LoggableStruct) *Logger {
+	id := loggable.LoggerIdentity(func() Identity {
+		return NewIdentityFromCaller(1)
+	})
 	l := &Logger{
-		id: loggable.LoggerIdentity(func() *Identity {
-			return NewIdentityFromCaller(1)
-		}),
+		id: &id,
 	}
 	l = newLogger(packageLogger, l)
 	loggable.SetLogger(l)
@@ -50,8 +53,9 @@ func NewStructLogger(packageLogger *Logger, loggable LoggableStruct) *Logger {
 }
 
 func NewMethodLogger(structLogger *Logger) *Logger {
+	id := NewIdentityFromCaller(1)
 	l := &Logger{
-		id: NewIdentityFromCaller(1),
+		id: &id,
 	}
 	return newLogger(structLogger, l)
 }

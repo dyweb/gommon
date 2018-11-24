@@ -7,5 +7,5 @@ package log // import "github.com/dyweb/gommon/log"
 type LoggableStruct interface {
 	GetLogger() *Logger
 	SetLogger(logger *Logger)
-	LoggerIdentity(justCallMe func() *Identity) *Identity
+	LoggerIdentity(justCallMe func() Identity) Identity
 }

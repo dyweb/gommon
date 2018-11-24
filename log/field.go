@@ -4,7 +4,8 @@ import (
 	"fmt"
 )
 
-// FieldType avoids calling reflection
+// FieldType avoids doing type assertion or calling reflection
+// TODO: difference between the two methods above
 type FieldType uint8
 
 const (

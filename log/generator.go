@@ -26,7 +26,7 @@ func ({{.Receiver}} {{.Struct}}) GetLogger() *dlog.Logger {
 	return {{.Receiver}}.{{.Field}}
 }
 
-func ({{.Receiver}} {{.Struct}}) LoggerIdentity(justCallMe func() *dlog.Identity) *dlog.Identity {
+func ({{.Receiver}} {{.Struct}}) LoggerIdentity(justCallMe func() dlog.Identity) dlog.Identity {
 	return justCallMe()
 }
 `

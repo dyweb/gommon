@@ -53,7 +53,7 @@ const MagicPackageLoggerFunctionName = "init"
 
 // TODO: document all the black magic here ...
 // https://github.com/dyweb/gommon/issues/32
-func NewIdentityFromCaller(skip int) *Identity {
+func NewIdentityFromCaller(skip int) Identity {
 	frame := runtimeutil.GetCallerFrame(skip + 1)
 	var (
 		pkg      string
@@ -77,7 +77,7 @@ func NewIdentityFromCaller(skip int) *Identity {
 		tpe = PackageLogger
 	}
 
-	return &Identity{
+	return Identity{
 		Package:  pkg,
 		Function: function,
 		Struct:   st,
