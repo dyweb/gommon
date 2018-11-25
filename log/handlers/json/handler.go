@@ -1,8 +1,8 @@
 /*
 Package json writes log in JSON format, it concatenates string directly and does not use encoding/json.
-TODO: support escape
+TODO: support escape string, and compare with standard json encoding
 */
-package json // import "github.com/dyweb/gommon/log/handlers/json"
+package json
 
 import (
 	"io"

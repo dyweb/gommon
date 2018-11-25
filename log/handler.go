@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+// handler.go contains Handler interface and builtin implementations
+
 const (
 	defaultTimeStampFormat = time.RFC3339
 )
@@ -34,9 +36,10 @@ type Handler interface {
 	Flush()
 }
 
+// NOTE: since the interface of handler become so big, there is no way to use a handler func
+// TODO: maybe we can trim down the interface by adding more if else inside handler and use the max parameters
 // HandlerFunc is an adapter to allow use of ordinary functions as log entry handlers
 //type HandlerFunc func(level Level, msg string)
-
 // TODO: why the receiver is value instead of pointer https://github.com/dyweb/gommon/issues/30
 //func (f HandlerFunc) HandleLog(level Level, msg string) {
 //	f(level, msg)
@@ -50,18 +53,20 @@ type Syncer interface {
 	Sync() error
 }
 
-//// TODO: handler for http access log, this should be in extra package
-//type HttpAccessLogger struct {
-//}`
-
 var defaultHandler = NewIOHandler(os.Stderr)
 
-// DefaultHandler returns the singleton defaultHandler instance, which logs to stdout in text format
+// DefaultHandler returns the singleton defaultHandler instance, which logs to stderr in text format
 func DefaultHandler() Handler {
 	return defaultHandler
 }
 
-// IOHandler writes log to io.Writer, default handler uses os.Stderr
+// MultiHandler creates a handler that duplicates the log to all the provided handlers, it runs in
+// serial and don't handle panic
+func MultiHandler(handlers ...Handler) Handler {
+	return &multiHandler{handlers: handlers}
+}
+
+// IOHandler writes log to io.Writer, default handler is a IOHandler using os.Stderr
 type IOHandler struct {
 	w io.Writer
 }
@@ -143,6 +148,59 @@ func (h *IOHandler) Flush() {
 		s.Sync()
 	}
 }
+
+// ----------------- start of multi handler ---------------------------
+
+var _ Handler = (*multiHandler)(nil)
+
+// https://github.com/dyweb/gommon/issues/87
+type multiHandler struct {
+	handlers []Handler
+}
+
+func (m *multiHandler) HandleLog(level Level, now time.Time, msg string) {
+	for _, h := range m.handlers {
+		h.HandleLog(level, now, msg)
+	}
+}
+
+func (m *multiHandler) HandleLogWithSource(level Level, now time.Time, msg string, source string) {
+	for _, h := range m.handlers {
+		h.HandleLogWithSource(level, now, msg, source)
+	}
+}
+
+func (m *multiHandler) HandleLogWithFields(level Level, now time.Time, msg string, fields Fields) {
+	for _, h := range m.handlers {
+		h.HandleLogWithFields(level, now, msg, fields)
+	}
+}
+
+func (m *multiHandler) HandleLogWithSourceFields(level Level, now time.Time, msg string, source string, fields Fields) {
+	for _, h := range m.handlers {
+		h.HandleLogWithSourceFields(level, now, msg, source, fields)
+	}
+}
+
+func (m *multiHandler) HandleLogWithContextFields(level Level, now time.Time, msg string, context Fields, fields Fields) {
+	for _, h := range m.handlers {
+		h.HandleLogWithContextFields(level, now, msg, context, fields)
+	}
+}
+
+func (m *multiHandler) HandleLogWithSourceContextFields(level Level, now time.Time, msg string, source string, context Fields, fields Fields) {
+	for _, h := range m.handlers {
+		h.HandleLogWithSourceContextFields(level, now, msg, source, context, fields)
+	}
+}
+
+func (m *multiHandler) Flush() {
+	for _, h := range m.handlers {
+		h.Flush()
+	}
+}
+
+// ----------------- end of multi handler ---------------------------
 
 // ----------------- start of text format util ---------------------------
 

@@ -1,6 +1,6 @@
 package log
 
-// used for benchmark test
+// NewTestLogger does not have identity and handler, it is mainly used for benchmark test
 func NewTestLogger(level Level) *Logger {
 	l := &Logger{
 		level: level,
