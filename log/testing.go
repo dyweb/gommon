@@ -31,41 +31,7 @@ func NewTestHandler() *TestHandler {
 	return &TestHandler{}
 }
 
-// HandleLog implements Handler interface
-func (h *TestHandler) HandleLog(level Level, time time.Time, msg string) {
-	h.mu.Lock()
-	h.entries = append(h.entries, entry{level: level, time: time, msg: msg})
-	h.mu.Unlock()
-}
-
-// HandleLogWithSource implements Handler interface
-func (h *TestHandler) HandleLogWithSource(level Level, time time.Time, msg string, source string) {
-	h.mu.Lock()
-	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, source: source})
-	h.mu.Unlock()
-}
-
-// HandleLogWithFields implements Handler interface
-func (h *TestHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
-	h.mu.Lock()
-	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, fields: CopyFields(fields)})
-	h.mu.Unlock()
-}
-
-// HandleLogWithSourceFields implements Handler interface
-func (h *TestHandler) HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields) {
-	h.mu.Lock()
-	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, source: source, fields: CopyFields(fields)})
-	h.mu.Unlock()
-}
-
-func (h *TestHandler) HandleLogWithContextFields(level Level, time time.Time, msg string, context Fields, fields Fields) {
-	h.mu.Lock()
-	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, context: CopyFields(context), fields: CopyFields(fields)})
-	h.mu.Unlock()
-}
-
-func (h *TestHandler) HandleLogWithSourceContextFields(level Level, time time.Time, msg string, source string, context Fields, fields Fields) {
+func (h *TestHandler) HandleLog(level Level, time time.Time, msg string, source string, context Fields, fields Fields) {
 	h.mu.Lock()
 	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, source: source, context: CopyFields(context), fields: CopyFields(fields)})
 	h.mu.Unlock()

@@ -113,3 +113,51 @@ type Handler interface {
 	HandleLogWithContextFields(lvl Level, time time.Time, msg string, context Fields, fields Fields)
 }
 ````
+
+Also I decided to trim do the interface, it may cause some extra performance overhead due to more if else inside handler,.
+but this avoid copy paste code in handler implementations, also make handler func possible
+
+Before simplify interface
+
+````go
+// Handler formats log message and writes to underlying storage, stdout, file, remote server etc.
+// It MUST be thread safe because logger calls handler concurrently without any locking.
+// There is NO log entry struct in gommon/log, which is used in many logging packages, the reason is
+// if extra field is added to the interface, compiler would throw error on stale handler implementations.
+type Handler interface {
+	// HandleLog accepts level, log time, formatted log message
+	HandleLog(level Level, now time.Time, msg string)
+	// HandleLogWithSource accepts formatted source line of log i.e., http.go:13
+	// TODO: pass frame instead of string so handler can use trace for error handling?
+	HandleLogWithSource(level Level, now time.Time, msg string, source string)
+	// HandleLogWithFields accepts fields with type hint,
+	// implementation should inspect the type field instead of using reflection
+	HandleLogWithFields(level Level, now time.Time, msg string, fields Fields)
+	// HandleLogWithSourceFields accepts both source and fields
+	HandleLogWithSourceFields(level Level, now time.Time, msg string, source string, fields Fields)
+	// HandleLogWithContextFields get context from logger, which is also fields
+	HandleLogWithContextFields(level Level, now time.Time, msg string, context Fields, fields Fields)
+	// HandleLogWithSourceContextFields contains everything
+	HandleLogWithSourceContextFields(level Level, now time.Time, msg string, source string, context Fields, fields Fields)
+	// Flush writes the buffer to underlying storage
+	Flush()
+}
+````
+
+After simplify interface
+
+````go
+// Handler formats log message and writes to underlying storage, stdout, file, remote server etc.
+// It MUST be thread safe because logger calls handler concurrently without any locking.
+// There is NO log entry struct in gommon/log, which is used in many logging packages, the reason is
+// if extra field is added to the interface, compiler would throw error on stale handler implementations.
+type Handler interface {
+	// HandleLog requires level, now, msg, all the others are optional
+	// source is file:line, i.e. main.go:18 TODO: pass frame instead of string so handler can use trace for error handling?
+	// context are fields attached to the logger instance
+	// fields are ad-hoc fields from logger method like DebugF(msg, fields)
+	HandleLog(level Level, now time.Time, msg string, source string, context Fields, fields Fields)
+	// Flush writes the buffer to underlying storage
+	Flush()
+}
+````

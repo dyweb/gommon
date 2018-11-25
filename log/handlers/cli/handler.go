@@ -34,55 +34,38 @@ func New(w io.Writer, delta bool) *Handler {
 	}
 }
 
-func (h *Handler) HandleLog(level log.Level, time time.Time, msg string) {
-	b := make([]byte, 0, 18+4+len(defaultTimeStampFormat)+len(msg))
-	b = formatHead(b, h.delta, h.start, level, time, msg)
-	b = append(b, '\n')
-	h.w.Write(b)
-}
-
-func (h *Handler) HandleLogWithSource(level log.Level, time time.Time, msg string, source string) {
-	b := make([]byte, 0, 18+4+len(defaultTimeStampFormat)+len(msg)+len(source))
-	b = formatHeadWithSource(b, h.delta, h.start, level, time, msg, source)
-	b = append(b, '\n')
-	h.w.Write(b)
-}
-
-func (h *Handler) HandleLogWithFields(level log.Level, time time.Time, msg string, fields log.Fields) {
-	b := make([]byte, 0, 18+4+len(defaultTimeStampFormat)+len(msg))
-	b = formatHead(b, h.delta, h.start, level, time, msg)
-	b = append(b, ' ')
-	b = formatFields(b, fields)
-	b[len(b)-1] = '\n'
-	h.w.Write(b)
-}
-
-func (h *Handler) HandleLogWithSourceFields(level log.Level, time time.Time, msg string, source string, fields log.Fields) {
-	b := make([]byte, 0, 18+4+len(defaultTimeStampFormat)+len(msg)+len(source))
-	b = formatHeadWithSource(b, h.delta, h.start, level, time, msg, source)
-	b = append(b, ' ')
-	b = formatFields(b, fields)
-	b[len(b)-1] = '\n'
-	h.w.Write(b)
-}
-
-func (h *Handler) HandleLogWithContextFields(level log.Level, time time.Time, msg string, context log.Fields, fields log.Fields) {
+func (h *Handler) HandleLog(level log.Level, now time.Time, msg string, source string, context log.Fields, fields log.Fields) {
 	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg))
-	b = formatHead(b, h.delta, h.start, level, time, msg)
+	// level
+	b = append(b, level.ColoredAlignedUpperString()...)
+	// time
 	b = append(b, ' ')
-	b = formatFields(b, context)
-	b = formatFields(b, fields)
-	b[len(b)-1] = '\n'
-	h.w.Write(b)
-}
-
-func (h *Handler) HandleLogWithSourceContextFields(level log.Level, time time.Time, msg string, source string, context log.Fields, fields log.Fields) {
-	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg))
-	b = formatHeadWithSource(b, h.delta, h.start, level, time, msg, source)
+	if h.delta {
+		b = append(b, formatNum(uint(now.Sub(h.start)/time.Second), 4)...)
+	} else {
+		b = now.AppendFormat(b, defaultTimeStampFormat)
+	}
+	// source
+	if source != "" {
+		b = append(b, ' ')
+		b = append(b, color.CyanStart...)
+		b = append(b, source...)
+		b = append(b, color.End...)
+	}
+	// message
 	b = append(b, ' ')
-	b = formatFields(b, context)
-	b = formatFields(b, fields)
-	b[len(b)-1] = '\n'
+	b = append(b, msg...)
+	// context
+	if len(context) > 0 {
+		b = append(b, ' ')
+		b = formatFields(b, context)
+	}
+	// field
+	if len(fields) > 0 {
+		b = append(b, ' ')
+		b = formatFields(b, fields)
+	}
+	b = append(b, '\n')
 	h.w.Write(b)
 }
 
@@ -112,39 +95,6 @@ func formatNum(u uint, digits int) []byte {
 	return b
 }
 
-// no need to use fmt.Printf since we don't need any format
-func formatHead(b []byte, delta bool, start time.Time, level log.Level, now time.Time, msg string) []byte {
-	b = append(b, level.ColoredAlignedUpperString()...)
-	b = append(b, ' ')
-	if delta {
-		b = append(b, formatNum(uint(now.Sub(start)/time.Second), 4)...)
-	} else {
-		b = now.AppendFormat(b, defaultTimeStampFormat)
-	}
-	b = append(b, ' ')
-	b = append(b, msg...)
-	return b
-}
-
-// we have a new function because source sits between time and msg in output, instead of after msg
-// i.e. info 2018-02-04T21:03:20-08:00 main.go:18 show me the line
-func formatHeadWithSource(b []byte, delta bool, start time.Time, level log.Level, now time.Time, msg string, source string) []byte {
-	b = append(b, level.ColoredAlignedUpperString()...)
-	b = append(b, ' ')
-	if delta {
-		b = append(b, formatNum(uint(now.Sub(start)/time.Second), 4)...)
-	} else {
-		b = now.AppendFormat(b, defaultTimeStampFormat)
-	}
-	b = append(b, ' ')
-	b = append(b, color.CyanStart...)
-	b = append(b, source...)
-	b = append(b, color.End...)
-	b = append(b, ' ')
-	b = append(b, msg...)
-	return b
-}
-
 // it has an extra tailing space, which can be updated inplace to a \n
 func formatFields(b []byte, fields log.Fields) []byte {
 	for _, f := range fields {
@@ -160,5 +110,6 @@ func formatFields(b []byte, fields log.Fields) []byte {
 		}
 		b = append(b, ' ')
 	}
+	b = b[:len(b)-1] // remove trailing space
 	return b
 }

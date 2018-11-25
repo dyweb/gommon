@@ -103,9 +103,9 @@ func (l *Logger) Identity() Identity {
 func (l *Logger) Panic(args ...interface{}) {
 	s := fmt.Sprint(args...)
 	if len(l.fields) == 0 {
-		l.h.HandleLogWithSource(PanicLevel, time.Now(), s, caller())
+		l.h.HandleLog(PanicLevel, time.Now(), s, caller(), nil, nil)
 	} else {
-		l.h.HandleLogWithSourceFields(PanicLevel, time.Now(), s, caller(), l.fields)
+		l.h.HandleLog(PanicLevel, time.Now(), s, caller(), l.fields, nil)
 	}
 	l.h.Flush()
 	panic(s)
@@ -115,9 +115,9 @@ func (l *Logger) Panic(args ...interface{}) {
 func (l *Logger) Panicf(format string, args ...interface{}) {
 	s := fmt.Sprintf(format, args...)
 	if len(l.fields) == 0 {
-		l.h.HandleLogWithSource(PanicLevel, time.Now(), s, caller())
+		l.h.HandleLog(PanicLevel, time.Now(), s, caller(), nil, nil)
 	} else {
-		l.h.HandleLogWithSourceFields(PanicLevel, time.Now(), s, caller(), l.fields)
+		l.h.HandleLog(PanicLevel, time.Now(), s, caller(), l.fields, nil)
 	}
 	l.h.Flush()
 	panic(s)
@@ -126,9 +126,9 @@ func (l *Logger) Panicf(format string, args ...interface{}) {
 // PanicF duplicates instead of calling Panic to keep source line correct
 func (l *Logger) PanicF(msg string, fields Fields) {
 	if len(l.fields) == 0 {
-		l.h.HandleLogWithSourceFields(PanicLevel, time.Now(), msg, caller(), fields)
+		l.h.HandleLog(PanicLevel, time.Now(), msg, caller(), nil, fields)
 	} else {
-		l.h.HandleLogWithSourceContextFields(PanicLevel, time.Now(), msg, caller(), l.fields, fields)
+		l.h.HandleLog(PanicLevel, time.Now(), msg, caller(), l.fields, fields)
 	}
 	l.h.Flush()
 	panic(msg)
@@ -138,9 +138,9 @@ func (l *Logger) PanicF(msg string, fields Fields) {
 func (l *Logger) Fatal(args ...interface{}) {
 	s := fmt.Sprint(args...)
 	if len(l.fields) == 0 {
-		l.h.HandleLogWithSource(FatalLevel, time.Now(), s, caller())
+		l.h.HandleLog(FatalLevel, time.Now(), s, caller(), nil, nil)
 	} else {
-		l.h.HandleLogWithSourceFields(FatalLevel, time.Now(), s, caller(), l.fields)
+		l.h.HandleLog(FatalLevel, time.Now(), s, caller(), l.fields, nil)
 	}
 	l.h.Flush()
 	// TODO: allow user to register hook to do cleanup before exit directly
@@ -151,9 +151,9 @@ func (l *Logger) Fatal(args ...interface{}) {
 func (l *Logger) Fatalf(format string, args ...interface{}) {
 	s := fmt.Sprintf(format, args...)
 	if len(l.fields) == 0 {
-		l.h.HandleLogWithSource(FatalLevel, time.Now(), s, caller())
+		l.h.HandleLog(FatalLevel, time.Now(), s, caller(), nil, nil)
 	} else {
-		l.h.HandleLogWithSourceFields(FatalLevel, time.Now(), s, caller(), l.fields)
+		l.h.HandleLog(FatalLevel, time.Now(), s, caller(), l.fields, nil)
 	}
 	l.h.Flush()
 	os.Exit(1)
@@ -162,9 +162,9 @@ func (l *Logger) Fatalf(format string, args ...interface{}) {
 // FatalF duplicates instead of calling Fatal to keep source line correct
 func (l *Logger) FatalF(msg string, fields Fields) {
 	if len(l.fields) == 0 {
-		l.h.HandleLogWithSourceFields(FatalLevel, time.Now(), msg, caller(), fields)
+		l.h.HandleLog(FatalLevel, time.Now(), msg, caller(), nil, fields)
 	} else {
-		l.h.HandleLogWithSourceContextFields(FatalLevel, time.Now(), msg, caller(), l.fields, fields)
+		l.h.HandleLog(FatalLevel, time.Now(), msg, caller(), l.fields, fields)
 	}
 	l.h.Flush()
 	os.Exit(1)
