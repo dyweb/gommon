@@ -5,6 +5,8 @@ import (
 	"os"
 	"testing"
 
+	"k8s.io/klog"
+
 	// zap
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -204,5 +206,12 @@ func TestLogrus(t *testing.T) {
 		logger.WithField("f1", "v1").Info("field has color? yes")
 		//INFO[0000] level have color? yes, when tty or forced
 		//INFO[0000] field has color?                              f1=v1
+	})
+}
+
+func TestKlog(t *testing.T) {
+	t.Run("console", func(t *testing.T) {
+		klog.SetOutput(os.Stderr)
+		klog.Info("just log something")
 	})
 }

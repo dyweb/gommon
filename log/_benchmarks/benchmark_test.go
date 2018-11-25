@@ -121,6 +121,16 @@ func BenchmarkDisabledLevelNoFormat(b *testing.B) {
 			}
 		})
 	})
+	b.Run("gommon.F", func(b *testing.B) {
+		logger := dlog.NewTestLogger(dlog.ErrorLevel)
+		logger.SetHandler(dlog.NewIOHandler(ioutil.Discard))
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.InfoF(msg, nil)
+			}
+		})
+	})
 	b.Run("gommon.check", func(b *testing.B) {
 		logger := dlog.NewTestLogger(dlog.ErrorLevel)
 		logger.SetHandler(dlog.NewIOHandler(ioutil.Discard))
@@ -217,6 +227,16 @@ func BenchmarkWithoutFieldsText(b *testing.B) {
 			}
 		})
 	})
+	b.Run("gommon.F", func(b *testing.B) {
+		logger := dlog.NewTestLogger(dlog.InfoLevel)
+		logger.SetHandler(dlog.NewIOHandler(ioutil.Discard))
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.InfoF(msg, nil)
+			}
+		})
+	})
 	b.Run("std", func(b *testing.B) {
 		logger := stdlog.New(ioutil.Discard, "", stdlog.Ldate|stdlog.Ltime)
 		b.ResetTimer()
@@ -276,11 +296,10 @@ func BenchmarkWithoutFieldsText(b *testing.B) {
 		klog.SetOutput(ioutil.Discard)
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				klog.Info(msg)
+				klog.Info(msg) // I think klog's buffer pool is the reason
 			}
 		})
 	})
-
 }
 
 func BenchmarkWithoutFieldsJSON(b *testing.B) {
@@ -294,6 +313,16 @@ func BenchmarkWithoutFieldsJSON(b *testing.B) {
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
 				logger.Info(msg)
+			}
+		})
+	})
+	b.Run("gommon.F", func(b *testing.B) {
+		logger := dlog.NewTestLogger(dlog.InfoLevel)
+		logger.SetHandler(json.New(ioutil.Discard))
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.InfoF(msg, nil)
 			}
 		})
 	})
