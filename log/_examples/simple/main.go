@@ -46,5 +46,7 @@ func main() {
 	time.Sleep(time.Second)
 	log.Info("no more line number")
 
+	log.AddField(dlog.Str("f1", "v1"))
+	log.Info("should have some extra context")
 	// TODO: panic and fatal
 }

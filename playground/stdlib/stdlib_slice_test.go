@@ -46,3 +46,19 @@ func TestSlice_ReSliceStructSlice(t *testing.T) {
 	s = append(s, foo{"2r", mr, ss})
 	assert.Equal("1+", sCopy[0].m["a"])
 }
+
+func acceptVariadicArgs(nums ...int) int {
+	s := 0
+	for _, v := range nums {
+		s += v
+	}
+	return s
+}
+
+func TestVariadicArgs(t *testing.T) {
+	v1 := []int{1, 2, 3}
+	v2 := []int{4, 5, 6}
+	acceptVariadicArgs(v1...)
+	acceptVariadicArgs(v2...)
+	//acceptVariadicArgs(v2..., v1...)
+}

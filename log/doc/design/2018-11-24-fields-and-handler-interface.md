@@ -96,3 +96,20 @@ TODO
   - [ ] might change it to a string?
 - [ ] enable fields
 - [ ] allow add fields (don't allow remove)
+- [ ] change handler interface or logger to merge fields with adhoc fields
+  - I don't want to create new slice just for merging the fields, and logger need to check if its context is empty
+
+
+- now it becomes permutation
+  - source
+  - fields
+  - context
+- we have total 2 * 2 * 2 ... 8 methods to implement, well ... such copy and paste and if else ...
+
+````go
+type Handler interface {
+	HandleLogWithFields(level Level, time time.Time, msg string, fields Fields)
+	// context are fields from the logger
+	HandleLogWithContextFields(lvl Level, time time.Time, msg string, context Fields, fields Fields)
+}
+````

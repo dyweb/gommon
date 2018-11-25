@@ -22,7 +22,7 @@ func (c *YAMLConfig) GetLogger() *dlog.Logger {
 	return c.log
 }
 
-func (c *YAMLConfig) LoggerIdentity(justCallMe func() *dlog.Identity) *dlog.Identity {
+func (c *YAMLConfig) LoggerIdentity(justCallMe func() dlog.Identity) dlog.Identity {
 	return justCallMe()
 }
 `},
@@ -35,7 +35,7 @@ func (c *YAMLConfig) GetLogger() *dlog.Logger {
 	return c.logger
 }
 
-func (c *YAMLConfig) LoggerIdentity(justCallMe func() *dlog.Identity) *dlog.Identity {
+func (c *YAMLConfig) LoggerIdentity(justCallMe func() dlog.Identity) dlog.Identity {
 	return justCallMe()
 }
 `},

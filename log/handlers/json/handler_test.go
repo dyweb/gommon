@@ -87,12 +87,13 @@ func TestHandler_HandleLogWithSourceFields(t *testing.T) {
 
 func Test_FormatHead(t *testing.T) {
 	assert := asst.New(t)
-	assert.Equal(`{"l":"debug","t":1517861935,"m":"hi"`, string(formatHeadDeprecated(log.DebugLevel, tm, "hi")))
+	var b []byte
+	assert.Equal(`{"l":"debug","t":1517861935,"m":"hi"`, string(formatHead(b, log.DebugLevel, tm.Unix(), "hi")))
 }
 
 func Test_FormatFields(t *testing.T) {
 	assert := asst.New(t)
-	b := make([]byte, 0)
+	var b []byte
 	assert.Equal(`"num":1,"str":"rts"`, string(formatFields(b, log.Fields{
 		log.Int("num", 1),
 		log.Str("str", "rts"),

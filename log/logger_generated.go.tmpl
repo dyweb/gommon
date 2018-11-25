@@ -11,32 +11,59 @@ func (l *Logger) Is{{.}}Enabled() bool {
 }
 
 func (l *Logger) {{.}}(args ...interface{}) {
-	if l.level >= {{.}}Level {
-	    if !l.source {
-    		l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprint(args...))
-	    } else {
-	        l.h.HandleLogWithSource({{.}}Level, time.Now(), fmt.Sprint(args...), caller())
-	    }
-	}
+    if l.level < {{.}}Level {
+        return
+    }
+    if len(l.fields) == 0 {
+        if !l.source {
+            l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprint(args...))
+        } else {
+            l.h.HandleLogWithSource({{.}}Level, time.Now(), fmt.Sprint(args...), caller())
+        }
+    } else {
+        if !l.source {
+            l.h.HandleLogWithFields({{.}}Level, time.Now(), fmt.Sprint(args...), l.fields)
+        } else {
+            l.h.HandleLogWithSourceFields({{.}}Level, time.Now(), fmt.Sprint(args...), caller(), l.fields)
+        }
+    }
 }
 
 func (l *Logger) {{.}}f(format string, args ...interface{}) {
-	if l.level >= {{.}}Level {
-	    if !l.source {
-            l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprintf(format, args...))
-	    } else {
-            l.h.HandleLogWithSource({{.}}Level, time.Now(), fmt.Sprintf(format, args...), caller())
-	    }
+	if l.level < {{.}}Level {
+		return
+	}
+	if len(l.fields) == 0 {
+		if !l.source {
+			l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprintf(format, args...))
+		} else {
+			l.h.HandleLogWithSource({{.}}Level, time.Now(), fmt.Sprintf(format, args...), caller())
+		}
+	} else {
+		if !l.source {
+			l.h.HandleLogWithFields({{.}}Level, time.Now(), fmt.Sprintf(format, args...), l.fields)
+		} else {
+			l.h.HandleLogWithSourceFields({{.}}Level, time.Now(), fmt.Sprintf(format, args...), caller(), l.fields)
+		}
 	}
 }
 
 func (l *Logger) {{.}}F(msg string, fields Fields) {
-    if l.level >= {{.}}Level {
-        if !l.source {
-            l.h.HandleLogWithFields({{.}}Level, time.Now(), msg, fields)
-        } else {
-            l.h.HandleLogWithSourceFields({{.}}Level, time.Now(), msg, caller(), fields)
-        }
-    }
+	if l.level < {{.}}Level {
+		return
+	}
+	if len(l.fields) == 0 {
+		if !l.source {
+			l.h.HandleLogWithFields({{.}}Level, time.Now(), msg, fields)
+		} else {
+			l.h.HandleLogWithSourceFields({{.}}Level, time.Now(), msg, caller(), fields)
+		}
+	} else {
+		if !l.source {
+			l.h.HandleLogWithContextFields({{.}}Level, time.Now(), msg, l.fields, fields)
+		} else {
+			l.h.HandleLogWithSourceContextFields({{.}}Level, time.Now(), msg, caller(), l.fields, fields)
+		}
+	}
 }
 {{ end }}

@@ -4,7 +4,6 @@ import (
 	"io"
 	"os"
 	"strconv"
-	"sync"
 	"time"
 )
 
@@ -18,15 +17,19 @@ const (
 // if extra field is added to the interface, compiler would throw error on stale handler implementations.
 type Handler interface {
 	// HandleLog accepts level, log time, formatted log message
-	HandleLog(level Level, time time.Time, msg string)
+	HandleLog(level Level, now time.Time, msg string)
 	// HandleLogWithSource accepts formatted source line of log i.e., http.go:13
 	// TODO: pass frame instead of string so handler can use trace for error handling?
-	HandleLogWithSource(level Level, time time.Time, msg string, source string)
+	HandleLogWithSource(level Level, now time.Time, msg string, source string)
 	// HandleLogWithFields accepts fields with type hint,
 	// implementation should inspect the type field instead of using reflection
-	HandleLogWithFields(level Level, time time.Time, msg string, fields Fields)
+	HandleLogWithFields(level Level, now time.Time, msg string, fields Fields)
 	// HandleLogWithSourceFields accepts both source and fields
-	HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields)
+	HandleLogWithSourceFields(level Level, now time.Time, msg string, source string, fields Fields)
+	// HandleLogWithContextFields get context from logger, which is also fields
+	HandleLogWithContextFields(level Level, now time.Time, msg string, context Fields, fields Fields)
+	// HandleLogWithSourceContextFields contains everything
+	HandleLogWithSourceContextFields(level Level, now time.Time, msg string, source string, context Fields, fields Fields)
 	// Flush writes the buffer to underlying storage
 	Flush()
 }
@@ -79,14 +82,16 @@ func NewIOHandler(w io.Writer) Handler {
 
 // HandleLog implements Handler interface
 func (h *IOHandler) HandleLog(level Level, time time.Time, msg string) {
-	b := formatHead(level, time, msg)
+	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg))
+	b = formatHead(b, level, time, msg)
 	b = append(b, '\n')
 	h.w.Write(b)
 }
 
 // HandleLogWithSource implements Handler interface
 func (h *IOHandler) HandleLogWithSource(level Level, time time.Time, msg string, source string) {
-	b := formatHeadWithSource(level, time, msg, source)
+	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg)+len(source))
+	b = formatHeadWithSource(b, level, time, msg, source)
 	b = append(b, '\n')
 	h.w.Write(b)
 }
@@ -94,7 +99,8 @@ func (h *IOHandler) HandleLogWithSource(level Level, time time.Time, msg string,
 // HandleLogWithFields implements Handler interface
 func (h *IOHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
 	// we use raw slice instead of bytes buffer because we need to use strconv.Append*, which requires raw slice
-	b := formatHead(level, time, msg)
+	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg))
+	b = formatHead(b, level, time, msg)
 	b = append(b, ' ')
 	b = formatFields(b, fields)
 	b[len(b)-1] = '\n'
@@ -103,8 +109,29 @@ func (h *IOHandler) HandleLogWithFields(level Level, time time.Time, msg string,
 
 // HandleLogWithSourceFields implements Handler interface
 func (h *IOHandler) HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields) {
-	b := formatHeadWithSource(level, time, msg, source)
+	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg)+len(source))
+	b = formatHeadWithSource(b, level, time, msg, source)
 	b = append(b, ' ')
+	b = formatFields(b, fields)
+	b[len(b)-1] = '\n'
+	h.w.Write(b)
+}
+
+func (h *IOHandler) HandleLogWithContextFields(level Level, time time.Time, msg string, context Fields, fields Fields) {
+	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg))
+	b = formatHead(b, level, time, msg)
+	b = append(b, ' ')
+	b = formatFields(b, context)
+	b = formatFields(b, fields)
+	b[len(b)-1] = '\n'
+	h.w.Write(b)
+}
+
+func (h *IOHandler) HandleLogWithSourceContextFields(level Level, time time.Time, msg string, source string, context Fields, fields Fields) {
+	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg))
+	b = formatHeadWithSource(b, level, time, msg, source)
+	b = append(b, ' ')
+	b = formatFields(b, context)
 	b = formatFields(b, fields)
 	b[len(b)-1] = '\n'
 	h.w.Write(b)
@@ -117,78 +144,10 @@ func (h *IOHandler) Flush() {
 	}
 }
 
-// entry is only used for test, it is not passed around like other loging packages
-type entry struct {
-	level  Level
-	time   time.Time
-	msg    string
-	fields Fields
-	source string
-}
-
-var _ Handler = (*TestHandler)(nil)
-
-// TestHandler stores log as entry, its slice is protected by a RWMutex and safe for concurrent use
-type TestHandler struct {
-	mu      sync.RWMutex
-	entries []entry
-}
-
-// NewTestHandler returns a test handler, it should only be used in test,
-// a concrete type instead of Handler interface is returned to reduce unnecessary type cast in test
-func NewTestHandler() *TestHandler {
-	return &TestHandler{}
-}
-
-// HandleLog implements Handler interface
-func (h *TestHandler) HandleLog(level Level, time time.Time, msg string) {
-	h.mu.Lock()
-	h.entries = append(h.entries, entry{level: level, time: time, msg: msg})
-	h.mu.Unlock()
-}
-
-// HandleLogWithSource implements Handler interface
-func (h *TestHandler) HandleLogWithSource(level Level, time time.Time, msg string, source string) {
-	h.mu.Lock()
-	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, source: source})
-	h.mu.Unlock()
-}
-
-// HandleLogWithFields implements Handler interface
-func (h *TestHandler) HandleLogWithFields(level Level, time time.Time, msg string, fields Fields) {
-	h.mu.Lock()
-	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, fields: fields})
-	h.mu.Unlock()
-}
-
-// HandleLogWithSourceFields implements Handler interface
-func (h *TestHandler) HandleLogWithSourceFields(level Level, time time.Time, msg string, source string, fields Fields) {
-	h.mu.Lock()
-	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, source: source, fields: fields})
-	h.mu.Unlock()
-}
-
-// Flush implements Handler interface
-func (h *TestHandler) Flush() {
-	// nop
-}
-
-// HasLog checks if a log with specified level and message exists in slice
-// TODO: support field, source etc.
-func (h *TestHandler) HasLog(level Level, msg string) bool {
-	h.mu.RLock()
-	defer h.mu.RUnlock()
-	for _, e := range h.entries {
-		if e.level == level && e.msg == msg {
-			return true
-		}
-	}
-	return false
-}
+// ----------------- start of text format util ---------------------------
 
 // no need to use fmt.Printf since we don't need any format
-func formatHead(level Level, time time.Time, msg string) []byte {
-	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg))
+func formatHead(b []byte, level Level, time time.Time, msg string) []byte {
 	b = append(b, level.String()...)
 	b = append(b, ' ')
 	b = time.AppendFormat(b, defaultTimeStampFormat)
@@ -199,8 +158,7 @@ func formatHead(level Level, time time.Time, msg string) []byte {
 
 // we have a new function because source sits between time and msg in output, instead of after msg
 // i.e. info 2018-02-04T21:03:20-08:00 main.go:18 show me the line
-func formatHeadWithSource(level Level, time time.Time, msg string, source string) []byte {
-	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg)+len(source))
+func formatHeadWithSource(b []byte, level Level, time time.Time, msg string, source string) []byte {
 	b = append(b, level.String()...)
 	b = append(b, ' ')
 	b = time.AppendFormat(b, defaultTimeStampFormat)
@@ -211,7 +169,7 @@ func formatHeadWithSource(level Level, time time.Time, msg string, source string
 	return b
 }
 
-// it has an extra tailing space, which can be updated inplace to a \n
+// it has an extra tailing space, which can be updated in place to a \n
 func formatFields(b []byte, fields Fields) []byte {
 	for _, f := range fields {
 		b = append(b, f.Key...)
@@ -226,3 +184,5 @@ func formatFields(b []byte, fields Fields) []byte {
 	}
 	return b
 }
+
+// ----------------- end of text format util ---------------------------

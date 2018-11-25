@@ -67,6 +67,7 @@ var levelColoredAlignedUpperStrings = []string{
 	TraceLevel: color.GrayStart + "TRAC" + color.End,
 }
 
+// TODO: use switch and generate the function ... or just generate it manually
 func (level Level) String() string {
 	return levelStrings[level]
 }

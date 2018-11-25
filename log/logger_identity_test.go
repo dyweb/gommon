@@ -27,7 +27,7 @@ func (f *Foo) SetLogger(logger *Logger) {
 	f.log = logger
 }
 
-func (f *Foo) LoggerIdentity(justCallMe func() *Identity) *Identity {
+func (f *Foo) LoggerIdentity(justCallMe func() Identity) Identity {
 	return justCallMe()
 }
 

@@ -1,5 +1,9 @@
 # TODO
 
+## 2018-11-24
+
+- [ ] [#90](https://github.com/dyweb/gommon/pull/90) the long pending benchmark and refactor for adding context (fields to logger instance)
+
 ## 2018-05-02
 
 - [x] [#67](https://github.com/dyweb/gommon/issues/67) add example in doc 

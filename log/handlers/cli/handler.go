@@ -3,7 +3,7 @@ Package cli writes is same as builtin IOHandler except color and delta time.
 It is used by go.ice as default handler
 TODO: color can't be disabled and we don't detect tty like logrus
 */
-package cli // import "github.com/dyweb/gommon/log/handlers/cli"
+package cli
 
 import (
 	"io"
@@ -17,6 +17,8 @@ import (
 const (
 	defaultTimeStampFormat = time.RFC3339
 )
+
+var _ log.Handler = (*Handler)(nil)
 
 type Handler struct {
 	w     io.Writer
@@ -33,20 +35,22 @@ func New(w io.Writer, delta bool) *Handler {
 }
 
 func (h *Handler) HandleLog(level log.Level, time time.Time, msg string) {
-	b := h.formatHead(level, time, msg)
+	b := make([]byte, 0, 18+4+len(defaultTimeStampFormat)+len(msg))
+	b = formatHead(b, h.delta, h.start, level, time, msg)
 	b = append(b, '\n')
 	h.w.Write(b)
 }
 
 func (h *Handler) HandleLogWithSource(level log.Level, time time.Time, msg string, source string) {
-	b := h.formatHeadWithSource(level, time, msg, source)
+	b := make([]byte, 0, 18+4+len(defaultTimeStampFormat)+len(msg)+len(source))
+	b = formatHeadWithSource(b, h.delta, h.start, level, time, msg, source)
 	b = append(b, '\n')
 	h.w.Write(b)
 }
 
 func (h *Handler) HandleLogWithFields(level log.Level, time time.Time, msg string, fields log.Fields) {
-	// we use raw slice instead of bytes buffer because we need to use strconv.Append*, which requires raw slice
-	b := h.formatHead(level, time, msg)
+	b := make([]byte, 0, 18+4+len(defaultTimeStampFormat)+len(msg))
+	b = formatHead(b, h.delta, h.start, level, time, msg)
 	b = append(b, ' ')
 	b = formatFields(b, fields)
 	b[len(b)-1] = '\n'
@@ -54,8 +58,29 @@ func (h *Handler) HandleLogWithFields(level log.Level, time time.Time, msg strin
 }
 
 func (h *Handler) HandleLogWithSourceFields(level log.Level, time time.Time, msg string, source string, fields log.Fields) {
-	b := h.formatHeadWithSource(level, time, msg, source)
+	b := make([]byte, 0, 18+4+len(defaultTimeStampFormat)+len(msg)+len(source))
+	b = formatHeadWithSource(b, h.delta, h.start, level, time, msg, source)
 	b = append(b, ' ')
+	b = formatFields(b, fields)
+	b[len(b)-1] = '\n'
+	h.w.Write(b)
+}
+
+func (h *Handler) HandleLogWithContextFields(level log.Level, time time.Time, msg string, context log.Fields, fields log.Fields) {
+	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg))
+	b = formatHead(b, h.delta, h.start, level, time, msg)
+	b = append(b, ' ')
+	b = formatFields(b, context)
+	b = formatFields(b, fields)
+	b[len(b)-1] = '\n'
+	h.w.Write(b)
+}
+
+func (h *Handler) HandleLogWithSourceContextFields(level log.Level, time time.Time, msg string, source string, context log.Fields, fields log.Fields) {
+	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg))
+	b = formatHeadWithSource(b, h.delta, h.start, level, time, msg, source)
+	b = append(b, ' ')
+	b = formatFields(b, context)
 	b = formatFields(b, fields)
 	b[len(b)-1] = '\n'
 	h.w.Write(b)
@@ -88,14 +113,13 @@ func formatNum(u uint, digits int) []byte {
 }
 
 // no need to use fmt.Printf since we don't need any format
-func (h *Handler) formatHead(level log.Level, tm time.Time, msg string) []byte {
-	b := make([]byte, 0, 18+4+len(defaultTimeStampFormat)+len(msg))
+func formatHead(b []byte, delta bool, start time.Time, level log.Level, now time.Time, msg string) []byte {
 	b = append(b, level.ColoredAlignedUpperString()...)
 	b = append(b, ' ')
-	if h.delta {
-		b = append(b, formatNum(uint(tm.Sub(h.start)/time.Second), 4)...)
+	if delta {
+		b = append(b, formatNum(uint(now.Sub(start)/time.Second), 4)...)
 	} else {
-		b = tm.AppendFormat(b, defaultTimeStampFormat)
+		b = now.AppendFormat(b, defaultTimeStampFormat)
 	}
 	b = append(b, ' ')
 	b = append(b, msg...)
@@ -104,14 +128,13 @@ func (h *Handler) formatHead(level log.Level, tm time.Time, msg string) []byte {
 
 // we have a new function because source sits between time and msg in output, instead of after msg
 // i.e. info 2018-02-04T21:03:20-08:00 main.go:18 show me the line
-func (h *Handler) formatHeadWithSource(level log.Level, tm time.Time, msg string, source string) []byte {
-	b := make([]byte, 0, 18+4+len(defaultTimeStampFormat)+len(msg))
+func formatHeadWithSource(b []byte, delta bool, start time.Time, level log.Level, now time.Time, msg string, source string) []byte {
 	b = append(b, level.ColoredAlignedUpperString()...)
 	b = append(b, ' ')
-	if h.delta {
-		b = append(b, formatNum(uint(tm.Sub(h.start)/time.Second), 4)...)
+	if delta {
+		b = append(b, formatNum(uint(now.Sub(start)/time.Second), 4)...)
 	} else {
-		b = tm.AppendFormat(b, defaultTimeStampFormat)
+		b = now.AppendFormat(b, defaultTimeStampFormat)
 	}
 	b = append(b, ' ')
 	b = append(b, color.CyanStart...)
