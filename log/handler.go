@@ -27,14 +27,13 @@ type Handler interface {
 	Flush()
 }
 
-// NOTE: since the interface of handler become so big, there is no way to use a handler func
-// TODO: maybe we can trim down the interface by adding more if else inside handler and use the max parameters
 // HandlerFunc is an adapter to allow use of ordinary functions as log entry handlers
-//type HandlerFunc func(level Level, msg string)
-// TODO: why the receiver is value instead of pointer https://github.com/dyweb/gommon/issues/30
-//func (f HandlerFunc) HandleLog(level Level, msg string) {
-//	f(level, msg)
-//}
+type HandlerFunc func(level Level, now time.Time, msg string, source string, context Fields, fields Fields)
+
+// TODO: why the receiver is value instead of pointer https://github.com/dyweb/gommon/issues/30 and what's the overhead
+func (f HandlerFunc) HandleLog(level Level, now time.Time, msg string, source string, context Fields, fields Fields) {
+	f(level, now, msg, source, context, fields)
+}
 
 var _ Syncer = (*os.File)(nil)
 

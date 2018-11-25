@@ -6,5 +6,6 @@ gotmpls:
       - Trace
       - Debug
       - Info
+      - Print
       - Warn
       - Error

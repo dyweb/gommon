@@ -27,6 +27,7 @@ func main() {
 	dlog.SetLevelRecursive(log, dlog.DebugLevel)
 	log.Debug("show me the meaning of being lonely")
 	log.Info("this is love!")
+	log.Print("print is info level")
 	log.Warnf("this is love %d", 2)
 	log.InfoF("this love", dlog.Fields{
 		dlog.Int("num", 2),
