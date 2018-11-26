@@ -66,6 +66,7 @@ func TestListenAndServeUnix(t *testing.T) {
 		// curl --unix-socket /tmp/gommon.sock http://abc/ping
 		err := dhttputil.ListenAndServeUnix(&srv, "/tmp/gommon.sock")
 		if err != nil {
+			// TODO: race in go tip https://travis-ci.org/dyweb/gommon/jobs/459629689
 			t.Logf("error start server: %s", err)
 		}
 		// https://travis-ci.org/dyweb/gommon/jobs/431772857

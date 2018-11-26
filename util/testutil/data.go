@@ -1,9 +1,12 @@
 package testutil
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"os"
 	"testing"
 
 	"gopkg.in/yaml.v2"
@@ -17,6 +20,15 @@ func ReadFixture(t *testing.T, path string) []byte {
 	return b
 }
 
+func WriteFixture(t *testing.T, path string, data []byte) {
+	err := ioutil.WriteFile(path, data, 0664)
+	if err != nil {
+		t.Fatalf("can't write fixture %s: %v", path, err)
+	}
+}
+
+// -------------------- start of json -----------------------
+
 func ReadJsonTo(t *testing.T, path string, v interface{}) {
 	b := ReadFixture(t, path)
 	if err := json.Unmarshal(b, v); err != nil {
@@ -24,25 +36,37 @@ func ReadJsonTo(t *testing.T, path string, v interface{}) {
 	}
 }
 
-func ReadYAMLTo(t *testing.T, path string, v interface{}) {
-	b := ReadFixture(t, path)
-	if err := yaml.Unmarshal(b, v); err != nil {
-		t.Fatalf("can't unmarhsal YAML fixture %s %v", path, err)
+func FormatJson(t *testing.T, src []byte) []byte {
+	var buf bytes.Buffer
+	if err := json.Indent(&buf, src, "", "  "); err != nil {
+		t.Fatalf("error ident json: %s", err)
+		return nil
 	}
+	return buf.Bytes()
 }
 
-// ReadYAMLToStrict uses strict mode when decoding, if unknown fields shows up in YAML but not in struct it will error
-func ReadYAMLToStrict(t *testing.T, path string, v interface{}) {
-	b := ReadFixture(t, path)
-	if err := yaml.UnmarshalStrict(b, v); err != nil {
-		t.Fatalf("can't unmarhsal YAML fixture %s in strict mode %v", path, err)
-	}
-}
-
-func WriteFixture(t *testing.T, path string, data []byte) {
-	err := ioutil.WriteFile(path, data, 0664)
+// TODO: it's dump w/ Print in pretty.go ... wrote too much and forgot ...
+func DumpAsJson(t *testing.T, v interface{}) {
+	b, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
-		t.Fatalf("can't write fixture %s: %v", path, err)
+		t.Fatalf("failed to encode as json %v", v)
+		return
+	}
+	if _, err := os.Stdout.Write(b); err != nil {
+		t.Fatalf("failed to write encoded json to stdout: %s", err)
+		return
+	}
+}
+
+func DumpAsJsonTo(t *testing.T, v interface{}, w io.Writer) {
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		t.Fatalf("failed to encode as json %v", v)
+		return
+	}
+	if _, err := w.Write(b); err != nil {
+		t.Fatalf("failed to write encoded json to writer: %s", err)
+		return
 	}
 }
 
@@ -98,6 +122,25 @@ func SaveAsPrettyJsonf(t *testing.T, v interface{}, format string, args ...inter
 	t.Logf("saved json to %s", file)
 }
 
+// -------------------- end of json -----------------------
+
+// -------------------- start of yaml -----------------------
+
+func ReadYAMLTo(t *testing.T, path string, v interface{}) {
+	b := ReadFixture(t, path)
+	if err := yaml.Unmarshal(b, v); err != nil {
+		t.Fatalf("can't unmarhsal YAML fixture %s %v", path, err)
+	}
+}
+
+// ReadYAMLToStrict uses strict mode when decoding, if unknown fields shows up in YAML but not in struct it will error
+func ReadYAMLToStrict(t *testing.T, path string, v interface{}) {
+	b := ReadFixture(t, path)
+	if err := yaml.UnmarshalStrict(b, v); err != nil {
+		t.Fatalf("can't unmarhsal YAML fixture %s in strict mode %v", path, err)
+	}
+}
+
 func SaveAsYAML(t *testing.T, v interface{}, file string) {
 	b, err := yaml.Marshal(v)
 	if err != nil {
@@ -124,3 +167,5 @@ func SaveAsYAMLf(t *testing.T, v interface{}, format string, args ...interface{}
 	}
 	t.Logf("saved YAML to %s", file)
 }
+
+// -------------------- end of yaml -----------------------
