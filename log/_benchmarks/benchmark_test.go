@@ -1,6 +1,7 @@
 package benchmarks
 
 import (
+	"errors"
 	"io/ioutil"
 	"testing"
 
@@ -297,6 +298,63 @@ func BenchmarkWithoutFieldsText(b *testing.B) {
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
 				klog.Info(msg) // I think klog's buffer pool is the reason
+			}
+		})
+	})
+}
+
+func BenchmarkWithoutFieldsTextFormat(b *testing.B) {
+	b.ReportAllocs()
+	b.Log("logging a single line text like stdlog with format but without fields")
+	format := "TODO: is fixed length msg really a good idea? we should give dynamic length with is more real world %d %s %s"
+	i1 := 10086
+	s1 := "sub str aaaaa"
+	err := errors.New("some error")
+
+	b.Run("gommon", func(b *testing.B) {
+		logger := dlog.NewTestLogger(dlog.InfoLevel)
+		logger.SetHandler(dlog.NewIOHandler(ioutil.Discard))
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Infof(format, i1, s1, err)
+			}
+		})
+	})
+	b.Run("zap.sugar", func(b *testing.B) {
+		logger := newZapConsoleLogger(zap.InfoLevel).Sugar()
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Infof(format, i1, s1, err)
+			}
+		})
+	})
+	// TODO: seems zerolog console logger also don't have *f variant
+	b.Run("apex", func(b *testing.B) {
+		logger := newApexConsoleLogger(apexlog.InfoLevel)
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Infof(format, i1, s1, err)
+			}
+		})
+	})
+	b.Run("logrus", func(b *testing.B) {
+		logger := newLogrusConsoleLogger(logrus.InfoLevel)
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Infof(format, i1, s1, err)
+			}
+		})
+	})
+	b.Run("klog", func(b *testing.B) {
+		// TODO: it seems glog can't create individual logger instance?
+		klog.SetOutput(ioutil.Discard)
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				klog.Infof(format, i1, s1, err)
 			}
 		})
 	})
