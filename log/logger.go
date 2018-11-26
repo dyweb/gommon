@@ -58,6 +58,11 @@ func (l *Logger) AddFields(fields ...Field) *Logger {
 	return l
 }
 
+// Flush calls Flush of its handler
+func (l *Logger) Flush() {
+	l.h.Flush()
+}
+
 func (l *Logger) Level() Level {
 	return l.level
 }
