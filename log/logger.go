@@ -124,7 +124,7 @@ func (l *Logger) Panicf(format string, args ...interface{}) {
 }
 
 // PanicF duplicates instead of calling Panic to keep source line correct
-func (l *Logger) PanicF(msg string, fields Fields) {
+func (l *Logger) PanicF(msg string, fields ...Field) {
 	if len(l.fields) == 0 {
 		l.h.HandleLog(PanicLevel, time.Now(), msg, caller(), nil, fields)
 	} else {
@@ -160,7 +160,7 @@ func (l *Logger) Fatalf(format string, args ...interface{}) {
 }
 
 // FatalF duplicates instead of calling Fatal to keep source line correct
-func (l *Logger) FatalF(msg string, fields Fields) {
+func (l *Logger) FatalF(msg string, fields ...Field) {
 	if len(l.fields) == 0 {
 		l.h.HandleLog(FatalLevel, time.Now(), msg, caller(), nil, fields)
 	} else {
@@ -168,6 +168,11 @@ func (l *Logger) FatalF(msg string, fields Fields) {
 	}
 	l.h.Flush()
 	os.Exit(1)
+}
+
+// Noop is only for test escape analysis
+func (l *Logger) NoopF(msg string, fields ...Field) {
+	// noop
 }
 
 // caller gets source location at runtime, in the future we may generate it at compile time to reduce the

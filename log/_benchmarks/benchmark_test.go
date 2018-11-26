@@ -128,7 +128,7 @@ func BenchmarkDisabledLevelNoFormat(b *testing.B) {
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				logger.InfoF(msg, nil)
+				logger.InfoF(msg)
 			}
 		})
 	})
@@ -234,7 +234,7 @@ func BenchmarkWithoutFieldsText(b *testing.B) {
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				logger.InfoF(msg, nil)
+				logger.InfoF(msg)
 			}
 		})
 	})
@@ -380,7 +380,7 @@ func BenchmarkWithoutFieldsJSON(b *testing.B) {
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				logger.InfoF(msg, nil)
+				logger.InfoF(msg)
 			}
 		})
 	})
@@ -431,9 +431,9 @@ func BenchmarkWithoutFieldsJSON(b *testing.B) {
 	})
 }
 
-func BenchmarkWithContextFieldsJSON(b *testing.B) {
+func BenchmarkWithContextNoFieldsJSON(b *testing.B) {
 	b.ReportAllocs()
-	b.Log("logging with context attached to logger (entry/event) no text format, use json output")
+	b.Log("logging with context attached to logger (entry/event) no text format, no fields, use json output")
 	msg := "TODO: is fixed length msg really a good idea, we should give dynamic length with is more real world"
 	b.Run("gommon", func(b *testing.B) {
 		logger := dlog.NewTestLogger(dlog.InfoLevel)
@@ -455,7 +455,7 @@ func BenchmarkWithContextFieldsJSON(b *testing.B) {
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				logger.InfoF(msg, nil)
+				logger.InfoF(msg)
 			}
 		})
 	})
@@ -529,10 +529,10 @@ func BenchmarkNoContextWithFieldsJSON(b *testing.B) {
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
 				// TODO: generate unified fields for all logging libraries
-				// TODO: might change interface to accept variadic args
-				logger.InfoF(msg, dlog.Fields{
-					dlog.Int("i1", 1), dlog.Str("s1", "v1"),
-				})
+				logger.InfoF(msg,
+					dlog.Int("i1", 1),
+					dlog.Str("s1", "v1"),
+				)
 			}
 		})
 	})

@@ -32,7 +32,7 @@ func (l *Logger) {{.}}f(format string, args ...interface{}) {
 	}
 }
 
-func (l *Logger) {{.}}F(msg string, fields Fields) {
+func (l *Logger) {{.}}F(msg string, fields ...Field) {
 	if l.level < {{.}}Level {
 		return
 	}

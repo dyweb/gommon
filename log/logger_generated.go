@@ -33,7 +33,7 @@ func (l *Logger) Tracef(format string, args ...interface{}) {
 	}
 }
 
-func (l *Logger) TraceF(msg string, fields Fields) {
+func (l *Logger) TraceF(msg string, fields ...Field) {
 	if l.level < TraceLevel {
 		return
 	}
@@ -70,7 +70,7 @@ func (l *Logger) Debugf(format string, args ...interface{}) {
 	}
 }
 
-func (l *Logger) DebugF(msg string, fields Fields) {
+func (l *Logger) DebugF(msg string, fields ...Field) {
 	if l.level < DebugLevel {
 		return
 	}
@@ -107,7 +107,7 @@ func (l *Logger) Infof(format string, args ...interface{}) {
 	}
 }
 
-func (l *Logger) InfoF(msg string, fields Fields) {
+func (l *Logger) InfoF(msg string, fields ...Field) {
 	if l.level < InfoLevel {
 		return
 	}
@@ -144,7 +144,7 @@ func (l *Logger) Printf(format string, args ...interface{}) {
 	}
 }
 
-func (l *Logger) PrintF(msg string, fields Fields) {
+func (l *Logger) PrintF(msg string, fields ...Field) {
 	if l.level < PrintLevel {
 		return
 	}
@@ -181,7 +181,7 @@ func (l *Logger) Warnf(format string, args ...interface{}) {
 	}
 }
 
-func (l *Logger) WarnF(msg string, fields Fields) {
+func (l *Logger) WarnF(msg string, fields ...Field) {
 	if l.level < WarnLevel {
 		return
 	}
@@ -218,7 +218,7 @@ func (l *Logger) Errorf(format string, args ...interface{}) {
 	}
 }
 
-func (l *Logger) ErrorF(msg string, fields Fields) {
+func (l *Logger) ErrorF(msg string, fields ...Field) {
 	if l.level < ErrorLevel {
 		return
 	}
