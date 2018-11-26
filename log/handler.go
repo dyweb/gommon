@@ -39,6 +39,10 @@ var _ Syncer = (*os.File)(nil)
 
 // Syncer is implemented by os.File, handler implementation should check this interface and call Sync
 // if they support using file as sink
+// TODO: about sync
+// - in go, both os.Stderr and os.Stdout are not (line) buffered
+// - what would happen if os.Stderr.Close()
+// - os.Stderr.Sync() will there be any different if stderr/stdout is redirected to a file
 type Syncer interface {
 	Sync() error
 }
@@ -67,17 +71,8 @@ func NewIOHandler(w io.Writer) Handler {
 	return &IOHandler{w: w}
 }
 
-// TODO: performance (which is not a major concern now ...)
-// - when using raw byte slice, have a correct length, fields can also return length required
-// - is calling level.String() faster than %s level
-// - use buffer (pool)
-// TODO: correctness
-// - in go, both os.Stderr and os.Stdout are not (line) buffered
-// - what would happen if os.Stderr.Close()
-// - os.Stderr.Sync() will there be any different if stderr/stdout is redirected to a file
-
 func (h *IOHandler) HandleLog(level Level, time time.Time, msg string, source string, context Fields, fields Fields) {
-	b := make([]byte, 0, 50+len(msg))
+	b := make([]byte, 0, 50+len(msg)+len(source)+30*len(context)+30*len(fields))
 	// level
 	b = append(b, level.AlignedUpperString()...)
 	// time

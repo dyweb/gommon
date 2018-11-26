@@ -35,7 +35,7 @@ func New(w io.Writer, delta bool) *Handler {
 }
 
 func (h *Handler) HandleLog(level log.Level, now time.Time, msg string, source string, context log.Fields, fields log.Fields) {
-	b := make([]byte, 0, 5+4+len(defaultTimeStampFormat)+len(msg))
+	b := make([]byte, 0, 50+len(msg)+len(source)+30*len(context)+30*len(fields))
 	// level
 	b = append(b, level.ColoredAlignedUpperString()...)
 	// time

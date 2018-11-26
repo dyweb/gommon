@@ -26,9 +26,7 @@ func New(w io.Writer) *Handler {
 }
 
 func (h *Handler) HandleLog(level log.Level, time time.Time, msg string, source string, context log.Fields, fields log.Fields) {
-	// FIXME: the hard coded 50 is not correct, it depends on source and fields etc.
-	// TODO: I think this make can only be optimized by using a buffer pool and
-	b := make([]byte, 0, 50+len(msg))
+	b := make([]byte, 0, 50+len(msg)+len(source)+30*len(context)+30*len(fields))
 	// level
 	b = append(b, `{"l":"`...)
 	b = append(b, level.String()...)
