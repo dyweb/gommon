@@ -79,7 +79,7 @@ func NewIOHandler(w io.Writer) Handler {
 func (h *IOHandler) HandleLog(level Level, time time.Time, msg string, source string, context Fields, fields Fields) {
 	b := make([]byte, 0, 50+len(msg))
 	// level
-	b = append(b, level.String()...)
+	b = append(b, level.AlignedUpperString()...)
 	// time
 	b = append(b, ' ')
 	b = time.AppendFormat(b, defaultTimeStampFormat)

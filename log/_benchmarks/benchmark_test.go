@@ -212,7 +212,7 @@ func BenchmarkDisabledLevelNoFormat(b *testing.B) {
 	//})
 }
 
-// TODO: besides no fields, it also don't call *f method
+// no fields and don't call *f method for Printf style text formatting
 func BenchmarkWithoutFieldsText(b *testing.B) {
 	b.ReportAllocs()
 	b.Log("logging a single line text like stdlog without format and fields")
@@ -426,6 +426,164 @@ func BenchmarkWithoutFieldsJSON(b *testing.B) {
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
 				logger.Info(msg)
+			}
+		})
+	})
+}
+
+func BenchmarkWithContextFieldsJSON(b *testing.B) {
+	b.ReportAllocs()
+	b.Log("logging with context attached to logger (entry/event) no text format, use json output")
+	msg := "TODO: is fixed length msg really a good idea, we should give dynamic length with is more real world"
+	b.Run("gommon", func(b *testing.B) {
+		logger := dlog.NewTestLogger(dlog.InfoLevel)
+		logger.SetHandler(json.New(ioutil.Discard))
+		// TODO: generate unified fields for all logging libraries
+		logger.AddFields(dlog.Int("i1", 1), dlog.Str("s1", "v1"))
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info(msg)
+			}
+		})
+	})
+	b.Run("gommon.F", func(b *testing.B) {
+		logger := dlog.NewTestLogger(dlog.InfoLevel)
+		logger.SetHandler(json.New(ioutil.Discard))
+		// TODO: generate unified fields for all logging libraries
+		logger.AddFields(dlog.Int("i1", 1), dlog.Str("s1", "v1"))
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.InfoF(msg, nil)
+			}
+		})
+	})
+	b.Run("zap", func(b *testing.B) {
+		logger := newZapJsonLogger(zap.InfoLevel).
+			With(zap.Int("i1", 1), zap.String("s1", "v1"))
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info(msg)
+			}
+		})
+	})
+	b.Run("zap.sugar", func(b *testing.B) {
+		logger := newZapJsonLogger(zap.InfoLevel).
+			With(zap.Int("i1", 1), zap.String("s1", "v1")).
+			Sugar()
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info(msg)
+			}
+		})
+	})
+	b.Run("zerolog", func(b *testing.B) {
+		logger := newZerologJsonLogger().
+			With().Int("i1", 1).Str("s1", "v1").Logger()
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info().Msg(msg)
+			}
+		})
+	})
+	b.Run("apex", func(b *testing.B) {
+		logger := newApexJsonLogger(apexlog.InfoLevel).
+			WithFields(apexlog.Fields{
+				"i1": 1,
+				"s1": "v1",
+			})
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info(msg)
+			}
+		})
+	})
+	b.Run("logrus", func(b *testing.B) {
+		logger := newLogrusJsonLogger(logrus.InfoLevel).
+			WithFields(logrus.Fields{
+				"i1": 1,
+				"s1": "v1",
+			})
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info(msg)
+			}
+		})
+	})
+}
+
+func BenchmarkNoContextWithFieldsJSON(b *testing.B) {
+	b.ReportAllocs()
+	b.Log("logging with fields at log site, no context attached to logger (entry/event) no text format, use json output")
+	msg := "TODO: is fixed length msg really a good idea, we should give dynamic length with is more real world"
+	b.Run("gommon.F", func(b *testing.B) {
+		logger := dlog.NewTestLogger(dlog.InfoLevel)
+		logger.SetHandler(json.New(ioutil.Discard))
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				// TODO: generate unified fields for all logging libraries
+				// TODO: might change interface to accept variadic args
+				logger.InfoF(msg, dlog.Fields{
+					dlog.Int("i1", 1), dlog.Str("s1", "v1"),
+				})
+			}
+		})
+	})
+	b.Run("zap", func(b *testing.B) {
+		logger := newZapJsonLogger(zap.InfoLevel)
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info(msg, zap.Int("i1", 1), zap.String("s1", "v1"))
+			}
+		})
+	})
+	b.Run("zap.sugar", func(b *testing.B) {
+		logger := newZapJsonLogger(zap.InfoLevel).Sugar()
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Infow(msg, "i1", 1, "s1", "v1")
+			}
+		})
+	})
+	b.Run("zerolog", func(b *testing.B) {
+		logger := newZerologJsonLogger()
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info().Int("i1", 1).Str("s1", "v1").Msg(msg)
+			}
+		})
+	})
+	b.Run("apex", func(b *testing.B) {
+		logger := newApexJsonLogger(apexlog.InfoLevel)
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.WithFields(apexlog.Fields{
+					"i1": 1,
+					"s1": "v1",
+				}).Info(msg)
+			}
+		})
+	})
+	b.Run("logrus", func(b *testing.B) {
+		logger := newLogrusJsonLogger(logrus.InfoLevel)
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.WithFields(logrus.Fields{
+					"i1": 1,
+					"s1": "v1",
+				}).Info(msg)
 			}
 		})
 	})
