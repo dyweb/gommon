@@ -33,7 +33,6 @@ type Logger struct {
 	level    Level
 	source   bool
 	children map[string][]*Logger
-
 	// fields contains common context, i.e. the struct is created for a specific task and it has "taskId": 0ac-123
 	fields Fields
 
