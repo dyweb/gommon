@@ -346,3 +346,8 @@ func (s *Server) Echo(w http.ResponseWriter, r *http.Request) {
     
 }
 ````
+
+## Implementation
+
+- [ ] remove the parent children logic from logger
+- [ ] check if the skip caller is correct when create logger registry, unit test is in same package so it's always correct
