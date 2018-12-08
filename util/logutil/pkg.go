@@ -16,9 +16,7 @@ func Registry() *log.Registry {
 }
 
 func NewPackageLoggerAndRegistry() (*log.Logger, *log.Registry) {
-	child := log.NewPackageRegistryWithSkip(Project, 1)
-	logger := log.NewPackageLoggerWithSkip(1)
-	child.AddLogger(logger)
-	registry.AddRegistry(&child)
-	return logger, &child
+	logger, child := log.NewPackageLoggerAndRegistryWithSkip(Project, 1)
+	registry.AddRegistry(child)
+	return logger, child
 }

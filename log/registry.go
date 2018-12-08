@@ -45,18 +45,15 @@ func (r RegistryType) String() string {
 
 type RegistryIdentity struct {
 	// Project is specified by user, i.e. for all the packages under gommon, they would have github.com/dyweb/gommon
-	// TODO: it can also be detected using runtime
 	Project string
 	// Package is detected base on runtime, i.e. github.com/dyweb/gommon/noodle
 	Package string
 	// Type is specified by user when creating registry
 	Type RegistryType
-}
-
-func NewPackageRegistryWithSkip(project string, skip int) Registry {
-	return Registry{
-		identity: newRegistryId(project, PackageRegistry, skip),
-	}
+	// File is where create registry is called
+	File string
+	// Line is where create registry is called
+	Line int
 }
 
 func NewLibraryRegistry(project string) Registry {
@@ -65,6 +62,7 @@ func NewLibraryRegistry(project string) Registry {
 	}
 }
 
+// TODO: validate skip
 func NewApplicationLoggerAndRegistry(project string) (*Logger, *Registry) {
 	reg := Registry{
 		identity: newRegistryId(project, ApplicationRegistry, 1),
@@ -74,14 +72,25 @@ func NewApplicationLoggerAndRegistry(project string) (*Logger, *Registry) {
 	return logger, &reg
 }
 
+func NewPackageLoggerAndRegistryWithSkip(project string, skip int) (*Logger, *Registry) {
+	reg := Registry{
+		identity: newRegistryId(project, PackageRegistry, skip+1),
+	}
+	logger := NewPackageLoggerWithSkip(skip + 1)
+	reg.AddLogger(logger)
+	return logger, &reg
+}
+
 func newRegistryId(proj string, tpe RegistryType, skip int) RegistryIdentity {
 	// TODO: check if the skip works .... we need another package for testing that
-	frame := runtimeutil.GetCallerFrame(2 + skip)
+	frame := runtimeutil.GetCallerFrame(skip + 1)
 	pkg, _ := runtimeutil.SplitPackageFunc(frame.Function)
 	return RegistryIdentity{
 		Project: proj,
 		Package: pkg,
 		Type:    tpe,
+		File:    frame.File,
+		Line:    frame.Line,
 	}
 }
 
@@ -109,4 +118,65 @@ func (r *Registry) AddLogger(l *Logger) {
 		}
 	}
 	r.loggers = append(r.loggers, l)
+}
+
+func (r *Registry) Identity() RegistryIdentity {
+	return r.identity
+}
+
+func SetLevel(root *Registry, level Level) {
+	WalkLogger(root, func(l *Logger) {
+		l.SetLevel(level)
+	})
+}
+
+func SetHandler(root *Registry, handler Handler) {
+	WalkLogger(root, func(l *Logger) {
+		l.SetHandler(handler)
+	})
+}
+
+func EnableSource(root *Registry) {
+	WalkLogger(root, func(l *Logger) {
+		l.EnableSource()
+	})
+}
+
+func DisableSource(root *Registry) {
+	WalkLogger(root, func(l *Logger) {
+		l.DisableSource()
+	})
+}
+
+// WalkLogger is PreOrderDfs
+func WalkLogger(root *Registry, cb func(l *Logger)) {
+	walkLogger(root, nil, nil, cb)
+}
+
+func walkLogger(root *Registry, loggers map[*Logger]bool, registries map[*Registry]bool, cb func(l *Logger)) {
+	// first call
+	if loggers == nil {
+		loggers = make(map[*Logger]bool)
+	}
+	if registries == nil {
+		registries = make(map[*Registry]bool)
+	}
+	// pre order
+	registries[root] = true
+	for _, l := range root.loggers {
+		// visit once
+		if loggers[l] {
+			continue
+		}
+		loggers[l] = true
+		cb(l)
+	}
+	// dfs
+	for _, r := range root.children {
+		// avoid cycle
+		if registries[r] {
+			continue
+		}
+		walkLogger(r, loggers, registries, cb)
+	}
 }

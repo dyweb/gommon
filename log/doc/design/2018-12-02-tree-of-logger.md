@@ -349,7 +349,12 @@ func (s *Server) Echo(w http.ResponseWriter, r *http.Request) {
 
 ## Implementation
 
-- [ ] remove the parent children logic from logger
+- [x] remove the parent children logic from logger
+- [ ] add traverse registry and logger
+  - [x] add traverse log in PreOrderDfs
+- [ ] fix logic for func and method logger
 - [ ] check if the skip caller is correct when create logger registry, unit test is in same package so it's always correct
+- [ ] check if identity of log registry is correct
+- [ ] check if identity of logger is correct
 - [x] change caller to struct
   - [ ] it may have some performance impact
