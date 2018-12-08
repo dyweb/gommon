@@ -43,7 +43,7 @@ from producer and no external filtering tool is required.
 
 ## Previous Solutions
 
-The original solution in log v1 is a filter inspired by logurs's hook,
+The original solution in log v1 is a filter inspired by logrus's hook,
 it keeps a set (actually it's a map) of package names, and entry struct
 has a field called Pkg. Actually I think I never used it during the lifespan
 of log v1, in v2 I started model after apex/log and uber-go/zap so hooks
@@ -81,7 +81,7 @@ func (filter *PkgFilter) FilterDescription() string {
 }
 ````
 
-Then follow the idea in the solr UI I decided to make a tree of logger
+Then follow the idea in the solr UI I decided to make **a tree of logger**
 and allow each logger has their own logging level, because instead of
 filtering based on package, you can simply turn one package to a more
 verbose level while keep other package at their original level.
@@ -255,5 +255,94 @@ func Work() {
     wg.Done()
   }
   wg.Wait()
+}
+````
+
+## Proposed solutions
+
+Based on previous solutions we can find the following patterns
+
+- keep the parent children relationship for all the loggers is unrealistic (gc) and unnecessary (a lot of them are short lived, just copy the parent's level and handler is fine)
+- set level only gives some basic control, we can have more complex control based on logger location (the identity we have now) and caller location, this logic can be implemented in handler
+- we can move logger relationship out into registry and only register important loggers like library, package and long running struct
+
+Some performance concerns
+
+- we will put identity caller into handler interface, identity and caller should be put as struct, 
+pass pointer to struct may cause heap allocation, pass struct need to deal with empty identity ...
+
+The new design for tree of logger and filter log when generating log has the following part
+
+- registry that keeps a tree of registry and loggers
+- handler that accept identity, user can implement any logic inside that handler
+
+````text
+type Logger struct {
+    identity *Identity // could be nil, though most time it should not be except in benchmark and test
+}
+
+type Registry {
+   childRegistry map[string]*Registry // use pointer instead of struct because Registry also use slice, if it is only using map, we can use struct because map is actually a pointer to underlying hashmap struct
+   childLoggers []*Logger
+}
+
+func SetLevel(rootRegistry Registry, lvl Level) {
+    DfsRegistry(rootRegistry, func(reg *Registry) {
+        for _, l := range reg.Logger {
+            l.SetLevel(lvl)
+        }
+    })
+    // or
+    DfsLogger(rootRegistry, func(l *Logger) {
+        l.SetLevel(lvl)
+    })
+}
+
+type Handler interface {
+    HandleLog(loggerIdentity *Identity, caller Caller, level Level, msg string, context []Field, fields []Field)
+}
+
+type FileLineFilter struct {
+    blockFile string
+    blockLine int
+    h Handler
+}
+
+func (fl *FileLineFilter) HandleLog(loggerIdentity *Identity, caller Caller, level Level, msg string, context []Field, fields []Field) {
+    if caller.File == fl.blockFile {
+        return
+    }
+    if caller.Line == fl.blockLine {
+        return
+    }
+    // go through
+    h(loggerIdentity, caller, msg, context, fields)
+}
+
+// TODO: need an example that check identity and level, if debug and is an allowed struct, go through
+````
+
+
+````text
+// gommon/config/config.go
+var log, logRegistry = NewPackageLoggerWithRegistry()
+
+func NewConfigLoader() ConfigLoader {
+    l := ConfigLoader()
+    l.logger = dlog.NewStructLogger(log, l) // NOTE: package logger is now only used for copy level and handler, no longer used for registry
+}
+
+// ayi/web/server.go
+var log, logRegistry = NewPackageLoggerWithRegistry()
+
+func NewServer() Server {
+    s := Server{}
+    s.logger = dlog.NewStructLogger(log, s)
+    logRegistry.AddLogger(s.logger) // server is long running and we know when it shuts down
+}
+
+func (s *Server) Echo(w http.ResponseWriter, r *http.Request) {
+    logger := s.logger.MethodLogger() // add method field automatically
+    
 }
 ````
