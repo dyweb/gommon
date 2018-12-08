@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -19,10 +20,10 @@ const (
 // if extra field is added to the interface, compiler would throw error on stale handler implementations.
 type Handler interface {
 	// HandleLog requires level, now, msg, all the others are optional
-	// source is file:line, i.e. main.go:18 TODO: pass frame instead of string so handler can use trace for error handling?
+	// source is Caller which contains full file line TODO: pass frame instead of string so handler can use trace for error handling?
 	// context are fields attached to the logger instance
 	// fields are ad-hoc fields from logger method like DebugF(msg, fields)
-	HandleLog(level Level, now time.Time, msg string, source string, context Fields, fields Fields)
+	HandleLog(level Level, now time.Time, msg string, source Caller, context Fields, fields Fields)
 	// Flush writes the buffer to underlying storage
 	Flush()
 }
@@ -71,17 +72,20 @@ func NewIOHandler(w io.Writer) Handler {
 	return &IOHandler{w: w}
 }
 
-func (h *IOHandler) HandleLog(level Level, time time.Time, msg string, source string, context Fields, fields Fields) {
-	b := make([]byte, 0, 50+len(msg)+len(source)+30*len(context)+30*len(fields))
+func (h *IOHandler) HandleLog(level Level, time time.Time, msg string, source Caller, context Fields, fields Fields) {
+	b := make([]byte, 0, 50+len(msg)+len(source.File)+30*len(context)+30*len(fields))
 	// level
 	b = append(b, level.AlignedUpperString()...)
 	// time
 	b = append(b, ' ')
 	b = time.AppendFormat(b, defaultTimeStampFormat)
 	// source, optional
-	if source != "" {
+	if source.File != "" {
 		b = append(b, ' ')
-		b = append(b, source...)
+		last := strings.LastIndex(source.File, "/")
+		b = append(b, source.File[last+1:]...)
+		b = append(b, ':')
+		b = strconv.AppendInt(b, int64(source.Line), 10)
 	}
 	// message
 	b = append(b, ' ')
@@ -115,7 +119,7 @@ type multiHandler struct {
 	handlers []Handler
 }
 
-func (m *multiHandler) HandleLog(level Level, now time.Time, msg string, source string, context Fields, fields Fields) {
+func (m *multiHandler) HandleLog(level Level, now time.Time, msg string, source Caller, context Fields, fields Fields) {
 	for _, h := range m.handlers {
 		h.HandleLog(level, now, msg, source, context, fields)
 	}

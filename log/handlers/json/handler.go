@@ -7,6 +7,7 @@ package json
 import (
 	"io"
 	"strconv"
+	"strings"
 	"time"
 	"unicode/utf8"
 
@@ -25,8 +26,8 @@ func New(w io.Writer) *Handler {
 	}
 }
 
-func (h *Handler) HandleLog(level log.Level, time time.Time, msg string, source string, context log.Fields, fields log.Fields) {
-	b := make([]byte, 0, 50+len(msg)+len(source)+30*len(context)+30*len(fields))
+func (h *Handler) HandleLog(level log.Level, time time.Time, msg string, source log.Caller, context log.Fields, fields log.Fields) {
+	b := make([]byte, 0, 50+len(msg)+len(source.File)+30*len(context)+30*len(fields))
 	// level
 	b = append(b, `{"l":"`...)
 	b = append(b, level.String()...)
@@ -37,9 +38,13 @@ func (h *Handler) HandleLog(level log.Level, time time.Time, msg string, source 
 	b = append(b, `,"m":`...)
 	b = encodeString(b, msg)
 	// source
-	if source != "" {
+	if source.File != "" {
 		b = append(b, `,"s":"`...)
-		b = append(b, source...)
+		// TODO: can file path contains character that need escape in json?
+		last := strings.LastIndex(source.File, "/")
+		b = append(b, source.File[last+1:]...)
+		b = append(b, ':')
+		b = strconv.AppendInt(b, int64(source.Line), 10)
 		b = append(b, '"')
 	}
 	// context

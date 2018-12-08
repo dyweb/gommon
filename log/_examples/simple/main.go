@@ -29,21 +29,14 @@ func main() {
 	log.Info("this is love!")
 	log.Print("print is info level")
 	log.Warnf("this is love %d", 2)
-	log.InfoF("this love", dlog.Fields{
-		dlog.Int("num", 2),
-		dlog.Str("foo", "bar"),
-	})
+	log.InfoF("this love", dlog.Int("num", 2), dlog.Str("foo", "bar"))
 	log.EnableSource()
+	// TODO: show skip caller using a util func
 	log.Info("show me the line")
 	log.Infof("show the line %d", 2)
-	log.InfoF("show the line", dlog.Fields{
-		dlog.Int("num", 2),
-		dlog.Str("foo", "bar"),
-	})
+	log.InfoF("show the line", dlog.Int("num", 2), dlog.Str("foo", "bar"))
 	log.DisableSource()
-	log.WarnF("I will sleep", dlog.Fields{
-		dlog.Int("duration", 1),
-	})
+	log.WarnF("I will sleep", dlog.Int("duration", 1))
 	time.Sleep(time.Second)
 	log.Info("no more line number")
 

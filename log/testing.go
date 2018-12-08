@@ -14,7 +14,7 @@ type entry struct {
 	msg     string
 	context Fields
 	fields  Fields
-	source  string
+	source  Caller
 }
 
 var _ Handler = (*TestHandler)(nil)
@@ -31,7 +31,7 @@ func NewTestHandler() *TestHandler {
 	return &TestHandler{}
 }
 
-func (h *TestHandler) HandleLog(level Level, time time.Time, msg string, source string, context Fields, fields Fields) {
+func (h *TestHandler) HandleLog(level Level, time time.Time, msg string, source Caller, context Fields, fields Fields) {
 	h.mu.Lock()
 	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, source: source, context: CopyFields(context), fields: CopyFields(fields)})
 	h.mu.Unlock()

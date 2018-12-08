@@ -15,9 +15,9 @@ func (l *Logger) {{.}}(args ...interface{}) {
 		return
 	}
 	if !l.source {
-		l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprint(args...), "", l.fields, nil)
+		l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprint(args...), emptyCaller, l.fields, nil)
 	} else {
-		l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprint(args...), caller(), l.fields, nil)
+		l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprint(args...), caller(l.skip), l.fields, nil)
 	}
 }
 
@@ -26,9 +26,9 @@ func (l *Logger) {{.}}f(format string, args ...interface{}) {
 		return
 	}
 	if !l.source {
-		l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprintf(format, args...), "", l.fields, nil)
+		l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprintf(format, args...), emptyCaller, l.fields, nil)
 	} else {
-		l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprintf(format, args...), caller(), l.fields, nil)
+		l.h.HandleLog({{.}}Level, time.Now(), fmt.Sprintf(format, args...), caller(l.skip), l.fields, nil)
 	}
 }
 
@@ -37,9 +37,9 @@ func (l *Logger) {{.}}F(msg string, fields ...Field) {
 		return
 	}
 	if !l.source {
-		l.h.HandleLog({{.}}Level, time.Now(), msg, "", l.fields, fields)
+		l.h.HandleLog({{.}}Level, time.Now(), msg, emptyCaller, l.fields, fields)
 	} else {
-		l.h.HandleLog({{.}}Level, time.Now(), msg, caller(), l.fields, fields)
+		l.h.HandleLog({{.}}Level, time.Now(), msg, caller(l.skip), l.fields, fields)
 	}
 }
 {{ end }}

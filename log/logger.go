@@ -3,8 +3,6 @@ package log
 import (
 	"fmt"
 	"os"
-	"runtime"
-	"strings"
 	"sync"
 	"time"
 )
@@ -32,6 +30,7 @@ type Logger struct {
 	h        Handler
 	level    Level
 	source   bool
+	skip     int
 	children map[string][]*Logger
 	// fields contains common context, i.e. the struct is created for a specific task and it has "taskId": 0ac-123
 	fields Fields
@@ -107,9 +106,9 @@ func (l *Logger) Identity() Identity {
 func (l *Logger) Panic(args ...interface{}) {
 	s := fmt.Sprint(args...)
 	if len(l.fields) == 0 {
-		l.h.HandleLog(PanicLevel, time.Now(), s, caller(), nil, nil)
+		l.h.HandleLog(PanicLevel, time.Now(), s, caller(l.skip), nil, nil)
 	} else {
-		l.h.HandleLog(PanicLevel, time.Now(), s, caller(), l.fields, nil)
+		l.h.HandleLog(PanicLevel, time.Now(), s, caller(l.skip), l.fields, nil)
 	}
 	l.h.Flush()
 	panic(s)
@@ -119,9 +118,9 @@ func (l *Logger) Panic(args ...interface{}) {
 func (l *Logger) Panicf(format string, args ...interface{}) {
 	s := fmt.Sprintf(format, args...)
 	if len(l.fields) == 0 {
-		l.h.HandleLog(PanicLevel, time.Now(), s, caller(), nil, nil)
+		l.h.HandleLog(PanicLevel, time.Now(), s, caller(l.skip), nil, nil)
 	} else {
-		l.h.HandleLog(PanicLevel, time.Now(), s, caller(), l.fields, nil)
+		l.h.HandleLog(PanicLevel, time.Now(), s, caller(l.skip), l.fields, nil)
 	}
 	l.h.Flush()
 	panic(s)
@@ -130,9 +129,9 @@ func (l *Logger) Panicf(format string, args ...interface{}) {
 // PanicF duplicates instead of calling Panic to keep source line correct
 func (l *Logger) PanicF(msg string, fields ...Field) {
 	if len(l.fields) == 0 {
-		l.h.HandleLog(PanicLevel, time.Now(), msg, caller(), nil, fields)
+		l.h.HandleLog(PanicLevel, time.Now(), msg, caller(l.skip), nil, fields)
 	} else {
-		l.h.HandleLog(PanicLevel, time.Now(), msg, caller(), l.fields, fields)
+		l.h.HandleLog(PanicLevel, time.Now(), msg, caller(l.skip), l.fields, fields)
 	}
 	l.h.Flush()
 	panic(msg)
@@ -142,9 +141,9 @@ func (l *Logger) PanicF(msg string, fields ...Field) {
 func (l *Logger) Fatal(args ...interface{}) {
 	s := fmt.Sprint(args...)
 	if len(l.fields) == 0 {
-		l.h.HandleLog(FatalLevel, time.Now(), s, caller(), nil, nil)
+		l.h.HandleLog(FatalLevel, time.Now(), s, caller(l.skip), nil, nil)
 	} else {
-		l.h.HandleLog(FatalLevel, time.Now(), s, caller(), l.fields, nil)
+		l.h.HandleLog(FatalLevel, time.Now(), s, caller(l.skip), l.fields, nil)
 	}
 	l.h.Flush()
 	// TODO: allow user to register hook to do cleanup before exit directly
@@ -155,9 +154,9 @@ func (l *Logger) Fatal(args ...interface{}) {
 func (l *Logger) Fatalf(format string, args ...interface{}) {
 	s := fmt.Sprintf(format, args...)
 	if len(l.fields) == 0 {
-		l.h.HandleLog(FatalLevel, time.Now(), s, caller(), nil, nil)
+		l.h.HandleLog(FatalLevel, time.Now(), s, caller(l.skip), nil, nil)
 	} else {
-		l.h.HandleLog(FatalLevel, time.Now(), s, caller(), l.fields, nil)
+		l.h.HandleLog(FatalLevel, time.Now(), s, caller(l.skip), l.fields, nil)
 	}
 	l.h.Flush()
 	os.Exit(1)
@@ -166,9 +165,9 @@ func (l *Logger) Fatalf(format string, args ...interface{}) {
 // FatalF duplicates instead of calling Fatal to keep source line correct
 func (l *Logger) FatalF(msg string, fields ...Field) {
 	if len(l.fields) == 0 {
-		l.h.HandleLog(FatalLevel, time.Now(), msg, caller(), nil, fields)
+		l.h.HandleLog(FatalLevel, time.Now(), msg, caller(l.skip), nil, fields)
 	} else {
-		l.h.HandleLog(FatalLevel, time.Now(), msg, caller(), l.fields, fields)
+		l.h.HandleLog(FatalLevel, time.Now(), msg, caller(l.skip), l.fields, fields)
 	}
 	l.h.Flush()
 	os.Exit(1)
@@ -177,19 +176,4 @@ func (l *Logger) FatalF(msg string, fields ...Field) {
 // Noop is only for test escape analysis
 func (l *Logger) NoopF(msg string, fields ...Field) {
 	// noop
-}
-
-// caller gets source location at runtime, in the future we may generate it at compile time to reduce the
-// overhead, though I am not sure what the overhead is without actual benchmark and profiling
-// TODO: https://github.com/dyweb/gommon/issues/43
-func caller() string {
-	_, file, line, ok := runtime.Caller(2)
-	if !ok {
-		file = "<?>"
-		line = 1
-	} else {
-		last := strings.LastIndex(file, "/")
-		file = file[last+1:]
-	}
-	return fmt.Sprintf("%s:%d", file, line)
 }
