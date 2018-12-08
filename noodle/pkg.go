@@ -12,7 +12,7 @@ const (
 	DefaultName           = "Bowel"
 )
 
-var log = logutil.NewPackageLogger()
+var log, logReg = logutil.NewPackageLoggerAndRegistry()
 
 // Bowel is the container for different types of noodles
 type Bowel interface {

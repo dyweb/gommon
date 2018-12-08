@@ -12,8 +12,8 @@ type LoggerType uint8
 
 const (
 	UnknownLogger LoggerType = iota
-	ApplicationLogger
-	LibraryLogger
+	// PackageLogger is normally singleton in entire package
+	// We were having application and library logger but they are replaced by registry
 	PackageLogger
 	FunctionLogger
 	StructLogger
@@ -21,13 +21,11 @@ const (
 )
 
 var loggerTypeStrings = []string{
-	UnknownLogger:     "unk",
-	ApplicationLogger: "app",
-	LibraryLogger:     "lib",
-	PackageLogger:     "pkg",
-	FunctionLogger:    "func",
-	StructLogger:      "struct",
-	MethodLogger:      "method",
+	UnknownLogger:  "unk",
+	PackageLogger:  "pkg",
+	FunctionLogger: "func",
+	StructLogger:   "struct",
+	MethodLogger:   "method",
 }
 
 func (tpe LoggerType) String() string {
@@ -61,7 +59,7 @@ func NewIdentityFromCaller(skip int) Identity {
 		st       string
 	)
 	tpe := UnknownLogger
-	// TODO: does it handle vendor correctly
+	// TODO: does it handle vendor correctly, and what about vgo ...
 	pkg, function = runtimeutil.SplitPackageFunc(frame.Function)
 	tpe = FunctionLogger
 	// NOTE: we distinguish a struct logger and method logger using the magic name,

@@ -8,18 +8,6 @@ func NewTestLogger(level Level) *Logger {
 	return l
 }
 
-func NewApplicationLogger() *Logger {
-	l := NewPackageLoggerWithSkip(1)
-	l.id.Type = ApplicationLogger
-	return l
-}
-
-func NewLibraryLogger() *Logger {
-	l := NewPackageLoggerWithSkip(1)
-	l.id.Type = LibraryLogger
-	return l
-}
-
 func NewPackageLogger() *Logger {
 	return NewPackageLoggerWithSkip(1)
 }
@@ -62,10 +50,14 @@ func NewMethodLogger(structLogger *Logger) *Logger {
 
 func newLogger(parent *Logger, child *Logger) *Logger {
 	if parent != nil {
-		parent.AddChild(child)
 		child.h = parent.h
 		child.level = parent.level
 		child.source = parent.source
+		if len(parent.fields) != 0 {
+			fields := make([]Field, len(parent.fields))
+			copy(fields, parent.fields)
+			child.fields = fields
+		}
 	} else {
 		child.h = DefaultHandler()
 		child.level = InfoLevel

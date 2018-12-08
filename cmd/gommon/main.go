@@ -11,12 +11,12 @@ import (
 	"github.com/dyweb/gommon/errors"
 	"github.com/dyweb/gommon/generator"
 	dlog "github.com/dyweb/gommon/log"
-	"github.com/dyweb/gommon/log/handlers/cli"
 	"github.com/dyweb/gommon/noodle"
 	"github.com/dyweb/gommon/util/logutil"
 )
 
-var log = dlog.NewApplicationLogger()
+var log, logReg = dlog.NewApplicationLoggerAndRegistry("gommon")
+
 var verbose = false
 var (
 	version   string
@@ -33,10 +33,11 @@ func main() {
 		Short: "gommon helpers",
 		Long:  "Generate go files for gommon",
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			if verbose {
-				dlog.SetLevelRecursive(log, dlog.DebugLevel)
-				dlog.EnableSourceRecursive(log)
-			}
+			// FIXME: add recursive set handler etc.
+			//if verbose {
+			//	dlog.SetLevelRecursive(log, dlog.DebugLevel)
+			//	dlog.EnableSourceRecursive(log)
+			//}
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.Help()
@@ -135,6 +136,6 @@ func genCmd() *cobra.Command {
 }
 
 func init() {
-	log.AddChild(logutil.Registry)
-	dlog.SetHandlerRecursive(log, cli.New(os.Stderr, true))
+	logReg.AddRegistry(logutil.Registry())
+	//dlog.SetHandlerRecursive(log, cli.New(os.Stderr, true))
 }

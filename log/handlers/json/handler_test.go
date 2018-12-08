@@ -23,8 +23,8 @@ type entry struct {
 func TestHandler_HandleLog(t *testing.T) {
 	b := &bytes.Buffer{}
 	h := New(b)
-	h.HandleLog(log.DebugLevel, tm, "hi", "", nil, nil)
-	h.HandleLog(log.InfoLevel, tm, "hello", "", nil, nil)
+	h.HandleLog(log.DebugLevel, tm, "hi", log.EmptyCaller(), nil, nil)
+	h.HandleLog(log.InfoLevel, tm, "hello", log.EmptyCaller(), nil, nil)
 	//t.Log(b.String())
 	expected := `{"l":"debug","t":1517861935,"m":"hi"}
 {"l":"info","t":1517861935,"m":"hello"}
@@ -49,7 +49,7 @@ func TestHandler_HandleLog(t *testing.T) {
 func TestHandler_HandleLogWithSource(t *testing.T) {
 	b := &bytes.Buffer{}
 	h := New(b)
-	h.HandleLog(log.DebugLevel, tm, "hi", "abc.go:12", nil, nil)
+	h.HandleLog(log.DebugLevel, tm, "hi", log.Caller{File: "abc.go", Line: 12}, nil, nil)
 	//t.Log(b.String())
 	assert.Equal(t, `{"l":"debug","t":1517861935,"m":"hi","s":"abc.go:12"}
 `, b.String())
@@ -59,7 +59,7 @@ func TestHandler_HandleLogWithSource(t *testing.T) {
 func TestHandler_HandleLogWithFields(t *testing.T) {
 	b := &bytes.Buffer{}
 	h := New(b)
-	h.HandleLog(log.DebugLevel, tm, "hi", "", log.Fields{
+	h.HandleLog(log.DebugLevel, tm, "hi", log.EmptyCaller(), log.Fields{
 		log.Int("num", 1),
 		log.Str("str", "rts"),
 	}, nil)
@@ -71,7 +71,7 @@ func TestHandler_HandleLogWithFields(t *testing.T) {
 func TestHandler_HandleLogWithSourceFields(t *testing.T) {
 	b := &bytes.Buffer{}
 	h := New(b)
-	h.HandleLog(log.DebugLevel, tm, "hi", "abc.go:12", log.Fields{
+	h.HandleLog(log.DebugLevel, tm, "hi", log.Caller{File: "abc.go", Line: 12}, log.Fields{
 		log.Int("num", 1),
 		log.Str("str", "rts"),
 	}, nil)
@@ -83,7 +83,7 @@ func TestHandler_HandleLogWithSourceFields(t *testing.T) {
 func TestJsonEscape(t *testing.T) {
 	var buf bytes.Buffer
 	h := New(&buf)
-	h.HandleLog(log.DebugLevel, tm, `I have "quote"`, "", nil, nil)
+	h.HandleLog(log.DebugLevel, tm, `I have "quote"`, log.EmptyCaller(), nil, nil)
 	validJSON(t, buf.Bytes())
 }
 

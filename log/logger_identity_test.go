@@ -80,12 +80,3 @@ func TestNewMethodLogger(t *testing.T) {
 	assert.Equal(testutil.GOPATH()+"/src/github.com/dyweb/gommon/log/logger_identity_test.go:35",
 		fmt.Sprintf("%s:%d", id.File, id.Line))
 }
-
-func ExampleNewApplicationLogger() {
-	logger := NewApplicationLogger()
-	fmt.Println(logger.Identity().Package)
-	fmt.Println(logger.Identity().Type)
-	// Output:
-	// github.com/dyweb/gommon/log
-	// app
-}

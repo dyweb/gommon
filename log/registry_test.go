@@ -6,13 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewPackageRegistry(t *testing.T) {
-	id := NewPackageRegistry("foo")
-	assert.Equal(t, "foo", id.Project)
-	assert.Equal(t, "github.com/dyweb/gommon/log", id.Package)
-	assert.Equal(t, PackageRegistry, id.Type)
-}
-
 func TestRegistry_AddRegistry(t *testing.T) {
 	rTop := Registry{}
 	r1 := Registry{}

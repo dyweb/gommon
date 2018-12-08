@@ -26,17 +26,30 @@ type Logger struct {
 	// mu is a Mutex instead of RWMutex because it's only for avoid concurrent write,
 	// for performance reason and the natural of logging, reading stale config is not a big problem,
 	// so we don't check mutex on read operation (i.e. log message) and allow race condition
-	mu       sync.Mutex
-	h        Handler
-	level    Level
-	source   bool
-	skip     int
-	children map[string][]*Logger
+	mu     sync.Mutex
+	h      Handler
+	level  Level
+	source bool
+	skip   int
 	// fields contains common context, i.e. the struct is created for a specific task and it has "taskId": 0ac-123
 	fields Fields
 
 	id *Identity // use nil so we can have logger without identity
 }
+
+// TODO: do we need the copy func
+//func (l *Logger) Copy() *Logger {
+//	fields := make([]Field, len(l.fields))
+//	copy(fields, l.fields)
+//	id := NewIdentityFromCaller(1)
+//	return &Logger{
+//		h:      l.h,
+//		level:  l.level,
+//		source: l.source,
+//		fields: fields,
+//		id:     &id, // TODO: is this new identity desired behavior
+//	}
+//}
 
 // AddField add field to current logger in place, it does NOT make a copy
 func (l *Logger) AddField(f Field) *Logger {

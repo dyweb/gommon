@@ -1,30 +1,28 @@
 package main
 
 import (
-	"os"
 	"time"
 
 	dlog "github.com/dyweb/gommon/log"
-	"github.com/dyweb/gommon/log/handlers/cli"
-	"github.com/dyweb/gommon/log/handlers/json"
 )
 
-var log = dlog.NewApplicationLogger()
+var log, logReg = dlog.NewApplicationLoggerAndRegistry("simple")
 
 // simply log to stderr
 func main() {
-	if len(os.Args) > 1 {
-		if os.Args[1] == "json" {
-			dlog.SetHandlerRecursive(log, json.New(os.Stderr))
-		}
-		if os.Args[1] == "cli" {
-			dlog.SetHandlerRecursive(log, cli.New(os.Stderr, false))
-		}
-		if os.Args[1] == "cli-d" {
-			dlog.SetHandlerRecursive(log, cli.New(os.Stderr, true))
-		}
-	}
-	dlog.SetLevelRecursive(log, dlog.DebugLevel)
+	// FIXME: enable after fix registry
+	//if len(os.Args) > 1 {
+	//	if os.Args[1] == "json" {
+	//		dlog.SetHandlerRecursive(log, json.New(os.Stderr))
+	//	}
+	//	if os.Args[1] == "cli" {
+	//		dlog.SetHandlerRecursive(log, cli.New(os.Stderr, false))
+	//	}
+	//	if os.Args[1] == "cli-d" {
+	//		dlog.SetHandlerRecursive(log, cli.New(os.Stderr, true))
+	//	}
+	//}
+	//dlog.SetLevelRecursive(log, dlog.DebugLevel)
 	log.Debug("show me the meaning of being lonely")
 	log.Info("this is love!")
 	log.Print("print is info level")

@@ -13,6 +13,11 @@ type Caller struct {
 
 var emptyCaller = Caller{File: "", Line: 0}
 
+// EmptyCaller is mainly used for testing handler, it contains a empty file and line 0
+func EmptyCaller() Caller {
+	return emptyCaller
+}
+
 const UnknownFile = "<?>"
 
 // caller gets source location at runtime, in the future we may generate it at compile time to reduce the

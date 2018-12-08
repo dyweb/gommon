@@ -5,4 +5,4 @@ import (
 	"github.com/dyweb/gommon/util/logutil"
 )
 
-var log = logutil.NewPackageLogger()
+var log, _ = logutil.NewPackageLoggerAndRegistry()

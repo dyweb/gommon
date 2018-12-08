@@ -48,6 +48,10 @@ FLAGS = -X main.version=$(VERSION) -X main.commit=$(BUILD_COMMIT) -X main.buildT
 install:
 	go install -ldflags "$(FLAGS)" ./cmd/gommon
 
+.PHONY: build
+build:
+	go build -ldflags "$(FLAGS)" -o gommon-build ./cmd/gommon
+
 .PHONY: fmt
 fmt:
 	goimports -d -l -w $(PKGST)

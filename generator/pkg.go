@@ -15,7 +15,7 @@ const (
 	DefaultGeneratedFile = "gommon_generated.go"
 )
 
-var log = logutil.NewPackageLogger()
+var log, logReg = logutil.NewPackageLoggerAndRegistry()
 
 type ConfigFile struct {
 	// Loggers is helper methods on struct for gommon/log to build a tree for logger, this is subject to change

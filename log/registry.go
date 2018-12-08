@@ -28,6 +28,21 @@ const (
 	PackageRegistry
 )
 
+func (r RegistryType) String() string {
+	switch r {
+	case UnknownRegistry:
+		return "unk"
+	case ApplicationRegistry:
+		return "app"
+	case LibraryRegistry:
+		return "lib"
+	case PackageRegistry:
+		return "pkg"
+	default:
+		return "unk"
+	}
+}
+
 type RegistryIdentity struct {
 	// Project is specified by user, i.e. for all the packages under gommon, they would have github.com/dyweb/gommon
 	// TODO: it can also be detected using runtime
@@ -38,21 +53,30 @@ type RegistryIdentity struct {
 	Type RegistryType
 }
 
-func NewPackageRegistry(proj string) RegistryIdentity {
-	return newRegistry(proj, PackageRegistry)
+func NewPackageRegistryWithSkip(project string, skip int) Registry {
+	return Registry{
+		identity: newRegistryId(project, PackageRegistry, skip),
+	}
 }
 
-func NewLibraryRegistry(proj string) RegistryIdentity {
-	return newRegistry(proj, LibraryRegistry)
+func NewLibraryRegistry(project string) Registry {
+	return Registry{
+		identity: newRegistryId(project, LibraryRegistry, 0),
+	}
 }
 
-func NewApplicationRegistry(proj string) RegistryIdentity {
-	return newRegistry(proj, ApplicationRegistry)
+func NewApplicationLoggerAndRegistry(project string) (*Logger, *Registry) {
+	reg := Registry{
+		identity: newRegistryId(project, ApplicationRegistry, 1),
+	}
+	logger := NewPackageLoggerWithSkip(1)
+	reg.AddLogger(logger)
+	return logger, &reg
 }
 
-func newRegistry(proj string, tpe RegistryType) RegistryIdentity {
+func newRegistryId(proj string, tpe RegistryType, skip int) RegistryIdentity {
 	// TODO: check if the skip works .... we need another package for testing that
-	frame := runtimeutil.GetCallerFrame(2)
+	frame := runtimeutil.GetCallerFrame(2 + skip)
 	pkg, _ := runtimeutil.SplitPackageFunc(frame.Function)
 	return RegistryIdentity{
 		Project: proj,
