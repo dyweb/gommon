@@ -13,7 +13,7 @@ type LoggerType uint8
 const (
 	UnknownLogger LoggerType = iota
 	// PackageLogger is normally singleton in entire package
-	// We were having application and library logger but they are replaced by registry
+	// We used to have application and library logger but they are replaced by registry
 	PackageLogger
 	FunctionLogger
 	StructLogger

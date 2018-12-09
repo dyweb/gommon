@@ -37,19 +37,15 @@ type Logger struct {
 	id *Identity // use nil so we can have logger without identity
 }
 
-// TODO: do we need the copy func
-//func (l *Logger) Copy() *Logger {
-//	fields := make([]Field, len(l.fields))
-//	copy(fields, l.fields)
-//	id := NewIdentityFromCaller(1)
-//	return &Logger{
-//		h:      l.h,
-//		level:  l.level,
-//		source: l.source,
-//		fields: fields,
-//		id:     &id, // TODO: is this new identity desired behavior
-//	}
-//}
+// Copy create a new logger with different identity, the identity is based on where Copy is called
+// Normally you should call Copy inside func or method on a package/strcut logger
+func (l *Logger) Copy() *Logger {
+	id := NewIdentityFromCaller(1)
+	c := &Logger{
+		id: &id,
+	}
+	return newLogger(l, c)
+}
 
 // AddField add field to current logger in place, it does NOT make a copy
 func (l *Logger) AddField(f Field) *Logger {

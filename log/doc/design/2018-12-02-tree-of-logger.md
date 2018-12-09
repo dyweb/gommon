@@ -328,7 +328,7 @@ func (fl *FileLineFilter) HandleLog(loggerIdentity *Identity, caller Caller, lev
 var log, logRegistry = NewPackageLoggerWithRegistry()
 
 func NewConfigLoader() ConfigLoader {
-    l := ConfigLoader()
+    l := ConfigLoader
     l.logger = dlog.NewStructLogger(log, l) // NOTE: package logger is now only used for copy level and handler, no longer used for registry
 }
 
@@ -350,9 +350,10 @@ func (s *Server) Echo(w http.ResponseWriter, r *http.Request) {
 ## Implementation
 
 - [x] remove the parent children logic from logger
-- [ ] add traverse registry and logger
+- [x] add traverse registry and logger
   - [x] add traverse log in PreOrderDfs
 - [ ] fix logic for func and method logger
+  - [ ] what was I trying to fix? creating sub logger or?
 - [ ] check if the skip caller is correct when create logger registry, unit test is in same package so it's always correct
 - [ ] check if identity of log registry is correct
 - [ ] check if identity of logger is correct

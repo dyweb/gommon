@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/dyweb/gommon/util/testutil"
-	asst "github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 var lg = NewPackageLogger()
@@ -13,6 +13,10 @@ var lg = NewPackageLogger()
 func foo() *Logger {
 	funcLog := NewFunctionLogger(lg)
 	return funcLog
+}
+
+func fooUseCopy() *Logger {
+	return lg.Copy()
 }
 
 type Foo struct {
@@ -36,47 +40,57 @@ func (f *Foo) method() *Logger {
 	return mlog
 }
 
+func (f *Foo) methodUseCopy() *Logger {
+	return f.log.Copy()
+}
+
+func (f *Foo) methodOrphanCopy() *Logger {
+	return lg.Copy()
+}
+
 var dummyFoo = &Foo{} // used for get struct logger identity
 
 func TestNewPackageLogger(t *testing.T) {
-	assert := asst.New(t)
 	id := lg.id
-	assert.Equal(PackageLogger, id.Type)
-	assert.Equal("pkg", id.Type.String())
-	assert.Equal("init", id.Function)
-	assert.Equal(testutil.GOPATH()+"/src/github.com/dyweb/gommon/log/logger_identity_test.go:11",
+	assert.Equal(t, PackageLogger, id.Type)
+	assert.Equal(t, "pkg", id.Type.String())
+	assert.Equal(t, "init", id.Function)
+	assert.Equal(t, testutil.GOPATH()+"/src/github.com/dyweb/gommon/log/logger_identity_test.go:11",
 		fmt.Sprintf("%s:%d", id.File, id.Line))
 }
 
 func TestNewFunctionLogger(t *testing.T) {
-	assert := asst.New(t)
-	flog := foo()
-	id := flog.id
-	assert.Equal(FunctionLogger, id.Type)
+	assert.Equal(t, FunctionLogger, foo().id.Type)
+	assert.Equal(t, FunctionLogger, fooUseCopy().id.Type)
 }
 
 func TestNewStructLogger(t *testing.T) {
-	assert := asst.New(t)
 	slog := NewStructLogger(lg, dummyFoo)
 	id := slog.id
-	assert.Equal(StructLogger, id.Type)
-	assert.Equal("struct", id.Type.String())
-	assert.Equal("Foo", id.Struct)
-	assert.Equal(MagicStructLoggerFunctionName, id.Function)
-	assert.Equal(testutil.GOPATH()+"/src/github.com/dyweb/gommon/log/logger_identity_test.go:31",
+	assert.Equal(t, StructLogger, id.Type)
+	assert.Equal(t, "struct", id.Type.String())
+	assert.Equal(t, "Foo", id.Struct)
+	assert.Equal(t, MagicStructLoggerFunctionName, id.Function)
+	assert.Equal(t, testutil.GOPATH()+"/src/github.com/dyweb/gommon/log/logger_identity_test.go:35",
 		fmt.Sprintf("%s:%d", id.File, id.Line))
 }
 
 func TestNewMethodLogger(t *testing.T) {
-	assert := asst.New(t)
 	slog := NewStructLogger(lg, dummyFoo)
 	dummyFoo.log = slog
 	mlog := dummyFoo.method()
 	id := mlog.id
-	assert.Equal(MethodLogger, id.Type)
-	assert.Equal("method", id.Type.String())
-	assert.Equal("Foo", id.Struct)
-	assert.Equal("method", id.Function)
-	assert.Equal(testutil.GOPATH()+"/src/github.com/dyweb/gommon/log/logger_identity_test.go:35",
+	assert.Equal(t, MethodLogger, id.Type)
+	assert.Equal(t, "method", id.Type.String())
+	assert.Equal(t, "Foo", id.Struct)
+	assert.Equal(t, "method", id.Function)
+	assert.Equal(t, testutil.GOPATH()+"/src/github.com/dyweb/gommon/log/logger_identity_test.go:39",
 		fmt.Sprintf("%s:%d", id.File, id.Line))
+
+	assert.Equal(t, MethodLogger, dummyFoo.methodUseCopy().id.Type)
+
+	orphanLog := dummyFoo.methodOrphanCopy()
+	assert.Equal(t, MethodLogger, orphanLog.id.Type)
+	assert.Equal(t, "Foo", orphanLog.id.Struct)
+	assert.Equal(t, "methodOrphanCopy", orphanLog.id.Function)
 }

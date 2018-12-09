@@ -153,6 +153,9 @@ func WalkLogger(root *Registry, cb func(l *Logger)) {
 	walkLogger(root, nil, nil, cb)
 }
 
+// walkLogger loops loggers in current registry first, then visist its children in DFS
+// It will create the map if it is nil, so caller don't need to do the bootstrap,
+// However, caller can provide a map so they can use it to get all the loggers and registry
 func walkLogger(root *Registry, loggers map[*Logger]bool, registries map[*Registry]bool, cb func(l *Logger)) {
 	// first call
 	if loggers == nil {
@@ -164,12 +167,12 @@ func walkLogger(root *Registry, loggers map[*Logger]bool, registries map[*Regist
 	// pre order
 	registries[root] = true
 	for _, l := range root.loggers {
-		// visit once
+		// avoid dup
 		if loggers[l] {
 			continue
 		}
 		loggers[l] = true
-		cb(l)
+		cb(l) // visit
 	}
 	// dfs
 	for _, r := range root.children {
@@ -178,5 +181,26 @@ func walkLogger(root *Registry, loggers map[*Logger]bool, registries map[*Regist
 			continue
 		}
 		walkLogger(r, loggers, registries, cb)
+	}
+}
+
+func WalkRegistry(root *Registry, cb func(r *Registry)) {
+	walkRegistry(root, nil, cb)
+}
+
+func walkRegistry(root *Registry, registries map[*Registry]bool, cb func(r *Registry)) {
+	// first call
+	if registries == nil {
+		registries = make(map[*Registry]bool)
+	}
+	registries[root] = true
+	cb(root) // visit
+	// dfs
+	for _, r := range root.children {
+		// avoid dup
+		if registries[r] {
+			continue
+		}
+		walkRegistry(r, registries, cb)
 	}
 }

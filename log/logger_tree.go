@@ -10,51 +10,6 @@ import (
 	"github.com/dyweb/gommon/structure"
 )
 
-func SetLevelRecursive(root *Logger, level Level) {
-	visited := make(map[*Logger]bool)
-	PreOrderDFS(root, visited, func(l *Logger) {
-		// TODO: remove it after we have tested it ....
-		//fmt.Println(l.Identity().String())
-		l.SetLevel(level)
-	})
-}
-
-func SetHandlerRecursive(root *Logger, handler Handler) {
-	visited := make(map[*Logger]bool)
-	PreOrderDFS(root, visited, func(l *Logger) {
-		l.SetHandler(handler)
-	})
-}
-
-// FIXME: this fixed typo requires update in go.ice
-func EnableSourceRecursive(root *Logger) {
-	visited := make(map[*Logger]bool)
-	PreOrderDFS(root, visited, func(l *Logger) {
-		l.EnableSource()
-	})
-}
-
-func DisableSourceRecursive(root *Logger) {
-	visited := make(map[*Logger]bool)
-	PreOrderDFS(root, visited, func(l *Logger) {
-		l.DisableSource()
-	})
-}
-
-// TODO: test it .... map traverse order is random, we need radix tree, it is need for pretty print as well
-func PreOrderDFS(root *Logger, visited map[*Logger]bool, cb func(l *Logger)) {
-	if visited[root] {
-		return
-	}
-	cb(root)
-	visited[root] = true
-	for _, group := range root.children {
-		for _, l := range group {
-			PreOrderDFS(l, visited, cb)
-		}
-	}
-}
-
 func ToStringTree(root *Logger) *structure.StringTreeNode {
 	visited := make(map[*Logger]bool)
 	return toStringTreeHelper(root, visited)

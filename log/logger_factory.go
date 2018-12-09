@@ -20,6 +20,7 @@ func NewPackageLoggerWithSkip(skip int) *Logger {
 	return newLogger(nil, l)
 }
 
+// Deprecated: use Copy method on package logger
 func NewFunctionLogger(packageLogger *Logger) *Logger {
 	id := NewIdentityFromCaller(1)
 	l := &Logger{
@@ -40,6 +41,7 @@ func NewStructLogger(packageLogger *Logger, loggable LoggableStruct) *Logger {
 	return l
 }
 
+// Deprecated: use Copy method on struct logger
 func NewMethodLogger(structLogger *Logger) *Logger {
 	id := NewIdentityFromCaller(1)
 	l := &Logger{
