@@ -23,8 +23,6 @@ const UnknownFile = "<?>"
 // caller gets source location at runtime, in the future we may generate it at compile time to reduce the
 // overhead, though I am not sure what the overhead is without actual benchmark and profiling
 // Also I think the complexity added does not worth the performance benefits it gives
-// TODO: https://github.com/dyweb/gommon/issues/43
-// TODO: add test for skip ...
 func caller(skip int) Caller {
 	_, file, line, ok := runtime.Caller(2 + skip)
 	if !ok {

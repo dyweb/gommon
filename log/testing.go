@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// entry is only used for test, it is not passed around like other loging packages
+// entry is only used for test, we do not use it as contract for interface
 type entry struct {
 	level   Level
 	time    time.Time
@@ -53,4 +53,16 @@ func (h *TestHandler) HasLog(level Level, msg string) bool {
 		}
 	}
 	return false
+}
+
+func (h *TestHandler) getLogByMessage(msg string) (entry, bool) {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+
+	for _, e := range h.entries {
+		if e.msg == msg {
+			return e, true
+		}
+	}
+	return entry{}, false
 }

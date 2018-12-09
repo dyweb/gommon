@@ -47,7 +47,9 @@ func (l *Logger) Copy() *Logger {
 	return newLogger(l, c)
 }
 
-// AddField add field to current logger in place, it does NOT make a copy
+// AddField add field to current logger in place, it does NOT create a copy of logger
+// Use Copy if you want a copy
+// It does NOT check duplication
 func (l *Logger) AddField(f Field) *Logger {
 	l.mu.Lock()
 	// TODO: check dup or not? or may it optional
@@ -56,7 +58,9 @@ func (l *Logger) AddField(f Field) *Logger {
 	return l
 }
 
-// AddFields add fields to current logger in place, it does NOT make a copy
+// AddFields add fields to current logger in place, it does NOT create a copy of logger
+// Use Copy if you want a copy
+// It does NOT check duplication
 func (l *Logger) AddFields(fields ...Field) *Logger {
 	l.mu.Lock()
 	// TODO: check dup or not? or may it optional
@@ -98,6 +102,41 @@ func (l *Logger) EnableSource() *Logger {
 func (l *Logger) DisableSource() *Logger {
 	l.mu.Lock()
 	l.source = false
+	l.mu.Unlock()
+	return l
+}
+
+// SetCallerSkip is used for util function to log using its caller's location instead of its own
+// Without extra skip, some common util function will keep logging same line and make the real
+// source hard to track.
+//
+// func echo(w http.ResponseWriter, r *http.Request) {
+//     if r.Query().Get("word") == "" {
+//          writeError(w, errors.New("word is required")
+//          return
+//     }
+//     w.Write([]byte(r.Query().Get("word")))
+// }
+//
+// func writeError(w http.ResponseWriter, err error) {
+//     l := pkgLogger.Copy().SetCallerSkip(1)
+//     l.Error(err)
+//     w.Write([]byte(err.String()))
+// }
+func (l *Logger) SetCallerSkip(skip int) *Logger {
+	l.mu.Lock()
+	// ignore invalid skip, most time it should just be one
+	if skip > 0 && skip < 5 {
+		l.skip = skip
+	}
+	l.mu.Unlock()
+	return l
+}
+
+// ResetCallerSkip set skip to 0, the default value
+func (l *Logger) ResetCallerSkip() *Logger {
+	l.mu.Lock()
+	l.skip = 0
 	l.mu.Unlock()
 	return l
 }
