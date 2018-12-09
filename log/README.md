@@ -2,52 +2,73 @@
 
 ## Convention
 
-- library/application MUST have a library/application logger as registry.
+- library/application MUST have a library/application registry.
 - every package MUST have a package level logger.
-- logger is a registry and can contain children.
-- instance of struct should have their own logger as children of package logger
+- logger should only register themselves in registry if it's a long lived, i.e. server
 
 ## Usage
 
-````go
-package logutil
+See [_examples](_examples)
 
+In your project have a `logutil` package to serve as registry, and import this package in all the other packages
+to create package logger so you don't need to manually register them
+
+````go
 import (
 	"github.com/dyweb/gommon/log"
 )
 
-var Registry = log.NewLibraryLogger()
+const Project = "github.com/your/project"
 
-func NewPackageLogger() *log.Logger {
-	l := log.NewPackageLoggerWithSkip(1)
-	Registry.AddChild(l)
-	return l
+var registry = log.NewLibraryRegistry(Project)
+
+func Registry() *log.Registry {
+	return &registry
+}
+
+func NewPackageLoggerAndRegistry() (*log.Logger, *log.Registry) {
+	logger, child := log.NewPackageLoggerAndRegistryWithSkip(Project, 1)
+	registry.AddRegistry(child)
+	return logger, child
 }
 ````
 
+In package, create package level var called `log` this saves import and also avoid people importing standard log.
+Use `dlog` as import alias because `log` is already used.
 
 ````go
-var log = logutil.NewPackageLogger()
+package server
 
-func foo() {
+import (
+	dlog "github.com/dyweb/gommon/log"
+	"github.com/your/project/logutil"
+)
+
+var log, logReg = logutil.NewPackageLoggerAndRegistry()
+
+func foo(file string) {
 	// structual way
-	log.DebugF("open", dlog.Fields{"file": file})
+	log.DebugF("open", dlog.Str("file", file))
 	// default handler
 	// debug 20180204 open file=test.yml
 	// logfmtish handler
 	// lvl=debug t=20180204 msg=open file=test.yml
 	// json handler
 	// {"lvl": "debug", "t": "20180204", "msg": "open", "file": "test.yml"}
+	
 	// traditional way
 	log.Debugf("open %s", file)
 	// debug 20180204 open test.yml
-	// a mixed way, this would lose hint from IDE for printf placeholders
-	log.DebugFf(dlog.Fields{"file": file}, "open with error %v", err)
-	// default handler
 	
 	// for expensive operation, check before log
 	if log.IsDebugEnabled() {
-		log.Debug("counter". dlog.Fields{"counter": CountExpensive()})
+		log.Debug("counter". dlog.Int("counter", CountExpensive()))
 	}
+}
+
+func bar() {
+	// create a new logger based on package level logger
+	logger := log.Copy().AddField(dlog.Str("bar", "barbarbar"))
+	logger.Info("have extra fields")
 }
 ````
