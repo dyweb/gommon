@@ -12,32 +12,35 @@ func (l *Logger) IsTraceEnabled() bool {
 }
 
 func (l *Logger) Trace(args ...interface{}) {
-	if l.level >= TraceLevel {
-		if !l.source {
-			l.h.HandleLog(TraceLevel, time.Now(), fmt.Sprint(args...))
-		} else {
-			l.h.HandleLogWithSource(TraceLevel, time.Now(), fmt.Sprint(args...), caller())
-		}
+	if l.level < TraceLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(TraceLevel, time.Now(), fmt.Sprint(args...), emptyCaller, l.fields, nil)
+	} else {
+		l.h.HandleLog(TraceLevel, time.Now(), fmt.Sprint(args...), caller(l.skip), l.fields, nil)
 	}
 }
 
 func (l *Logger) Tracef(format string, args ...interface{}) {
-	if l.level >= TraceLevel {
-		if !l.source {
-			l.h.HandleLog(TraceLevel, time.Now(), fmt.Sprintf(format, args...))
-		} else {
-			l.h.HandleLogWithSource(TraceLevel, time.Now(), fmt.Sprintf(format, args...), caller())
-		}
+	if l.level < TraceLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(TraceLevel, time.Now(), fmt.Sprintf(format, args...), emptyCaller, l.fields, nil)
+	} else {
+		l.h.HandleLog(TraceLevel, time.Now(), fmt.Sprintf(format, args...), caller(l.skip), l.fields, nil)
 	}
 }
 
-func (l *Logger) TraceF(msg string, fields Fields) {
-	if l.level >= TraceLevel {
-		if !l.source {
-			l.h.HandleLogWithFields(TraceLevel, time.Now(), msg, fields)
-		} else {
-			l.h.HandleLogWithSourceFields(TraceLevel, time.Now(), msg, caller(), fields)
-		}
+func (l *Logger) TraceF(msg string, fields ...Field) {
+	if l.level < TraceLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(TraceLevel, time.Now(), msg, emptyCaller, l.fields, fields)
+	} else {
+		l.h.HandleLog(TraceLevel, time.Now(), msg, caller(l.skip), l.fields, fields)
 	}
 }
 
@@ -46,32 +49,35 @@ func (l *Logger) IsDebugEnabled() bool {
 }
 
 func (l *Logger) Debug(args ...interface{}) {
-	if l.level >= DebugLevel {
-		if !l.source {
-			l.h.HandleLog(DebugLevel, time.Now(), fmt.Sprint(args...))
-		} else {
-			l.h.HandleLogWithSource(DebugLevel, time.Now(), fmt.Sprint(args...), caller())
-		}
+	if l.level < DebugLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(DebugLevel, time.Now(), fmt.Sprint(args...), emptyCaller, l.fields, nil)
+	} else {
+		l.h.HandleLog(DebugLevel, time.Now(), fmt.Sprint(args...), caller(l.skip), l.fields, nil)
 	}
 }
 
 func (l *Logger) Debugf(format string, args ...interface{}) {
-	if l.level >= DebugLevel {
-		if !l.source {
-			l.h.HandleLog(DebugLevel, time.Now(), fmt.Sprintf(format, args...))
-		} else {
-			l.h.HandleLogWithSource(DebugLevel, time.Now(), fmt.Sprintf(format, args...), caller())
-		}
+	if l.level < DebugLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(DebugLevel, time.Now(), fmt.Sprintf(format, args...), emptyCaller, l.fields, nil)
+	} else {
+		l.h.HandleLog(DebugLevel, time.Now(), fmt.Sprintf(format, args...), caller(l.skip), l.fields, nil)
 	}
 }
 
-func (l *Logger) DebugF(msg string, fields Fields) {
-	if l.level >= DebugLevel {
-		if !l.source {
-			l.h.HandleLogWithFields(DebugLevel, time.Now(), msg, fields)
-		} else {
-			l.h.HandleLogWithSourceFields(DebugLevel, time.Now(), msg, caller(), fields)
-		}
+func (l *Logger) DebugF(msg string, fields ...Field) {
+	if l.level < DebugLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(DebugLevel, time.Now(), msg, emptyCaller, l.fields, fields)
+	} else {
+		l.h.HandleLog(DebugLevel, time.Now(), msg, caller(l.skip), l.fields, fields)
 	}
 }
 
@@ -80,32 +86,72 @@ func (l *Logger) IsInfoEnabled() bool {
 }
 
 func (l *Logger) Info(args ...interface{}) {
-	if l.level >= InfoLevel {
-		if !l.source {
-			l.h.HandleLog(InfoLevel, time.Now(), fmt.Sprint(args...))
-		} else {
-			l.h.HandleLogWithSource(InfoLevel, time.Now(), fmt.Sprint(args...), caller())
-		}
+	if l.level < InfoLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(InfoLevel, time.Now(), fmt.Sprint(args...), emptyCaller, l.fields, nil)
+	} else {
+		l.h.HandleLog(InfoLevel, time.Now(), fmt.Sprint(args...), caller(l.skip), l.fields, nil)
 	}
 }
 
 func (l *Logger) Infof(format string, args ...interface{}) {
-	if l.level >= InfoLevel {
-		if !l.source {
-			l.h.HandleLog(InfoLevel, time.Now(), fmt.Sprintf(format, args...))
-		} else {
-			l.h.HandleLogWithSource(InfoLevel, time.Now(), fmt.Sprintf(format, args...), caller())
-		}
+	if l.level < InfoLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(InfoLevel, time.Now(), fmt.Sprintf(format, args...), emptyCaller, l.fields, nil)
+	} else {
+		l.h.HandleLog(InfoLevel, time.Now(), fmt.Sprintf(format, args...), caller(l.skip), l.fields, nil)
 	}
 }
 
-func (l *Logger) InfoF(msg string, fields Fields) {
-	if l.level >= InfoLevel {
-		if !l.source {
-			l.h.HandleLogWithFields(InfoLevel, time.Now(), msg, fields)
-		} else {
-			l.h.HandleLogWithSourceFields(InfoLevel, time.Now(), msg, caller(), fields)
-		}
+func (l *Logger) InfoF(msg string, fields ...Field) {
+	if l.level < InfoLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(InfoLevel, time.Now(), msg, emptyCaller, l.fields, fields)
+	} else {
+		l.h.HandleLog(InfoLevel, time.Now(), msg, caller(l.skip), l.fields, fields)
+	}
+}
+
+func (l *Logger) IsPrintEnabled() bool {
+	return l.level >= PrintLevel
+}
+
+func (l *Logger) Print(args ...interface{}) {
+	if l.level < PrintLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(PrintLevel, time.Now(), fmt.Sprint(args...), emptyCaller, l.fields, nil)
+	} else {
+		l.h.HandleLog(PrintLevel, time.Now(), fmt.Sprint(args...), caller(l.skip), l.fields, nil)
+	}
+}
+
+func (l *Logger) Printf(format string, args ...interface{}) {
+	if l.level < PrintLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(PrintLevel, time.Now(), fmt.Sprintf(format, args...), emptyCaller, l.fields, nil)
+	} else {
+		l.h.HandleLog(PrintLevel, time.Now(), fmt.Sprintf(format, args...), caller(l.skip), l.fields, nil)
+	}
+}
+
+func (l *Logger) PrintF(msg string, fields ...Field) {
+	if l.level < PrintLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(PrintLevel, time.Now(), msg, emptyCaller, l.fields, fields)
+	} else {
+		l.h.HandleLog(PrintLevel, time.Now(), msg, caller(l.skip), l.fields, fields)
 	}
 }
 
@@ -114,32 +160,35 @@ func (l *Logger) IsWarnEnabled() bool {
 }
 
 func (l *Logger) Warn(args ...interface{}) {
-	if l.level >= WarnLevel {
-		if !l.source {
-			l.h.HandleLog(WarnLevel, time.Now(), fmt.Sprint(args...))
-		} else {
-			l.h.HandleLogWithSource(WarnLevel, time.Now(), fmt.Sprint(args...), caller())
-		}
+	if l.level < WarnLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(WarnLevel, time.Now(), fmt.Sprint(args...), emptyCaller, l.fields, nil)
+	} else {
+		l.h.HandleLog(WarnLevel, time.Now(), fmt.Sprint(args...), caller(l.skip), l.fields, nil)
 	}
 }
 
 func (l *Logger) Warnf(format string, args ...interface{}) {
-	if l.level >= WarnLevel {
-		if !l.source {
-			l.h.HandleLog(WarnLevel, time.Now(), fmt.Sprintf(format, args...))
-		} else {
-			l.h.HandleLogWithSource(WarnLevel, time.Now(), fmt.Sprintf(format, args...), caller())
-		}
+	if l.level < WarnLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(WarnLevel, time.Now(), fmt.Sprintf(format, args...), emptyCaller, l.fields, nil)
+	} else {
+		l.h.HandleLog(WarnLevel, time.Now(), fmt.Sprintf(format, args...), caller(l.skip), l.fields, nil)
 	}
 }
 
-func (l *Logger) WarnF(msg string, fields Fields) {
-	if l.level >= WarnLevel {
-		if !l.source {
-			l.h.HandleLogWithFields(WarnLevel, time.Now(), msg, fields)
-		} else {
-			l.h.HandleLogWithSourceFields(WarnLevel, time.Now(), msg, caller(), fields)
-		}
+func (l *Logger) WarnF(msg string, fields ...Field) {
+	if l.level < WarnLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(WarnLevel, time.Now(), msg, emptyCaller, l.fields, fields)
+	} else {
+		l.h.HandleLog(WarnLevel, time.Now(), msg, caller(l.skip), l.fields, fields)
 	}
 }
 
@@ -148,31 +197,34 @@ func (l *Logger) IsErrorEnabled() bool {
 }
 
 func (l *Logger) Error(args ...interface{}) {
-	if l.level >= ErrorLevel {
-		if !l.source {
-			l.h.HandleLog(ErrorLevel, time.Now(), fmt.Sprint(args...))
-		} else {
-			l.h.HandleLogWithSource(ErrorLevel, time.Now(), fmt.Sprint(args...), caller())
-		}
+	if l.level < ErrorLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(ErrorLevel, time.Now(), fmt.Sprint(args...), emptyCaller, l.fields, nil)
+	} else {
+		l.h.HandleLog(ErrorLevel, time.Now(), fmt.Sprint(args...), caller(l.skip), l.fields, nil)
 	}
 }
 
 func (l *Logger) Errorf(format string, args ...interface{}) {
-	if l.level >= ErrorLevel {
-		if !l.source {
-			l.h.HandleLog(ErrorLevel, time.Now(), fmt.Sprintf(format, args...))
-		} else {
-			l.h.HandleLogWithSource(ErrorLevel, time.Now(), fmt.Sprintf(format, args...), caller())
-		}
+	if l.level < ErrorLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(ErrorLevel, time.Now(), fmt.Sprintf(format, args...), emptyCaller, l.fields, nil)
+	} else {
+		l.h.HandleLog(ErrorLevel, time.Now(), fmt.Sprintf(format, args...), caller(l.skip), l.fields, nil)
 	}
 }
 
-func (l *Logger) ErrorF(msg string, fields Fields) {
-	if l.level >= ErrorLevel {
-		if !l.source {
-			l.h.HandleLogWithFields(ErrorLevel, time.Now(), msg, fields)
-		} else {
-			l.h.HandleLogWithSourceFields(ErrorLevel, time.Now(), msg, caller(), fields)
-		}
+func (l *Logger) ErrorF(msg string, fields ...Field) {
+	if l.level < ErrorLevel {
+		return
+	}
+	if !l.source {
+		l.h.HandleLog(ErrorLevel, time.Now(), msg, emptyCaller, l.fields, fields)
+	} else {
+		l.h.HandleLog(ErrorLevel, time.Now(), msg, caller(l.skip), l.fields, fields)
 	}
 }

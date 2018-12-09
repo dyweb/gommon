@@ -16,3 +16,9 @@ func TestDefault_StructString(t *testing.T) {
 	f := &fooStr{}
 	assert.True(f.str == "")
 }
+
+var ga, gb = newDouble()
+
+func newDouble() (int, int) {
+	return 1, 2
+}

@@ -1,0 +1,23 @@
+go build -gcflags "-m -m" .
+# github.com/dyweb/gommon/log/_benchmarks/playground/field_interface
+./field.go:32:6: cannot inline main: function too complex: cost 315 exceeds budget 80
+./field.go:38:30: inlining call to log.NewTestLogger func(log.Level) *log.Logger { var log.l·3 *log.Logger; log.l·3 = <N>; log.l·3 = &log.Logger literal; return log.l·3 }
+./field.go:39:37: inlining call to log.NewIOHandler func(io.Writer) log.Handler { return log.Handler(&log.IOHandler literal) }
+./field.go:42:28: inlining call to log.Int func(string, int) log.Field { return log.Field literal }
+./field.go:43:28: inlining call to log.Int func(string, int) log.Field { return log.Field literal }
+./field.go:43:14: inlining call to log.(*Logger).NoopF method(*log.Logger) func(string, ...log.Field) {  }
+./field.go:38:30: &log.Logger literal escapes to heap
+./field.go:38:30: 	from log.l·3 (assigned) at ./field.go:38:30
+./field.go:38:30: 	from ~R0 (assign-pair) at ./field.go:38:30
+./field.go:38:30: 	from logger (assigned) at ./field.go:38:9
+./field.go:38:30: 	from logger (passed to call[argument escapes]) at ./field.go:39:19
+./field.go:39:37: log.Handler(&log.IOHandler literal) escapes to heap
+./field.go:39:37: 	from ~R0 (assign-pair) at ./field.go:39:37
+./field.go:39:37: 	from log.Handler(~R0) (passed to call[argument escapes]) at ./field.go:39:19
+./field.go:39:37: &log.IOHandler literal escapes to heap
+./field.go:39:37: 	from log.Handler(&log.IOHandler literal) (interface-converted) at ./field.go:39:37
+./field.go:39:37: 	from ~R0 (assign-pair) at ./field.go:39:37
+./field.go:39:37: 	from log.Handler(~R0) (passed to call[argument escapes]) at ./field.go:39:19
+./field.go:42:14: ... argument escapes to heap
+./field.go:42:14: 	from ... argument (passed to call[argument escapes]) at ./field.go:42:14
+./field.go:43:14: main []log.Field literal does not escape

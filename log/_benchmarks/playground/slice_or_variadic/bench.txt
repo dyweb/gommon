@@ -1,0 +1,10 @@
+ go test -run none -bench . -benchtime 3s -benchmem -memprofile p.out
+goos: linux
+goarch: amd64
+pkg: github.com/dyweb/gommon/log/_benchmarks/playground/slice_or_variadic
+BenchmarkVariadic-8         	1000000000	         6.50 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSlice-8            	1000000000	         6.80 ns/op	       0 B/op	       0 allocs/op
+BenchmarkVariadicStruct-8   	500000000	        10.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSliceStruct-8      	500000000	         9.44 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/dyweb/gommon/log/_benchmarks/playground/slice_or_variadic	26.720s

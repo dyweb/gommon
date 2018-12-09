@@ -1,6 +1,7 @@
 package runtimeutil
 
 import (
+	"os"
 	"runtime"
 	"strings"
 )
@@ -29,8 +30,8 @@ func SplitPackageFunc(f string) (pkg string, function string) {
 	// the first dot splits package (w/ struct) and function, the second dot split package and struct (if any)
 	// we put struct (if any) and function together, so we just need to dot closest to last /
 	for i := len(f) - 1; i >= 0; i-- {
-		// TODO: it might not work on windows
-		if f[i] == '/' {
+		// TODO: validate if this works on windows
+		if f[i] == os.PathSeparator {
 			break
 		}
 		if f[i] == '.' {

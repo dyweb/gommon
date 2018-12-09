@@ -314,6 +314,8 @@ func (f Field) AddTo(enc ObjectEncoder) {
 
 Core zapcore/core.go
 
+- when adding fields to logger, it is encoded right away, so when log is called, only those extra new fields will be encoded
+
 ````go
 // Core is a minimal, fast logger interface. It's designed for library authors
 // to wrap in a more user-friendly API.
@@ -343,6 +345,12 @@ type ioCore struct {
 	LevelEnabler
 	enc Encoder
 	out WriteSyncer
+}
+
+func (c *ioCore) With(fields []Field) Core {
+	clone := c.clone()
+	addFields(clone.enc, fields)
+	return clone
 }
 
 func (c *ioCore) Check(ent Entry, ce *CheckedEntry) *CheckedEntry {

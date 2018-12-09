@@ -26,26 +26,8 @@ const (
 	TraceLevel
 )
 
-// based on https://github.com/apex/log/blob/master/levels.go
-var levelStrings = []string{
-	FatalLevel: "fatal",
-	PanicLevel: "panic",
-	ErrorLevel: "error",
-	WarnLevel:  "warn",
-	InfoLevel:  "info",
-	DebugLevel: "debug",
-	TraceLevel: "trace",
-}
-
-var levelAlignedUpperStrings = []string{
-	FatalLevel: "FATA",
-	PanicLevel: "PANI",
-	ErrorLevel: "ERRO",
-	WarnLevel:  "WARN",
-	InfoLevel:  "INFO",
-	DebugLevel: "DEBU",
-	TraceLevel: "TRAC",
-}
+// PrintLevel is for library/application that requires a Printf based logger interface
+const PrintLevel = InfoLevel
 
 var levelColoredStrings = []string{
 	FatalLevel: color.RedStart + "fatal" + color.End,
@@ -67,15 +49,51 @@ var levelColoredAlignedUpperStrings = []string{
 	TraceLevel: color.GrayStart + "TRAC" + color.End,
 }
 
+// String returns log level in lower case and not aligned in length, i.e. fatal, warn
 func (level Level) String() string {
-	return levelStrings[level]
+	switch level {
+	case FatalLevel:
+		return "fatal"
+	case PanicLevel:
+		return "panic"
+	case ErrorLevel:
+		return "error"
+	case WarnLevel:
+		return "warn"
+	case InfoLevel:
+		return "info"
+	case DebugLevel:
+		return "debug"
+	case TraceLevel:
+		return "trace"
+	default:
+		return "unknown"
+	}
 }
 
-// AlignedUpperString returns fixed length level string in uppercase
+// AlignedUpperString returns log level with fixed length of 4 in uppercase, i.e. FATA, WARN
 func (level Level) AlignedUpperString() string {
-	return levelAlignedUpperStrings[level]
+	switch level {
+	case FatalLevel:
+		return "FATA"
+	case PanicLevel:
+		return "PANI"
+	case ErrorLevel:
+		return "ERRO"
+	case WarnLevel:
+		return "WARN"
+	case InfoLevel:
+		return "INFO"
+	case DebugLevel:
+		return "DEBG" // TODO: or DEBU
+	case TraceLevel:
+		return "TRAC"
+	default:
+		return "UNKN"
+	}
 }
 
+// TODO: use switch and generate the function ... or just generate it manually
 // ColoredString returns level string wrapped by terminal color characters, only works on *nix
 func (level Level) ColoredString() string {
 	return levelColoredStrings[level]

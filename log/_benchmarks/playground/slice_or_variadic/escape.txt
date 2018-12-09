@@ -1,0 +1,13 @@
+go build -gcflags "-m -m" .
+# github.com/dyweb/gommon/log/_benchmarks/playground/slice_or_variadic
+./param_allocate.go:9:6: cannot inline fVariadic: unhandled op FOR
+./param_allocate.go:17:6: cannot inline fVariadicSt: unhandled op FOR
+./param_allocate.go:25:6: cannot inline fSlice: unhandled op FOR
+./param_allocate.go:33:6: cannot inline fSliceSt: unhandled op FOR
+./param_allocate.go:42:6: cannot inline main: function too complex: cost 172 exceeds budget 80
+./param_allocate.go:9:16: fVariadic nums does not escape
+./param_allocate.go:17:18: fVariadicSt nums does not escape
+./param_allocate.go:25:13: fSlice nums does not escape
+./param_allocate.go:33:15: fSliceSt nums does not escape
+./param_allocate.go:43:11: main ... argument does not escape
+./param_allocate.go:44:14: main []int literal does not escape

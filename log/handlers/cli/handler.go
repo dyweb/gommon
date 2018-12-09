@@ -1,13 +1,12 @@
-/*
-Package cli writes is same as builtin IOHandler except color and delta time.
-It is used by go.ice as default handler
-TODO: color can't be disabled and we don't detect tty like logrus
-*/
-package cli // import "github.com/dyweb/gommon/log/handlers/cli"
+// Package cli writes is same as builtin TextHandler except color and delta time.
+// It is used by go.ice as default handler
+// TODO: color can't be disabled and we don't detect tty like logrus
+package cli
 
 import (
 	"io"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/dyweb/gommon/log"
@@ -17,6 +16,8 @@ import (
 const (
 	defaultTimeStampFormat = time.RFC3339
 )
+
+var _ log.Handler = (*Handler)(nil)
 
 type Handler struct {
 	w     io.Writer
@@ -32,32 +33,41 @@ func New(w io.Writer, delta bool) *Handler {
 	}
 }
 
-func (h *Handler) HandleLog(level log.Level, time time.Time, msg string) {
-	b := h.formatHead(level, time, msg)
-	b = append(b, '\n')
-	h.w.Write(b)
-}
-
-func (h *Handler) HandleLogWithSource(level log.Level, time time.Time, msg string, source string) {
-	b := h.formatHeadWithSource(level, time, msg, source)
-	b = append(b, '\n')
-	h.w.Write(b)
-}
-
-func (h *Handler) HandleLogWithFields(level log.Level, time time.Time, msg string, fields log.Fields) {
-	// we use raw slice instead of bytes buffer because we need to use strconv.Append*, which requires raw slice
-	b := h.formatHead(level, time, msg)
+func (h *Handler) HandleLog(level log.Level, now time.Time, msg string, source log.Caller, context log.Fields, fields log.Fields) {
+	b := make([]byte, 0, 50+len(msg)+len(source.File)+30*len(context)+30*len(fields))
+	// level
+	b = append(b, level.ColoredAlignedUpperString()...)
+	// time
 	b = append(b, ' ')
-	b = formatFields(b, fields)
-	b[len(b)-1] = '\n'
-	h.w.Write(b)
-}
-
-func (h *Handler) HandleLogWithSourceFields(level log.Level, time time.Time, msg string, source string, fields log.Fields) {
-	b := h.formatHeadWithSource(level, time, msg, source)
+	if h.delta {
+		b = append(b, formatNum(uint(now.Sub(h.start)/time.Second), 4)...)
+	} else {
+		b = now.AppendFormat(b, defaultTimeStampFormat)
+	}
+	// source
+	if source.Line != 0 {
+		b = append(b, ' ')
+		b = append(b, color.CyanStart...)
+		last := strings.LastIndex(source.File, "/")
+		b = append(b, source.File[last+1:]...)
+		b = append(b, ':')
+		b = strconv.AppendInt(b, int64(source.Line), 10)
+		b = append(b, color.End...)
+	}
+	// message
 	b = append(b, ' ')
-	b = formatFields(b, fields)
-	b[len(b)-1] = '\n'
+	b = append(b, msg...)
+	// context
+	if len(context) > 0 {
+		b = append(b, ' ')
+		b = formatFields(b, context)
+	}
+	// field
+	if len(fields) > 0 {
+		b = append(b, ' ')
+		b = formatFields(b, fields)
+	}
+	b = append(b, '\n')
 	h.w.Write(b)
 }
 
@@ -87,41 +97,6 @@ func formatNum(u uint, digits int) []byte {
 	return b
 }
 
-// no need to use fmt.Printf since we don't need any format
-func (h *Handler) formatHead(level log.Level, tm time.Time, msg string) []byte {
-	b := make([]byte, 0, 18+4+len(defaultTimeStampFormat)+len(msg))
-	b = append(b, level.ColoredAlignedUpperString()...)
-	b = append(b, ' ')
-	if h.delta {
-		b = append(b, formatNum(uint(tm.Sub(h.start)/time.Second), 4)...)
-	} else {
-		b = tm.AppendFormat(b, defaultTimeStampFormat)
-	}
-	b = append(b, ' ')
-	b = append(b, msg...)
-	return b
-}
-
-// we have a new function because source sits between time and msg in output, instead of after msg
-// i.e. info 2018-02-04T21:03:20-08:00 main.go:18 show me the line
-func (h *Handler) formatHeadWithSource(level log.Level, tm time.Time, msg string, source string) []byte {
-	b := make([]byte, 0, 18+4+len(defaultTimeStampFormat)+len(msg))
-	b = append(b, level.ColoredAlignedUpperString()...)
-	b = append(b, ' ')
-	if h.delta {
-		b = append(b, formatNum(uint(tm.Sub(h.start)/time.Second), 4)...)
-	} else {
-		b = tm.AppendFormat(b, defaultTimeStampFormat)
-	}
-	b = append(b, ' ')
-	b = append(b, color.CyanStart...)
-	b = append(b, source...)
-	b = append(b, color.End...)
-	b = append(b, ' ')
-	b = append(b, msg...)
-	return b
-}
-
 // it has an extra tailing space, which can be updated inplace to a \n
 func formatFields(b []byte, fields log.Fields) []byte {
 	for _, f := range fields {
@@ -137,5 +112,6 @@ func formatFields(b []byte, fields log.Fields) []byte {
 		}
 		b = append(b, ' ')
 	}
+	b = b[:len(b)-1] // remove trailing space
 	return b
 }

@@ -16,7 +16,8 @@ import (
 	"github.com/dyweb/gommon/util/logutil"
 )
 
-var log = dlog.NewApplicationLogger()
+var log, logReg = dlog.NewApplicationLoggerAndRegistry("gommon")
+
 var verbose = false
 var (
 	version   string
@@ -34,8 +35,8 @@ func main() {
 		Long:  "Generate go files for gommon",
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			if verbose {
-				dlog.SetLevelRecursive(log, dlog.DebugLevel)
-				dlog.EnableSourceRecursive(log)
+				dlog.SetLevel(logReg, dlog.DebugLevel)
+				dlog.EnableSource(logReg)
 			}
 		},
 		Run: func(cmd *cobra.Command, args []string) {
@@ -135,6 +136,6 @@ func genCmd() *cobra.Command {
 }
 
 func init() {
-	log.AddChild(logutil.Registry)
-	dlog.SetHandlerRecursive(log, cli.New(os.Stderr, true))
+	logReg.AddRegistry(logutil.Registry())
+	dlog.SetHandler(logReg, cli.New(os.Stderr, true))
 }

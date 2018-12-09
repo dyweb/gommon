@@ -1,8 +1,9 @@
 package requests
 
 import (
-	asst "github.com/stretchr/testify/assert"
 	"testing"
+
+	asst "github.com/stretchr/testify/assert"
 )
 
 func TestTransportBuilder_UseSocks5(t *testing.T) {

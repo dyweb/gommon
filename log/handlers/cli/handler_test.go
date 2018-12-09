@@ -1,14 +1,14 @@
 package cli
 
 import (
+	"fmt"
 	"testing"
 
 	asst "github.com/stretchr/testify/assert"
 )
 
-func TestHandler_HandleLog(t *testing.T) {
-	// FIXME: the test seems to be broken, it has no output and when run in GoLand it shows terminated instead of pass
-	//fmt.Printf("%04d", 2)
+func TestFmt_FormatNum(t *testing.T) {
+	fmt.Printf("%04d\n", 2)
 }
 
 func Test_FormatNum(t *testing.T) {

@@ -1,16 +1,16 @@
 package stdlib
 
 import (
-	"testing"
 	"fmt"
 	"os"
+	"testing"
 )
 
 // For #31 [log] extra square brackets when using fmt.Sprint
 // https://github.com/dyweb/gommon/issues/31
 
 func printArgs(args ...interface{}) {
-	fmt.Println(args) // WRONG, it will have [arg1 arg2 arg3]
+	//	fmt.Println(args) // WRONG, it will have [arg1 arg2 arg3] NOTE: this is already disabled when go test is used
 	fmt.Println(args...)
 }
 
