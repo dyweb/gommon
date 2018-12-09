@@ -2,7 +2,7 @@
 
 ## Log libraries
 
-- [ ] TODO: k8s fork for glog https://github.com/kubernetes/klog , 
+- [x] k8s fork for glog https://github.com/kubernetes/klog , 
 they are also considering parent children logger https://github.com/kubernetes/klog/issues/22
 
 ## Ref

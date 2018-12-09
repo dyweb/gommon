@@ -136,7 +136,7 @@ func encodeString(buf []byte, s string) []byte {
 		i += size // only move the cursor, append happens when need to escape or there is error or at last
 	}
 	if start < len(s) {
-		// NOTE: it's s[start:] not buf[star:] ....
+		// NOTE: it's s[start:] not buf[start:] ....
 		buf = append(buf, s[start:]...)
 	}
 	buf = append(buf, '"')

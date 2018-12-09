@@ -6,7 +6,7 @@ help           show help
 
 Dev:
 install           install binaries under ./cmd to $$GOPATH/bin
-fmt               gofmt
+fmt               goimports
 test              unit test
 generate          generate code using gommon
 loc               lines of code (cloc required, brew install cloc)
@@ -17,10 +17,11 @@ dep-update     update dependency based on spec and code
 
 Build:
 install        install all binaries under ./cmd to $$GOPATH/bin
-build          compile all binary to ./build
+build          compile all binary to ./build for current platform
 build-linux    compile all linux binary to ./build with -linux suffix
 build-mac      compile all mac binary to ./build with -mac suffix
-build-release  compile all linux and mac binary and generate tarball to ./build
+build-win      compile all windows binary to ./build with -win suffix
+build-release  compile binary for all platforms and generate tarball to ./build
 
 Docker:
 docker-build   build runner image w/ all binaries using mulitstage build
@@ -35,11 +36,11 @@ help:
 	@echo "$$GOMMON_MAKEFILE_HELP_MSG"
 
 # -- build vars ---
-PKGS=./errors/... ./generator/... ./log/... ./noodle/... ./requests/... ./structure/... ./util/...
-PKGST=./cmd ./errors ./generator ./log ./noodle ./requests ./structure ./util
-VERSION = 0.0.7
-BUILD_COMMIT = $(shell git rev-parse HEAD)
-BUILD_TIME = $(shell date +%Y-%m-%dT%H:%M:%S%z)
+PKGS =./errors/... ./generator/... ./log/... ./noodle/... ./requests/... ./structure/... ./util/...
+PKGST =./cmd ./errors ./generator ./log ./noodle ./requests ./structure ./util
+VERSION = 0.0.8
+BUILD_COMMIT := $(shell git rev-parse HEAD)
+BUILD_TIME := $(shell date +%Y-%m-%dT%H:%M:%S%z)
 CURRENT_USER = $(USER)
 FLAGS = -X main.version=$(VERSION) -X main.commit=$(BUILD_COMMIT) -X main.buildTime=$(BUILD_TIME) -X main.buildUser=$(CURRENT_USER)
 # -- build vars ---
@@ -48,13 +49,29 @@ FLAGS = -X main.version=$(VERSION) -X main.commit=$(BUILD_COMMIT) -X main.buildT
 install:
 	go install -ldflags "$(FLAGS)" ./cmd/gommon
 
-.PHONY: build
-build:
-	go build -ldflags "$(FLAGS)" -o gommon-build ./cmd/gommon
-
 .PHONY: fmt
 fmt:
 	goimports -d -l -w $(PKGST)
+
+# --- build ---
+.PHONY: clean build build-linux build-mac build-win build-all
+clean:
+	rm ./build/gommon
+	rm ./build/gommon-*
+build:
+	go build -ldflags "$(FLAGS)" -o ./build/gommon ./cmd/gommon
+build-linux:
+	GOOS=linux GOARCH=amd64 go build -ldflags "$(FLAGS)" -o ./build/gommon-linux ./cmd/gommon
+build-mac:
+	GOOS=darwin GOARCH=amd64 go build -ldflags "$(FLAGS)" -o ./build/gommon-mac ./cmd/gommon
+build-win:
+	GOOS=windows GOARCH=amd64 go build -ldflags "$(FLAGS)" -o ./build/gommon-win ./cmd/gommon
+build-all: build build-linux build-mac build-win
+build-release: clean build-all
+	zip ./build/gommon-linux.zip ./build/gommon-linux
+	zip ./build/gommon-mac.zip ./build/gommon-mac
+	zip ./build/gommon-win.zip ./build/gommon-win
+# --- build ---
 
 .PHONY: generate
 generate:
