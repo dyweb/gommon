@@ -431,6 +431,34 @@ func BenchmarkWithoutFieldsJSON(b *testing.B) {
 	})
 }
 
+func BenchmarkCallerJSON(b *testing.B) {
+	b.ReportAllocs()
+	b.Log("logging without fields and without printf, use json output and enable log file line")
+	msg := "TODO: is fixed length msg really a good idea, we should give dynamic length with is more real world"
+	b.Run("gommon", func(b *testing.B) {
+		logger := dlog.NewTestLogger(dlog.InfoLevel)
+		logger.SetHandler(json.New(ioutil.Discard))
+		logger.EnableSource()
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info(msg)
+			}
+		})
+	})
+	b.Run("gommon.F", func(b *testing.B) {
+		logger := dlog.NewTestLogger(dlog.InfoLevel)
+		logger.SetHandler(json.New(ioutil.Discard))
+		logger.EnableSource()
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.InfoF(msg)
+			}
+		})
+	})
+}
+
 func BenchmarkWithContextNoFieldsJSON(b *testing.B) {
 	b.ReportAllocs()
 	b.Log("logging with context attached to logger (entry/event) no text format, no fields, use json output")

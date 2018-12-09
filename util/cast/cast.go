@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/dyweb/gommon/errors"
-	"gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v2"
 )
 
 // ToStringMap converts a map to use string key, non string key will be ignored

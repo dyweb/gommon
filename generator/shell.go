@@ -4,7 +4,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/kballard/go-shellquote"
+	shellquote "github.com/kballard/go-shellquote"
 
 	"github.com/dyweb/gommon/errors"
 	"github.com/dyweb/gommon/util/fsutil"

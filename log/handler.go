@@ -61,18 +61,22 @@ func MultiHandler(handlers ...Handler) Handler {
 	return &multiHandler{handlers: handlers}
 }
 
-// IOHandler writes log to io.Writer, default handler is a IOHandler using os.Stderr
-// TODO: rename to text handler, this gonna break many applications ...
-type IOHandler struct {
+// TextHandler writes log to io.Writer, default handler is a TextHandler using os.Stderr
+type TextHandler struct {
 	w io.Writer
 }
 
-// NewIOHandler
+// NewIOHandler returns the default text handler, the name is for backward compatibility
 func NewIOHandler(w io.Writer) Handler {
-	return &IOHandler{w: w}
+	return &TextHandler{w: w}
 }
 
-func (h *IOHandler) HandleLog(level Level, time time.Time, msg string, source Caller, context Fields, fields Fields) {
+// NewTextHandler formats log in human readable format without any escape, thus it is NOT machine readable
+func NewTextHandler(w io.Writer) Handler {
+	return &TextHandler{w: w}
+}
+
+func (h *TextHandler) HandleLog(level Level, time time.Time, msg string, source Caller, context Fields, fields Fields) {
 	b := make([]byte, 0, 50+len(msg)+len(source.File)+30*len(context)+30*len(fields))
 	// level
 	b = append(b, level.AlignedUpperString()...)
@@ -80,7 +84,7 @@ func (h *IOHandler) HandleLog(level Level, time time.Time, msg string, source Ca
 	b = append(b, ' ')
 	b = time.AppendFormat(b, defaultTimeStampFormat)
 	// source, optional
-	if source.File != "" {
+	if source.Line != 0 {
 		b = append(b, ' ')
 		last := strings.LastIndex(source.File, "/")
 		b = append(b, source.File[last+1:]...)
@@ -104,7 +108,7 @@ func (h *IOHandler) HandleLog(level Level, time time.Time, msg string, source Ca
 }
 
 // Flush implements Handler interface
-func (h *IOHandler) Flush() {
+func (h *TextHandler) Flush() {
 	if s, ok := h.w.(Syncer); ok {
 		s.Sync()
 	}

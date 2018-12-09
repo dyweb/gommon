@@ -1,8 +1,6 @@
-/*
-Package cli writes is same as builtin IOHandler except color and delta time.
-It is used by go.ice as default handler
-TODO: color can't be disabled and we don't detect tty like logrus
-*/
+// Package cli writes is same as builtin TextHandler except color and delta time.
+// It is used by go.ice as default handler
+// TODO: color can't be disabled and we don't detect tty like logrus
 package cli
 
 import (
@@ -47,7 +45,7 @@ func (h *Handler) HandleLog(level log.Level, now time.Time, msg string, source l
 		b = now.AppendFormat(b, defaultTimeStampFormat)
 	}
 	// source
-	if source.File != "" {
+	if source.Line != 0 {
 		b = append(b, ' ')
 		b = append(b, color.CyanStart...)
 		last := strings.LastIndex(source.File, "/")

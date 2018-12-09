@@ -9,7 +9,7 @@ import (
 	"os"
 	"testing"
 
-	"gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v2"
 )
 
 func ReadFixture(t *testing.T, path string) []byte {

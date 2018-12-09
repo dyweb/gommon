@@ -38,7 +38,7 @@ func (h *Handler) HandleLog(level log.Level, time time.Time, msg string, source 
 	b = append(b, `,"m":`...)
 	b = encodeString(b, msg)
 	// source
-	if source.File != "" {
+	if source.Line != 0 {
 		b = append(b, `,"s":"`...)
 		// TODO: can file path contains character that need escape in json?
 		last := strings.LastIndex(source.File, "/")
