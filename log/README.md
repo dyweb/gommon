@@ -1,5 +1,8 @@
 # Log
 
+- [Design](doc/design)
+- [Survey](doc/survey)
+
 ## Convention
 
 - library/application MUST have a library/application registry.

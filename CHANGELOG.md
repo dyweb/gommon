@@ -4,9 +4,13 @@
 
 [release](https://github.com/dyweb/gommon/releases/tag/0.0.8) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aclosed+milestone%3A0.0.8)
 
+Breaking change in factory functions
+
 - reduce handler interface from 6 methods to 1
 - [#88](https://github.com/dyweb/gommon/issues/88) add benchmark
 - [#33](https://github.com/dyweb/gommon/issues/33) [#78](https://github.com/dyweb/gommon/issues/33) use log registry to keep tree of logger
+  - application logger is now application log registry
+  - library logger is now library log registry
 - escape string in json handler
 - [#87](https://github.com/dyweb/gommon/issues/87) add multi handler for fan out
 

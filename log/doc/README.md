@@ -1,5 +1,6 @@
 # gommon/log
 
+- [Design](design)
 - [Survey](survey)
 
 ## Goals

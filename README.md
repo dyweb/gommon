@@ -17,9 +17,12 @@ It has the following components:
 - [generator](generator) Render go template, generate methods for logger interface based on `gommon.yml`
 - [log](log) A Javaish logger for Go, application can set level for their dependencies based on package, struct 
 - [noodle](noodle) Embed static assets for web application with `.noodleignore` support
-- [requests](requests) A pythonic wrapper for `net/http`, HTTP for Gopher
 - [structure](structure) Bring data structure like Set etc. to Golang
-- [util](util) A collection of utils
+- [util](util) small utils over standard libraries utils
+
+Deprecating
+
+- [requests](requests) A pythonic wrapper for `net/http`, HTTP for Gopher
 
 Legacy
 

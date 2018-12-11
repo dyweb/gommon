@@ -1,8 +1,10 @@
 # TODO
 
+This doc might be outdated, was mainly used to keep track when there is no wifi ...
+
 ## 2018-11-24
 
-- [ ] [#90](https://github.com/dyweb/gommon/pull/90) the long pending benchmark and refactor for adding context (fields to logger instance)
+- [x] [#90](https://github.com/dyweb/gommon/pull/90) the long pending benchmark and refactor for adding context (fields to logger instance)
 
 ## 2018-05-02
 
