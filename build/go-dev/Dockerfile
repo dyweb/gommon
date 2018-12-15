@@ -43,6 +43,7 @@ RUN \
     && rm /usr/local/bin/README.md /usr/local/bin/LICENSE
 
 # dep releases are way behind master, so we install from source
-RUN go get -u -v github.com/golang/dep/cmd/dep
+RUN go get -u -v github.com/golang/dep/cmd/dep \
+    && go get -u -v golang.org/x/tools/cmd/goimports
 
 WORKDIR $GOPATH
