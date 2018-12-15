@@ -43,3 +43,29 @@ func GetAll(err error, msg string) []error {
 	return result
 }
 ````
+
+````go
+// GetAllType gets all the errors that are the same type as v.
+//
+// The order of the return value is the same as described in GetAll.
+func GetAllType(err error, v interface{}) []error {
+	var result []error
+
+	var search string
+	if v != nil {
+		search = reflect.TypeOf(v).String()
+	}
+	Walk(err, func(err error) {
+		var needle string
+		if err != nil {
+			needle = reflect.TypeOf(err).String()
+		}
+
+		if needle == search {
+			result = append(result, err)
+		}
+	})
+
+	return result
+}
+````
