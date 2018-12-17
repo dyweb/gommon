@@ -28,7 +28,6 @@ func AsValue(v interface{}, err error) {
 	if rv.Kind() != reflect.Ptr || rv.IsNil() {
 		// do nothing, panic so the test is easier
 		panic("v must be a pointer")
-		return
 	}
 	iv := reflect.Indirect(rv)
 	log.Printf("iv is nil? %t", iv.IsNil())

@@ -95,8 +95,9 @@ Second go over all the refers I put in [#76](https://github.com/dyweb/gommon/iss
 - docker https://github.com/moby/moby/blob/master/errdefs/doc.go `Errors that cross the package boundary should implement one (and only one) of these interfaces.`
 - teleport (ssh servers) https://github.com/gravitational/trace/blob/master/errors.go concrete structs (different from docker's errdefs)
 - dgraph https://github.com/dgraph-io/dgraph/blob/master/x/error.go the `func Check2(_ interface{}, err error)` is epic, I want `func Check3(_ interface{}, _ interface{}, err error)`
-- [ ] error collection like sentry, it's good to ship all your errors like logs into a central place for cross application/node analysis
+- [x] error collection like sentry, it's good to ship all your errors like logs into a central place for cross application/node analysis
 (if you can afford it)
+  - https://github.com/getsentry/raven-go
 
 Third lines up the following
 
