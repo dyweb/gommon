@@ -141,6 +141,30 @@ func Match(err1, err2 error) bool {
 - match type use reflect `func GetAllType(err error, v interface{}) []error`
 
 ````go
+// GetAllType gets all the errors that are the same type as v.
+//
+// The order of the return value is the same as described in GetAll.
+func GetAllType(err error, v interface{}) []error {
+	var result []error
+
+	var search string
+	if v != nil {
+		search = reflect.TypeOf(v).String()
+	}
+	Walk(err, func(err error) {
+		var needle string
+		if err != nil {
+			needle = reflect.TypeOf(err).String()
+		}
+
+		if needle == search {
+			result = append(result, err)
+		}
+	})
+
+	return result
+}
+
 // Walk walks all the wrapped errors in err and calls the callback. If
 // err isn't a wrapped error, this will be called once for err. If err
 // is a wrapped error, the callback will be called for both the wrapper
