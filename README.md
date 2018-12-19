@@ -13,11 +13,11 @@ Gommon is a collection of common util libraries written in Go.
 
 It has the following components:
 
-- [errors](errors) Typed error with context, multi error
-- [generator](generator) Render go template, generate methods for logger interface based on `gommon.yml`
-- [log](log) A Javaish logger for Go, application can set level for their dependencies based on package, struct 
-- [noodle](noodle) Embed static assets for web application with `.noodleignore` support
-- [structure](structure) Bring data structure like Set etc. to Golang
+- [errors](errors) error wrapping, inspection, multi error (error list), common error types
+- [log](log) fine grained level control and reasonable performance
+- [noodle](noodle) embed static assets for web application with `.noodleignore` support
+- [generator](generator) render go template, generate methods for logger interface based on `gommon.yml`
+- [structure](structure) data structure like Set etc. to go
 - [util](util) small utils over standard libraries utils
 
 Deprecating

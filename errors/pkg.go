@@ -1,7 +1,9 @@
-// Package errors provides multi error, error wrapping. It defines error category code for machine post processing
-package errors // import "github.com/dyweb/gommon/errors"
+// Package errors provides error wrapping, multi error and error inspection.
+package errors
 
-import "fmt"
+import (
+	"fmt"
+)
 
 const (
 	// MultiErrSep is the separator used when returning a slice of errors as single line message
@@ -10,9 +12,9 @@ const (
 	ErrCauseSep = ": "
 )
 
-// New creates a FreshError with stack
+// New creates a freshError with stack trace
 func New(msg string) error {
-	return &FreshError{
+	return &freshError{
 		msg:   msg,
 		stack: callers(),
 	}
@@ -20,7 +22,7 @@ func New(msg string) error {
 
 // Errorf is New with fmt.Sprintf
 func Errorf(format string, args ...interface{}) error {
-	return &FreshError{
+	return &freshError{
 		msg:   fmt.Sprintf(format, args...),
 		stack: callers(),
 	}
