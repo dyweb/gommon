@@ -19,7 +19,7 @@ type Messenger interface {
 
 // Tracer is error with stack trace
 type Tracer interface {
-	Stack() *Stack
+	Stack() Stack
 }
 
 // Wrap creates a wrappedError with stack and set its cause to err.
@@ -42,10 +42,15 @@ func Wrap(err error, msg string) error {
 	if err == nil {
 		return nil
 	}
-	var stack *Stack
+	if err == nil {
+		return nil
+	}
+	var stack *lazyStack
 	// reuse existing stack
 	if t, ok := err.(Tracer); ok {
-		stack = t.Stack()
+		stack = &lazyStack{
+			frames: t.Stack().Frames(),
+		}
 	} else {
 		stack = callers()
 	}
@@ -63,10 +68,12 @@ func Wrapf(err error, format string, args ...interface{}) error {
 	if err == nil {
 		return nil
 	}
-	var stack *Stack
+	var stack *lazyStack
 	// reuse existing stack
 	if t, ok := err.(Tracer); ok {
-		stack = t.Stack()
+		stack = &lazyStack{
+			frames: t.Stack().Frames(),
+		}
 	} else {
 		stack = callers()
 	}
@@ -87,14 +94,14 @@ var (
 // freshError is a root error with stack trace
 type freshError struct {
 	msg   string
-	stack *Stack
+	stack *lazyStack
 }
 
 func (fresh *freshError) Error() string {
 	return fresh.msg
 }
 
-func (fresh *freshError) Stack() *Stack {
+func (fresh *freshError) Stack() Stack {
 	return fresh.stack
 }
 
@@ -123,14 +130,14 @@ var (
 type wrappedError struct {
 	msg   string
 	cause error
-	stack *Stack
+	stack *lazyStack
 }
 
 func (wrapped *wrappedError) Error() string {
 	return wrapped.msg + ErrCauseSep + wrapped.cause.Error()
 }
 
-func (wrapped *wrappedError) Stack() *Stack {
+func (wrapped *wrappedError) Stack() Stack {
 	return wrapped.stack
 }
 

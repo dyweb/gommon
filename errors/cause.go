@@ -4,7 +4,7 @@ package errors
 
 // causer returns the underlying error, a error without cause should return itself.
 // It is based on the private `causer` interface in pkg/errors, so errors wrapped using pkg/errors can also be handled
-// Deprecated: use Wrapper interface instead,
+// Deprecated: Use Wrapper interface instead,
 type causer interface {
 	Cause() error
 }

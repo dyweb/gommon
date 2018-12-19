@@ -6,6 +6,8 @@ import (
 	"sync"
 )
 
+// TODO: add interface for error list so we can do flatten when unwrap, Errors.Errors is not good, or maybe just an not exported interface
+
 // MultiErr is a slice of Error. It has two implementation, NewMultiErr return a non thread safe version,
 // NewMultiErrSafe return a thread safe version using mutex
 type MultiErr interface {
