@@ -1,4 +1,4 @@
-// Package errors provides error wrapping, multi error and error inspection.
+// Package errors provides multi error, wrapping and inspection.
 package errors
 
 import (
@@ -27,3 +27,17 @@ func Errorf(format string, args ...interface{}) error {
 		stack: callers(),
 	}
 }
+
+// Ignore swallow the error, you should NOT use it unless you know what you are doing (make the lint tool happy)
+// It is inspired by dgraph x/error.go
+func Ignore(_ error) {
+	// do nothing
+}
+
+// Ignore2 allow you to ignore return value and error, it is useful for io.Writer like functions
+// It is also inspired by dgraph x/error.go
+func Ignore2(_ interface{}, _ error) {
+	// do nothing
+}
+
+// yeah, there is no Ignore3

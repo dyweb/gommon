@@ -6,7 +6,7 @@ import (
 
 // wrapper.go defines interface and util method for error wrapping
 
-// Wrapper is based go 2 proposal, it only has an Unwrap method to returns the underlying error
+// Wrapper is based on go 2 proposal, it only has an Unwrap method to returns the underlying error
 type Wrapper interface {
 	Unwrap() error
 }
@@ -104,10 +104,10 @@ func (fresh *freshError) Format(s fmt.State, verb rune) {
 		// TODO: print stack if s.Flag('+')
 		fallthrough
 	case 's':
-		s.Write([]byte(fresh.msg))
+		Ignore2(s.Write([]byte(fresh.msg)))
 	case 'q':
 		// %q	a double-quoted string safely escaped with Go syntax
-		fmt.Fprintf(s, "%q", fresh.msg)
+		Ignore2(fmt.Fprintf(s, "%q", fresh.msg))
 	}
 }
 
@@ -153,8 +153,8 @@ func (wrapped *wrappedError) Format(s fmt.State, verb rune) {
 		// TODO: print stack if s.Flag('+')
 		fallthrough
 	case 's':
-		s.Write([]byte(wrapped.Error()))
+		Ignore2(s.Write([]byte(wrapped.Error())))
 	case 'q':
-		fmt.Fprintf(s, "%q", wrapped.Error())
+		Ignore2(fmt.Fprintf(s, "%q", wrapped.Error()))
 	}
 }
