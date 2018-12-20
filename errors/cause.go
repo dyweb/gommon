@@ -19,10 +19,10 @@ func Cause(err error) error {
 	}
 	for err != nil {
 		switch err.(type) {
-		case causer:
-			err = err.(causer).Cause()
 		case Wrapper:
 			err = err.(Wrapper).Unwrap()
+		case causer:
+			err = err.(causer).Cause()
 		default:
 			return err
 		}
@@ -30,22 +30,18 @@ func Cause(err error) error {
 	return err
 }
 
-// RootCause is alias for Cause
-func RootCause(err error) error {
-	return Cause(err)
-}
-
-// DirectCause returns the direct cause of the error (if any). It does NOT follow the cause chain,
-// if you want to get root cause, use Cause
+// DirectCause returns the direct cause of the error (if any).
+// It does NOT follow the cause chain all the way down, just the first one (if any),
+// If you want to get root cause, use Cause
 func DirectCause(err error) error {
 	if err == nil {
 		return nil
 	}
 	switch err.(type) {
-	case causer:
-		return err.(causer).Cause()
 	case Wrapper:
 		return err.(Wrapper).Unwrap()
+	case causer:
+		return err.(causer).Cause()
 	default:
 		return err
 	}

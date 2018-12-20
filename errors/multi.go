@@ -6,7 +6,15 @@ import (
 	"sync"
 )
 
-// TODO: add interface for error list so we can do flatten when unwrap, Errors.Errors is not good, or maybe just an not exported interface
+// ErrorList is a list of errors that do not fit into the Wrapper model
+// because they are at same level and don't have direct causal relationships.
+// For example, a user request that lacks both username and password can have two parallel errors.
+//
+// The interface is mainly used for error unwrapping, for create error list, use MultiErr
+// TODO: a better name than ErrorList
+type ErrorList interface {
+	Errors() []error
+}
 
 // MultiErr is a slice of Error. It has two implementation, NewMultiErr return a non thread safe version,
 // NewMultiErrSafe return a thread safe version using mutex
