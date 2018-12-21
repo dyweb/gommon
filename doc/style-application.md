@@ -5,6 +5,7 @@ Style guide for writing application using gommon or libraries that use gommon
 ## Error handling
 
 - when using `log.Fatal`, add a `return` after it, it won't get executed, but it makes the abort logic more obvious
+  - if you are calling `panic` then you should not add `return` to avoid `go vet` warning
 
 Good
 
