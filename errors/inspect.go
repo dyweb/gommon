@@ -109,3 +109,39 @@ func GetTypeOf(err error, tpe string) (error, bool) {
 //func AsValue(val interface{}, err error) bool {
 //
 //}
+
+// WalkFunc accepts an error and based on its inspection logic it can tell
+// Walk if it should stop walking the error chain or error list
+type WalkFunc func(err error) (stop bool)
+
+// Walk traverse error chain and error list, it stops when there is no
+// underlying error or the WalkFunc decides to stop
+// TODO: might let Is and GetType use Walk, this reduce copy and paste ...
+func Walk(err error, cb WalkFunc) {
+	if err == nil {
+		return
+	}
+	for {
+		if err == nil {
+			return
+		}
+		// WalkFunc decides to stop
+		if cb(err) {
+			return
+		}
+		switch err.(type) {
+		case Wrapper:
+			err = err.(Wrapper).Unwrap()
+		case causer:
+			err = err.(causer).Cause()
+		case ErrorList:
+			errs := err.(ErrorList).Errors()
+			for i := 0; i < len(errs); i++ {
+				Walk(errs[i], cb)
+			}
+			return
+		default:
+			return
+		}
+	}
+}

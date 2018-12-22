@@ -100,3 +100,28 @@ func TestGetType(t *testing.T) {
 		assert.Equal(t, "open", err.(*os.PathError).Op)
 	})
 }
+
+func TestWalk(t *testing.T) {
+	t.Run("stop", func(t *testing.T) {
+		merr := errors.NewMultiErr()
+		merr.Append(os.ErrNotExist)
+		merr.Append(os.ErrNotExist)
+
+		var errs []error
+		errors.Walk(merr, func(err error) (stop bool) {
+			errs = append(errs, err)
+			return true
+		})
+		assert.Equal(t, 1, len(errs), "WalkFunc is only called once because it returns true for stop")
+
+		// https://stackoverflow.com/questions/16971741/how-do-you-clear-a-slice-in-go
+		errs = nil
+		errors.Walk(merr, func(err error) (stop bool) {
+			//t.Logf("%v", err)
+			errs = append(errs, err)
+			return false
+		})
+		// NOTE: it is not 2 because multi error itself is also an error ...
+		assert.Equal(t, 1 + 2, len(errs), "WalkFunc is called same times as length of error list")
+	})
+}
