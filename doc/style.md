@@ -3,39 +3,188 @@
 General Go coding style, this should be followed by people developing gommon and [other Go projects
 under dyweb](https://github.com/dyweb?utf8=%E2%9C%93&q=&type=&language=go)
 
+## TODO
+
+- package
+  - [ ] `types` package, to export API and reduce import cycle, a package the defines struct is really needed
+
 ## Package
 
 Based on [Go Blog: Package names][Go: Package names]
 
-- use small packages instead of single flat package
-  - a large package can have many import and is easier to cause import cycle if it is a library
-  - it's easy to merge smaller packages into large one but hard in the other direction (TODO: refer hashicorp blog)
-- package name should be same as folder name
-  - avoid `go-mylib`, `go.mylib` as end of import path for `mylib` (we know it's go code ...)
-- use `alllowercase` no `camelCase` or `snake_case`
-  - `camelCase` cause trouble for some filesystems, i.e. windows users (even worse when they mount it into a linux vm)
-  - `snake_case` normally have special meaning in go, i.e. `foo_test.go` (it's test file), `fs_windows.go` (only build for windows platform)
-  - this `hardtoreadname` also distinguish it from other identifiers like `varName` `funcName`
-- rename your package if all the usage have to rename it
-  - when user rename the import and copy paste the code to another file, editors can't fill in the right import
-  - people can have many different renames even inside a single project `httpUtil`, `httpUtility`, 
-  it's better just give people a name that don't conflict and can use it everywhere
-- use `util.go` instead of `util` package
-  - a lot of times, those `util` are only used once in current package
-  - you will have a hard time rename all the `util` packages
-  
+Use small packages instead of a single flat package
+
+- a large package can have many import and is easier to cause import cycle if it is a library
+- it's easy to merge smaller packages into large one but hard in the other direction (TODO: refer hashicorp blog)
+
+````text
+// bad
+agent.go
+raft.go
+http.go
+grpc.go
+
+// good
+agent
+  server.go
+raft
+  leader.go
+  replication.go
+  store.go
+transport
+  http.go
+  grpc.go
+````
+
+Package name should be same as folder name
+
+- avoid `go-mylib`, `go.mylib` as end of import path for `mylib` (we know it's go code ...)
+
+````go
+// bad
+// file src/github.com/dyweb/gommon/go-errors/wrapper.go
+package errors
+
+// good
+// file src/github.com/dyweb/gommon/errors/wrapper.go
+package errors
+````
+
+Use `alllowercase` no `camelCase` or `snake_case`
+
+- should try to use a single word in first place []
+- `camelCase` cause trouble for some filesystems, i.e. windows users (even worse when they mount it into a linux vm)
+- `snake_case` normally have special meaning in go, i.e. `foo_test.go` (it's test file), `fs_windows.go` (only build for windows platform)
+- this `hardtoreadname` also distinguish it from other identifiers like `varName` `funcName`
+
+````text
+// good
+termutil
+
+// bad
+termUtil
+term_util
+````
+
+Rename your package if most users have to rename it when import
+
+- when user rename the import and copy paste the code to another file, editors can't fill in the right import
+- people can have many different renames even inside a single project `httpUtil`, `httpUtility`, it's better just give people a name that don't conflict and can use it everywhere
+
+````go
+import (
+	"net/http"
+	// good
+	"github.com/dyweb/gommon/util/httputil"
+	// bad
+	httputil "github.com/dyweb/gommon/util/http"
+	// even worse
+	httputil "github.com/dyweb/gommon/util/go-http.v2"
+)
+````
+
+Use `util.go` instead of `util` package
+
+- a lot of times, those `util` are only used once in current package
+- you will have a hard time rename all the `util` packages
+- if there are too many things that can't fit into `util.go`, better make it a dedicated package with another name
+
+````text
+// good
+pkg
+   agent
+     util.go
+
+// bad, a single util.go in the util package
+pkg
+   agent
+     util
+       util.go
+````
+
 ## File
 
-- put definitions on the top
-  - constant, package level vars (sentiel errors)
-  - exported interface
-  - exported struct
-- group implementations together
-  - if a interface have multiple implementations, put them close to each other, but **do NOT intersect the methods from
+Put definitions on the top
+
+- constant, package level vars (sentiel errors)
+- exported interface
+- factory functions
+- exported struct
+
+````go
+// bad: sort the following content randomly while still keeps it compile
+
+// good
+const DefaltSuccessRatio = 0.8
+
+var ErrOutOfResource = errors.New("out of resource")
+
+type Executor interface {
+	Run(ctx contex.Context, task Task) error
+}
+
+func NewShellExecutor(cmd string) (Executor, error) {
+	return &ShellExecutor{cmd: cmd}, nil
+} 
+
+type Task struct {
+	spec Spec
+	retry int
+}
+
+type ShellExecutor struct {
+	cmd string
+}
+````
+
+Group implementations together
+ 
+- if a interface have multiple implementations, put them close to each other, but **do NOT intersect the methods from
   different structs**, this only makes copy and paste easier
-- keep file small
-  - if a file have many struct and many methods, you should group them by functionality and split into smaller files
-  - if a struct has too many/lengthy methods in one file, you should consider decouple the struct
+
+````go
+// good
+
+func (s *ShellExecutor) Name() string {
+	return "shell"
+}
+
+func (s *ShellExecutor) Run(ctx context.Context, task Task) error {
+	cmd := exec.Command(s.cmd)
+	return cmd.Run()
+}
+
+func (d *DockerExecutor) Name() string {
+	return "docker"
+}
+
+func (d *DockerExecutor) Run(ctx context.Context, task Task) error  {
+    // create docker client, exec inside a container etc.
+}
+
+// bad
+func (s *ShellExecutor) Name() string {
+	return "shell"
+}
+
+func (d *DockerExecutor) Name() string {
+	return "docker"
+}
+
+func (s *ShellExecutor) Run(ctx context.Context, task Task) error {
+	cmd := exec.Command(s.cmd)
+	return cmd.Run()
+}
+
+func (d *DockerExecutor) Run(ctx context.Context, task Task) error  {
+    // create docker client, exec inside a container etc.
+}
+````
+ 
+Keep file small
+  
+- if a file have many struct and many methods, you should group them by functionality and split into smaller files
+- if a struct has too many/lengthy methods in one file, you should consider decouple the struct
 
 ## Struct
 
@@ -61,7 +210,9 @@ Based on [Go Blog: Package names][Go: Package names]
 - use [subtest][Go: Subtest and Sub-benchmarks]
   - this allows setup and teardown using vanilla go code without any framework
 - use `TestMain` for package level setup and tear down
-- [ ] TODO: add godlen file, add refer to hashicorp test video
+- [ ] TODO: add golden file, add refer to hashicorp test video
+- when assert error thant will cause panic for following code use `require` instead of `assert`
+- define anonymous struct for table driven test 
 
 ## Ref
 
