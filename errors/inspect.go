@@ -1,6 +1,8 @@
 package errors
 
-import "reflect"
+import (
+	"reflect"
+)
 
 // inspect.go defines functions for inspecting wrapped error or error list
 
@@ -11,33 +13,20 @@ import "reflect"
 //
 // It unwraps both wrapped error and multi error
 func Is(err, target error) bool {
-	for {
-		// TODO: put this before nil check allow Is(nil, nil) returns true, not sure if this is desired behaviour
+	// TODO: Is(nil, nil)? should we return true for that ... user should just use if err == nil ...
+	if err == nil || target == nil {
+		return false
+	}
+
+	var found bool
+	Walk(err, func(err error) (stop bool) {
 		if err == target {
+			found = true
 			return true
 		}
-		if err == nil {
-			return false
-		}
-		// support both Causer from pkg/errors and Wrapper from go 2 proposal
-		switch err.(type) {
-		case Wrapper:
-			err = err.(Wrapper).Unwrap()
-		case causer:
-			err = err.(causer).Cause()
-		case ErrorList:
-			// support multi error
-			errs := err.(ErrorList).Errors()
-			for i := 0; i < len(errs); i++ {
-				if Is(errs[i], target) {
-					return true
-				}
-			}
-			return false // NOTE: without the return we will be looping forever because err is not updated
-		default:
-			return false
-		}
-	}
+		return false
+	})
+	return found
 }
 
 // IsType walks the error chain and match by type using reflect.
@@ -72,35 +61,19 @@ func GetType(err, target error) (matched error, ok bool) {
 }
 
 // GetTypeOf requires user to call reflect.TypeOf(exampleErr).String() as the type string
-func GetTypeOf(err error, tpe string) (error, bool) {
+func GetTypeOf(err error, tpe string) (matched error, ok bool) {
 	if err == nil {
 		return nil, false
 	}
-	for {
-		if err == nil {
-			return nil, false
-		}
+
+	Walk(err, func(err error) (stop bool) {
 		if reflect.TypeOf(err).String() == tpe {
-			return err, true
+			matched = err
+			return true
 		}
-		switch err.(type) {
-		case Wrapper:
-			err = err.(Wrapper).Unwrap()
-		case causer:
-			err = err.(causer).Cause()
-		case ErrorList:
-			errs := err.(ErrorList).Errors()
-			for i := 0; i < len(errs); i++ {
-				m, ok := GetTypeOf(errs[i], tpe)
-				if ok {
-					return m, true
-				}
-			}
-			return nil, false
-		default:
-			return nil, false
-		}
-	}
+		return false
+	})
+	return matched, matched != nil
 }
 
 // AsValue is in go 2 proposal as workaround if go 2 does not have polymorphism,
@@ -116,11 +89,7 @@ type WalkFunc func(err error) (stop bool)
 
 // Walk traverse error chain and error list, it stops when there is no
 // underlying error or the WalkFunc decides to stop
-// TODO: might let Is and GetType use Walk, this reduce copy and paste ...
 func Walk(err error, cb WalkFunc) {
-	if err == nil {
-		return
-	}
 	for {
 		if err == nil {
 			return
