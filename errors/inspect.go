@@ -43,7 +43,7 @@ func IsType(err, target error) bool {
 }
 
 // IsTypeOf requires user to call reflect.TypeOf(exampleErr).String() as the type string
-func IsTypeOf(err error, tpe string) bool {
+func IsTypeOf(err error, tpe reflect.Type) bool {
 	_, ok := GetTypeOf(err, tpe)
 	return ok
 }
@@ -57,17 +57,25 @@ func GetType(err, target error) (matched error, ok bool) {
 	if err == nil || target == nil {
 		return nil, false
 	}
-	return GetTypeOf(err, reflect.TypeOf(target).String())
+	return GetTypeOf(err, reflect.TypeOf(target))
 }
 
-// GetTypeOf requires user to call reflect.TypeOf(exampleErr).String() as the type string
-func GetTypeOf(err error, tpe string) (matched error, ok bool) {
+// GetTypeOf requires user to call reflect.TypeOf(exampleErr) as target type.
+// NOTE: for the type matching, we compare equality of reflect.Type directly,
+// Originally we were comparing string, however result from `String()` is not
+// the full path, so x/foo/bar.Encoder can match y/foo/bar.Encoder because we
+// got bar.Encoder for both of them.
+// You can compare interface{} if their underlying type is same and comparable,
+// it is documented in https://golang.org/pkg/reflect/#Type
+//
+// Related https://github.com/dyweb/gommon/issues/104
+func GetTypeOf(err error, tpe reflect.Type) (matched error, ok bool) {
 	if err == nil {
 		return nil, false
 	}
 
 	Walk(err, func(err error) (stop bool) {
-		if reflect.TypeOf(err).String() == tpe {
+		if reflect.TypeOf(err) == tpe {
 			matched = err
 			return true
 		}

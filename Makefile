@@ -78,7 +78,8 @@ generate:
 	gommon generate -v
 
 # --- test ---
-.PHONY: test test-cover test-cover-html test-race test-log
+.PHONY: test test-cover test-cover-html test-race
+.PHONY: test-log test-errors
 
 test:
 	go test -v -cover $(PKGS)
@@ -95,6 +96,8 @@ test-race:
 
 test-log:
 	go test -v -cover ./log/...
+test-errors:
+	go test -v -cover ./errors/...
 # --- test ---
 
 # TODO: refer tools used in https://github.com/360EntSecGroup-Skylar/goreporter
