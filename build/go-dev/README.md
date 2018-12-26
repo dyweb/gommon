@@ -13,6 +13,12 @@ you need a full go environment to run your code (looking at ginkgo)
 
 TODO: example using multi stage build using dep and go mods
 
+Use it as a playground, run the container in interactive mode and remove it after you are done
+
+````bash
+docker run --rm -it --entrypoint /bin/bash dyweb/go-dev:1.11.4 
+````
+
 ## Build
 
 ````bash
