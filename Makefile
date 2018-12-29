@@ -36,8 +36,8 @@ help:
 	@echo "$$GOMMON_MAKEFILE_HELP_MSG"
 
 # -- build vars ---
-PKGS =./errors/... ./generator/... ./log/... ./noodle/... ./requests/... ./structure/... ./util/...
-PKGST =./cmd ./errors ./generator ./log ./noodle ./requests ./structure ./util
+PKGS =./errors/... ./generator/... ./log/... ./noodle/... ./structure/... ./util/...
+PKGST =./cmd ./errors ./generator ./log ./noodle ./structure ./util
 VERSION = 0.0.8
 BUILD_COMMIT := $(shell git rev-parse HEAD)
 BUILD_TIME := $(shell date +%Y-%m-%dT%H:%M:%S%z)
