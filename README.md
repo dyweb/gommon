@@ -1,5 +1,13 @@
 # Gommon - Go common libraries
 
+<h1 align="center">
+	<br>
+	<img width="100%" src="doc/media/gommon.png" alt="xephon-b">
+	<br>
+	<br>
+	<br>
+</h1>
+
 [![GoDoc](https://godoc.org/github.com/dyweb/gommon?status.svg)](https://godoc.org/github.com/dyweb/gommon)
 [![Build Status](https://travis-ci.org/dyweb/gommon.svg?branch=master)](https://travis-ci.org/dyweb/gommon)
 [![codecov](https://codecov.io/gh/dyweb/gommon/branch/master/graph/badge.svg)](https://codecov.io/gh/dyweb/gommon)

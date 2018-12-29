@@ -8,6 +8,11 @@ under dyweb](https://github.com/dyweb?utf8=%E2%9C%93&q=&type=&language=go)
 - package
   - [ ] `types` package, to export API and reduce import cycle, a package the defines struct is really needed
 
+## Reference
+
+- https://github.com/golang/go/wiki/CodeReviewComments
+- https://golang.org/doc/effective_go.html
+
 ## Package
 
 Based on [Go Blog: Package names][Go: Package names]
@@ -206,8 +211,31 @@ Keep file small
 
 ## Struct
 
-- use struct literal initialization
-  - you type less and rename variable is easier when there is no editor's help
+Use struct literal initialization
+  
+- you type less and rename variable is easier when there is no editor's help
+
+````go
+// good
+task := Task{
+	Id: RandomID(),
+	Parent: Ppid,
+	Name: "clean up"
+}
+executeTask(task)
+
+// bad
+task := Task{}
+task.Id = RandomID()
+task.Parent = Ppid
+task.Name = "clean up"
+
+// even worse
+task := &Task{Id: RandomID()} // don't use pointer when initialize struct
+task.Name = "clean up" // for fields that can be assigned directly, put them in struct literal
+executeTask(*task) // don't create a pointer and de reference it
+````
+
 - do NOT use embedding for struct that will be serialized (in JSON etc.)
 - prefer function over struct methods
   - TODO: explain this ...
@@ -218,7 +246,50 @@ Keep file small
   - pointer means ownership
   - pointer does not means no copy, sometimes it causes allocation on heap which can be avoided
   - [ ] TODO: refer to Bill's blog and course
-   
+
+## Variable
+
+Use short names for common operations
+
+````go
+// good
+b, err := json.Marshal(Task)
+w.Write(b)
+
+// bad
+encodedTask, err := json.Marhsal(Task)
+responseWriter.Write(encodedTask)
+````
+
+## Error handling
+
+Return early to avoid nesting 
+
+````go
+// good
+if execErr != nil {
+	return execErr
+}
+if cErr := container.Err(); cErr != nil {
+	return cErr
+}
+postExecHook(task)
+
+
+// bad
+if execErr != nil {
+	return execErr
+} else {
+	if cErr := container.Err(); cErr != nil {
+		return cErr
+    } else {
+    	postExecHook(task)
+    }
+}
+````
+
+- [ ] if there are many checks at the start of a function, might put validation in a new function
+
 ## Test
 
 - use helper function that accepts `testing.T` and don't return error
