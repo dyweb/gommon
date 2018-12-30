@@ -1,3 +1,5 @@
+// +build ignore
+
 // Package config supports go text/template, environment and self defined variables
 package config
 
