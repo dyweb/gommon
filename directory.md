@@ -3,16 +3,15 @@
 ## Project Layout
 
 - [cmd/gommon](cmd/gommon) the command line application
-- [doc](doc) documentation
-- [errors](errors) error wrapping and multi error
-- [generator](generator) generating interface methods, render go template, protobuf etc.
+- [doc](doc) style guide and developer log
+- [errors](errors) error wrapping, multi error and error inspection
+- [generator](generator) generating interface methods, render go template, execute shell command.
 - [legacy](legacy) legacy code base
 - [noodle](noodle) embed static assets for go binary with .ignore file support
 - [playground](playground) test library and replay issues
-- [requests](requests) ~~http util~~
 - [scripts](scripts) test scripts
 - [structure](structure) data structure
-- [util](util) small packages
+- [util](util) contains many small packages like [httputl](util/httputil)
 
 ## Package Layout
 

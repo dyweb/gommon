@@ -1,13 +1,15 @@
 # Errors
 
-A error package supports wrapping and multi error
+A error package that allows you to wrap/unwrap, multi error and inspect error
 
 ## Issues
 
-- init https://github.com/dyweb/gommon/issues/54
+- [#54](https://github.com/dyweb/gommon/issues/54) init 
+- 
 
 ## Implementation
 
+- [doc/design](doc/design) contains some survey and design choices we made
 - `Wrap` checks if this is already a `WrappedErr`, if not, it attach stack
 - `MultiErr` keep a slice of errors, the thread safe version use mutex and returns copy of slice when `Errors` is called
 
