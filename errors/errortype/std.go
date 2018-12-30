@@ -11,4 +11,3 @@ func IsRuntimeError(err error) bool {
 	_, ok := err.(runtime.Error)
 	return ok
 }
-

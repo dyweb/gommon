@@ -2,9 +2,13 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -13,6 +17,7 @@ import (
 	dlog "github.com/dyweb/gommon/log"
 	"github.com/dyweb/gommon/log/handlers/cli"
 	"github.com/dyweb/gommon/noodle"
+	"github.com/dyweb/gommon/util/fsutil"
 	"github.com/dyweb/gommon/util/logutil"
 )
 
@@ -67,6 +72,7 @@ func main() {
 	rootCmd.AddCommand(
 		versionCmd,
 		genCmd(),
+		addBuildIgnoreCmd(),
 	)
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -75,7 +81,7 @@ func main() {
 }
 
 func genCmd() *cobra.Command {
-	gen := &cobra.Command{
+	gen := cobra.Command{
 		Use:     "generate",
 		Aliases: []string{"gen"},
 		Short:   "generate code based on gommon.yml",
@@ -132,7 +138,60 @@ func genCmd() *cobra.Command {
 	noodleCmd.Flags().StringVar(&pkg, "pkg", "gen", "go package of generated file")
 	noodleCmd.Flags().StringVar(&output, "output", "noodle.go", "path for generated file")
 	gen.AddCommand(noodleCmd)
-	return gen
+	return &gen
+}
+
+func addBuildIgnoreCmd() *cobra.Command {
+	cmd := cobra.Command{
+		Use:   "add-build-ignore",
+		Short: "Add // +build ignore to go files",
+		Run: func(cmd *cobra.Command, args []string) {
+			pwd, err := os.Getwd()
+			if err != nil {
+				log.Fatalf("error get current directory: %s", err)
+				return
+			}
+			buildIgnore := "// +build ignore\n\n"
+			ignores := fsutil.NewIgnores([]fsutil.IgnorePattern{
+				fsutil.ExactPattern(".git"),
+				fsutil.ExactPattern("testdata"),
+				fsutil.ExactPattern("vendor"),
+				fsutil.ExactPattern(".idea"),
+				fsutil.ExactPattern(".vscode"),
+			}, nil)
+			for _, p := range args {
+				err = fsutil.Walk(filepath.Join(pwd, p), ignores, func(path string, info os.FileInfo) {
+					if info.IsDir() || !strings.HasSuffix(info.Name(), ".go") {
+						return
+					}
+					f := filepath.Join(path, info.Name())
+					b, err := ioutil.ReadFile(f)
+					if err != nil {
+						log.Fatalf("error read file %s", err)
+						return
+					}
+					// NOTE: we only
+					prefix := []byte(buildIgnore)
+					if bytes.HasPrefix(b, prefix) {
+						log.Warnf("%s already have build ignore prefix", f)
+						return
+					}
+					// prepend prefix
+					b = append(prefix, b...)
+					if err := fsutil.WriteFile(f, b); err != nil {
+						log.Fatalf("error write file with build prefix: %s", err)
+						return
+					}
+					log.Infof("updated %s", f)
+				})
+				if err != nil {
+					log.Fatalf("error walk %s", err)
+					return
+				}
+			}
+		},
+	}
+	return &cmd
 }
 
 func init() {

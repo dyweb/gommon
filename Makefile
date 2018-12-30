@@ -46,7 +46,7 @@ FLAGS = -X main.version=$(VERSION) -X main.commit=$(BUILD_COMMIT) -X main.buildT
 # -- build vars ---
 
 .PHONY: install
-install:
+install: fmt
 	go install -ldflags "$(FLAGS)" ./cmd/gommon
 
 .PHONY: fmt
