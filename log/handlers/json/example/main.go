@@ -1,18 +1,3 @@
-# JSON log handler
-
-For machine
-
-## TODO
-
-- [ ] allow config built in filed names
-
-## Usage
-
-See [example/main.go](example/main.go)
-
-TODO: gommon should allow sync file into markdown
-
-````go
 package main
 
 import (
@@ -47,15 +32,3 @@ func main() {
 	time.Sleep(500 * time.Millisecond)
 	log.Fatal("I am red")
 }
-````
-
-````text
-{"l":"info","t":1546234314,"m":"hi"}
-{"l":"info","t":1546234314,"m":"open file foo.yml"}
-{"l":"info","t":1546234314,"m":"open","file":"foo.yml","mode":438}
-{"l":"warn","t":1546234314,"m":"I am yellow"}
-{"l":"panic","t":1546234314,"m":"I just want to panic","s":"main.go:28"}
-{"l":"info","t":1546234314,"m":"recoveredI just want to panic"}
-{"l":"debug","t":1546234314,"m":"I will sleep for a while"}
-{"l":"fatal","t":1546234314,"m":"I am red","s":"main.go:33"}
-````

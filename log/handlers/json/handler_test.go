@@ -104,13 +104,13 @@ func TestEncodeString(t *testing.T) {
 	// TODO: add assert here
 	for _, s := range strs {
 		var b []byte
-		b = encodeString(b, s)
+		b = EncodeString(b, s)
 		t.Log(string(b))
 	}
 
 	t.Run("no escape", func(t *testing.T) {
 		var b []byte
-		b = encodeString(b, "nothing")
+		b = EncodeString(b, "nothing")
 		t.Log(string(b))
 	})
 }

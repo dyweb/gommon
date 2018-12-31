@@ -1,7 +1,5 @@
-/*
-Package json writes log in JSON format, it concatenates string directly and does not use encoding/json.
-TODO: compare with standard json encoding
-*/
+// Package json writes log in JSON format, it escapes string in json based encoding/json,
+// It does not use encoding/json directly because all the fields have known type
 package json
 
 import (
@@ -14,19 +12,19 @@ import (
 	"github.com/dyweb/gommon/log"
 )
 
-var _ log.Handler = (*Handler)(nil)
+var _ log.Handler = (*handler)(nil)
 
-type Handler struct {
+type handler struct {
 	w io.Writer
 }
 
-func New(w io.Writer) *Handler {
-	return &Handler{
+func New(w io.Writer) log.Handler {
+	return &handler{
 		w: w,
 	}
 }
 
-func (h *Handler) HandleLog(level log.Level, time time.Time, msg string, source log.Caller, context log.Fields, fields log.Fields) {
+func (h *handler) HandleLog(level log.Level, time time.Time, msg string, source log.Caller, context log.Fields, fields log.Fields) {
 	b := make([]byte, 0, 50+len(msg)+len(source.File)+30*len(context)+30*len(fields))
 	// level
 	b = append(b, `{"l":"`...)
@@ -36,7 +34,7 @@ func (h *Handler) HandleLog(level log.Level, time time.Time, msg string, source 
 	b = strconv.AppendInt(b, time.Unix(), 10)
 	// message
 	b = append(b, `,"m":`...)
-	b = encodeString(b, msg)
+	b = EncodeString(b, msg)
 	// source
 	if source.Line != 0 {
 		b = append(b, `,"s":"`...)
@@ -61,7 +59,7 @@ func (h *Handler) HandleLog(level log.Level, time time.Time, msg string, source 
 	h.w.Write(b)
 }
 
-func (h *Handler) Flush() {
+func (h *handler) Flush() {
 	if s, ok := h.w.(log.Syncer); ok {
 		s.Sync()
 	}
@@ -77,7 +75,7 @@ func formatFields(b []byte, fields log.Fields) []byte {
 		case log.IntType:
 			b = strconv.AppendInt(b, f.Int, 10)
 		case log.StringType:
-			b = encodeString(b, f.Str)
+			b = EncodeString(b, f.Str)
 		}
 		b = append(b, ',')
 	}
@@ -85,9 +83,9 @@ func formatFields(b []byte, fields log.Fields) []byte {
 	return b
 }
 
-// encodeString escape character like " \n, it does not handle jsonp or html like standard library does
-// it is based on encoding/json/encode.go func (e *encodeState) string(s string, escapeHTML bool) w/ some comment
-func encodeString(buf []byte, s string) []byte {
+// EncodeString escapes character like " \n, it does not handle jsonp or html like standard library does.
+// It is based on encoding/json/encode.go func (e *encodeState) string(s string, escapeHTML bool)
+func EncodeString(buf []byte, s string) []byte {
 	buf = append(buf, '"')
 	start := 0
 	for i := 0; i < len(s); {
