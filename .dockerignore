@@ -1,0 +1,6 @@
+# ignore vendor folder because we install it using dep
+build
+legacy
+doc
+playground
+vendor
