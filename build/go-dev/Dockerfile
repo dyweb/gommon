@@ -47,6 +47,7 @@ RUN \
        | tar -vxz -C /usr/local/bin --strip=1 \
     && rm /usr/local/bin/README.md /usr/local/bin/LICENSE
 
+# TODO: install dep may have problem when go mod is enabled ...
 # dep releases are way behind master, so we install from source
 RUN go get -u -v github.com/golang/dep/cmd/dep \
     && go get -u -v golang.org/x/tools/cmd/goimports

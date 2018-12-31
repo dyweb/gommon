@@ -130,10 +130,13 @@ dep-update:
 # --- dependency management ---
 
 # --- docker ---
-.PHONY: docker-build docker-test
+.PHONY: docker-build docker-push docker-test
 
 docker-build:
 	docker build -t $(DOCKER_REPO):$(VERSION) .
+
+docker-push:
+	docker push $(DOCKER_REPO):$(VERSION)
 
 # TODO: deprecated docker-compose based test
 docker-test:

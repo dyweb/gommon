@@ -1,12 +1,6 @@
 package log
 
-// NewTestLogger does not have identity and handler, it is mainly used for benchmark test
-func NewTestLogger(level Level) *Logger {
-	l := &Logger{
-		level: level,
-	}
-	return l
-}
+// logger_factory.go creates logger without register them to registry
 
 func NewPackageLogger() *Logger {
 	return NewPackageLoggerWithSkip(1)
@@ -48,6 +42,14 @@ func NewMethodLogger(structLogger *Logger) *Logger {
 		id: &id,
 	}
 	return newLogger(structLogger, l)
+}
+
+// NewTestLogger does not have identity and handler, it is mainly used for benchmark test
+func NewTestLogger(level Level) *Logger {
+	l := &Logger{
+		level: level,
+	}
+	return l
 }
 
 func newLogger(parent *Logger, child *Logger) *Logger {

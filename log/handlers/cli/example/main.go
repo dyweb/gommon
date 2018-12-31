@@ -1,14 +1,3 @@
-# Cli log handler
-
-For short running cli and human read
-
-## Usage
-
-See [example/main.go](example/main.go)
-
-TODO: gommon should allow sync file into markdown
-
-````go
 package main
 
 import (
@@ -50,22 +39,3 @@ func main() {
 	time.Sleep(500 * time.Millisecond)
 	log.Fatal("I am red")
 }
-
-````
-
-Result in
-
-````text
-INFO 0000 hi
-INFO 0000 open file foo.yml
-INFO 0000 open file=foo.yml mode=438
-WARN 0000 I am yellow
-PANI 0000 Panic reason
-INFO 0000 recoveredPanic reason
-DEBU 0000 I will sleep for a while
-FATA 0001 I am red
-````
-
-It has color (only tested on Linux (Ubuntu)) and can be disabled when created using no color
-
-![gommon_log_cli_handler](gommon_log_cli_handler.png)
