@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.0.9
+
+[release](https://github.com/dyweb/gommon/releases/tag/0.0.9) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aissue+milestone%3A0.0.9+is%3Aclosed)
+
+New feature
+
+- [#66](https://github.com/dyweb/gommon/issues/66) error inspection without checking string, based on [go 2 proposal](https://go.googlesource.com/proposal/+/master/design/go2draft-error-inspection.md)
+- [#105](https://github.com/dyweb/gommon/issues/105) `gommon add-build-ignore` used for disable all the legacy packages
+
+Partial
+
+- [#74](https://github.com/dyweb/gommon/issues/74) created `go.mod` so gommon be used by the `replace` directive in other
+go mod based projects, gommon itself is still using dep
+- [#103](https://github.com/dyweb/gommon/issues/103) style guide, only covered general and is not well formatted
+
+Removed package
+
+- [#68](https://github.com/dyweb/gommon/issues/68) deprecate request package, use httpclient in [go.ice#37](https://github.com/dyweb/go.ice/issues/37)
+
 ## v0.0.8
 
 [release](https://github.com/dyweb/gommon/releases/tag/0.0.8) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aclosed+milestone%3A0.0.8)

@@ -12,8 +12,7 @@
 [![Build Status](https://travis-ci.org/dyweb/gommon.svg?branch=master)](https://travis-ci.org/dyweb/gommon)
 [![codecov](https://codecov.io/gh/dyweb/gommon/branch/master/graph/badge.svg)](https://codecov.io/gh/dyweb/gommon)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dyweb/gommon)](https://goreportcard.com/report/github.com/dyweb/gommon)
-[![Sourcegraph](https://sourcegraph.com/github.com/dyweb/gommon/-/badge.svg)](https://sourcegraph.com/github.com/dyweb/gommon?badge)
-[![](https://tokei.rs/b1/github/dyweb/gommon)](https://github.com/dyweb/gommon)
+[![loc](https://tokei.rs/b1/github/dyweb/gommon)](https://github.com/dyweb/gommon)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdyweb%2Fgommon.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdyweb%2Fgommon?ref=badge_shield)
 
 Gommon is a collection of common util libraries written in Go.
@@ -27,15 +26,12 @@ It has the following components:
 - [structure](structure) data structure like Set etc. to go
 - [util](util) small utils over standard libraries utils
 
-Deprecating
-
-- [requests](requests) A pythonic wrapper for `net/http`, HTTP for Gopher
-
 Legacy
 
 - [config v1](config) A YAML config reader with template support
 - [log v1](legacy/log) A logrus like structured logger
-- [Runner](legacy/runner) A os/exec wrapper
+- [runner](legacy/runner) A os/exec wrapper
+- [requests](requests) A pythonic wrapper for `net/http`, HTTP for Gopher
 
 ## Dependencies
 
@@ -48,15 +44,14 @@ Currently we only have one non standard library dependencies (cmd and examples a
 
 Removed
 
-- [pkg/errors](https://github.com/pkg/errors) for including context in error
-  - removed in [#59](https://github.com/dyweb/gommon/pull/59)
-  - replaced by `gommon/errors`
+- [pkg/errors](https://github.com/pkg/errors) for including context in error, removed in [#59](https://github.com/dyweb/gommon/pull/59) 
+replaced by `gommon/errors`
 
 ## Development
 
 - install go https://golang.org/
 - install dep https://github.com/golang/dep
-- `dep ensure`
+- `make dep-install`
 - `make test`
 
 ## License
