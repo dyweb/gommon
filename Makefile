@@ -36,17 +36,18 @@ help:
 	@echo "$$GOMMON_MAKEFILE_HELP_MSG"
 
 # -- build vars ---
-PKGS =./errors/... ./generator/... ./log/... ./noodle/... ./requests/... ./structure/... ./util/...
-PKGST =./cmd ./errors ./generator ./log ./noodle ./requests ./structure ./util
+PKGS =./errors/... ./generator/... ./log/... ./noodle/... ./structure/... ./util/...
+PKGST =./cmd ./errors ./generator ./log ./noodle ./structure ./util
 VERSION = 0.0.8
 BUILD_COMMIT := $(shell git rev-parse HEAD)
 BUILD_TIME := $(shell date +%Y-%m-%dT%H:%M:%S%z)
 CURRENT_USER = $(USER)
 FLAGS = -X main.version=$(VERSION) -X main.commit=$(BUILD_COMMIT) -X main.buildTime=$(BUILD_TIME) -X main.buildUser=$(CURRENT_USER)
+DOCKER_REPO = dyweb/gommon
 # -- build vars ---
 
 .PHONY: install
-install:
+install: fmt test
 	go install -ldflags "$(FLAGS)" ./cmd/gommon
 
 .PHONY: fmt
@@ -78,9 +79,13 @@ generate:
 	gommon generate -v
 
 # --- test ---
-.PHONY: test test-cover test-cover-html test-race test-log
+.PHONY: test test-cover test-cover-html test-race
+.PHONY: test-log test-errors
 
 test:
+	go test -cover $(PKGS)
+
+test-verbose:
 	go test -v -cover $(PKGS)
 
 test-cover:
@@ -95,6 +100,8 @@ test-race:
 
 test-log:
 	go test -v -cover ./log/...
+test-errors:
+	go test -v -cover ./errors/...
 # --- test ---
 
 # TODO: refer tools used in https://github.com/360EntSecGroup-Skylar/goreporter
@@ -123,12 +130,20 @@ dep-update:
 # --- dependency management ---
 
 # --- docker ---
-.PHONY: docker-test
+.PHONY: docker-build docker-push docker-test
+
+docker-build:
+	docker build -t $(DOCKER_REPO):$(VERSION) .
+
+docker-push:
+	docker push $(DOCKER_REPO):$(VERSION)
+
+# TODO: deprecated docker-compose based test
 docker-test:
 	docker-compose -f scripts/docker-compose.yml run --rm golang1.10
 	docker-compose -f scripts/docker-compose.yml run --rm golanglatest
 
-.PHONY: docker-remove-all-containers
-docker-remove-all-containers:
-	docker rm $(shell docker ps -a -q)
+#.PHONY: docker-remove-all-containers
+#docker-remove-all-containers:
+#	docker rm $(shell docker ps -a -q)
 # --- docker ---

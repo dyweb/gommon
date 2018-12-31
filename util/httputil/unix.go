@@ -7,6 +7,15 @@ import (
 	"time"
 )
 
+// NewUnPooledUnixTransport uses NewPooledUnixTransport with keep alive and idle connection disabled
+func NewUnPooledUnixTransport(socketFile string) *http.Transport {
+	tr := NewPooledUnixTransport(socketFile)
+	tr.DisableKeepAlives = true
+	tr.MaxIdleConnsPerHost = -1
+	return tr
+}
+
+// NewPooledUnixTransport creates transport for unix domain socket i.e. /var/run/docker.sock
 func NewPooledUnixTransport(sockFile string) *http.Transport {
 	return &http.Transport{
 		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {

@@ -1,21 +1,30 @@
-package cli
+package cli_test
 
 import (
-	"fmt"
+	"bytes"
 	"testing"
+	"time"
 
-	asst "github.com/stretchr/testify/assert"
+	"github.com/dyweb/gommon/log"
+	"github.com/dyweb/gommon/log/handlers/cli"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestFmt_FormatNum(t *testing.T) {
-	fmt.Printf("%04d\n", 2)
+// TODO: test fields and caller
+
+func TestNew(t *testing.T) {
+	buf := bytes.Buffer{}
+	h := cli.New(&buf, true)
+	h.HandleLog(log.InfoLevel, time.Now(), "hi", log.EmptyCaller(), nil, nil)
+	assert.Equal(t, "\x1b[34mINFO\x1b[0m 0000 hi\n", buf.String())
 }
 
-func Test_FormatNum(t *testing.T) {
-	assert := asst.New(t)
-
-	assert.Equal("0010", string(formatNum(10, 4)))
-	assert.Equal("0100", string(formatNum(100, 4)))
-	assert.Equal("1000", string(formatNum(1000, 4)))
-	assert.Equal("0000", string(formatNum(10000, 4)))
+func TestNewNoColor(t *testing.T) {
+	buf := bytes.Buffer{}
+	h := cli.NewNoColor(&buf)
+	tm, err := time.Parse(cli.DefaultTimeStampFormat, "2018-12-30T21:10:49-08:00")
+	require.Nil(t, err)
+	h.HandleLog(log.InfoLevel, tm, "hi", log.EmptyCaller(), nil, nil)
+	assert.Equal(t, "INFO 2018-12-30T21:10:49-08:00 hi\n", buf.String())
 }

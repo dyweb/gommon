@@ -4,27 +4,38 @@ For short running cli and human read
 
 ## Usage
 
+See [example/main.go](example/main.go)
+
+TODO: gommon should allow sync file into markdown
+
 ````go
 package main
 
 import (
 	"os"
 	"time"
-	
+
 	dlog "github.com/dyweb/gommon/log"
 	"github.com/dyweb/gommon/log/handlers/cli"
 )
 
-var log = dlog.NewApplicationLogger()
+var log, logReg = dlog.NewApplicationLoggerAndRegistry("example")
 
 func main() {
-	dlog.SetHandlerRecursive(log, cli.New(os.Stderr, true))
+	dlog.SetHandler(logReg, cli.New(os.Stderr, true))
+
+	if len(os.Args) > 1 {
+		if os.Args[1] == "nocolor" || os.Args[1] == "no" {
+			dlog.SetHandler(logReg, cli.NewNoColor(os.Stderr))
+		}
+	}
+
 	log.Info("hi")
 	log.Infof("open file %s", "foo.yml")
-	log.InfoF("open", dlog.Fields{
+	log.InfoF("open",
 		dlog.Str("file", "foo.yml"),
 		dlog.Int("mode", 0666),
-	})
+	)
 	log.Warn("I am yellow")
 	func() {
 		defer func() {
@@ -32,13 +43,14 @@ func main() {
 				log.Info("recovered", r)
 			}
 		}()
-		log.Panic("Panic reason")
+		log.Panic("I just want to panic")
 	}()
-	dlog.SetLevelRecursive(log, dlog.DebugLevel)
+	dlog.SetLevel(logReg, dlog.DebugLevel)
 	log.Debug("I will sleep for a while")
-	time.Sleep(1 * time.Second)
+	time.Sleep(500 * time.Millisecond)
 	log.Fatal("I am red")
 }
+
 ````
 
 Result in
@@ -54,6 +66,6 @@ DEBU 0000 I will sleep for a while
 FATA 0001 I am red
 ````
 
-It has color (only tested on Linux (Ubuntu)) and can't be disabled
+It has color (only tested on Linux (Ubuntu)) and can be disabled when created using no color
 
 ![gommon_log_cli_handler](gommon_log_cli_handler.png)

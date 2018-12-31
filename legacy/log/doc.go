@@ -1,3 +1,5 @@
+// +build ignore
+
 /*
 Package log(Deprecated) can filter log by field and support multiple level
 */

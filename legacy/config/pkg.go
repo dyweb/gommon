@@ -1,4 +1,6 @@
-// Package config supports go text/template, environment and self defined variables
+// +build ignore
+
+// Package config(Deprecated) supports go text/template, environment and self defined variables
 package config
 
 import (

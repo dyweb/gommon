@@ -1,3 +1,5 @@
+// +build ignore
+
 package runner
 
 // FIXME: this is never used, and it may not be a good idea to use context, since there is context package

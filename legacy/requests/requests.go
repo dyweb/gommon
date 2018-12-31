@@ -1,3 +1,5 @@
+// +build ignore
+
 // Package requests wrap net/http like requests did for python
 // it is easy to use, but not very efficient
 package requests

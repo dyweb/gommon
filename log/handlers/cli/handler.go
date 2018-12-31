@@ -1,6 +1,12 @@
-// Package cli writes is same as builtin TextHandler except color and delta time.
-// It is used by go.ice as default handler
-// TODO: color can't be disabled and we don't detect tty like logrus
+// Package cli generates human readable text with color and display time in delta.
+// Color and delta can be disabled and output will be same as default handler
+// It does NOT escape quote so it is not machine readable
+//
+//	func main() {
+//		var log, logReg = dlog.NewApplicationLoggerAndRegistry("example")
+// 		dlog.SetHandler(logReg, cli.New(os.Stderr, true)) // with color, delta time
+//	}
+//
 package cli
 
 import (
@@ -14,45 +20,67 @@ import (
 )
 
 const (
-	defaultTimeStampFormat = time.RFC3339
+	DefaultTimeStampFormat = time.RFC3339
 )
 
-var _ log.Handler = (*Handler)(nil)
+var _ log.Handler = (*handler)(nil)
 
-type Handler struct {
+// handler is not exported since all the fields are not exported
+type handler struct {
 	w     io.Writer
 	start time.Time
 	delta bool
+	color bool
 }
 
-func New(w io.Writer, delta bool) *Handler {
-	return &Handler{
+// New returns a handler with color on level and field key
+func New(w io.Writer, delta bool) log.Handler {
+	return &handler{
 		w:     w,
 		start: time.Now(),
 		delta: delta,
+		color: true,
 	}
 }
 
-func (h *Handler) HandleLog(level log.Level, now time.Time, msg string, source log.Caller, context log.Fields, fields log.Fields) {
+// NewNoColor returns a handler without color and use full timestamp
+func NewNoColor(w io.Writer) log.Handler {
+	return &handler{
+		w:     w,
+		start: time.Now(),
+		delta: false,
+		color: false,
+	}
+}
+
+func (h *handler) HandleLog(level log.Level, now time.Time, msg string, source log.Caller, context log.Fields, fields log.Fields) {
 	b := make([]byte, 0, 50+len(msg)+len(source.File)+30*len(context)+30*len(fields))
 	// level
-	b = append(b, level.ColoredAlignedUpperString()...)
+	if h.color {
+		b = append(b, level.ColoredAlignedUpperString()...)
+	} else {
+		b = append(b, level.AlignedUpperString()...)
+	}
 	// time
 	b = append(b, ' ')
 	if h.delta {
 		b = append(b, formatNum(uint(now.Sub(h.start)/time.Second), 4)...)
 	} else {
-		b = now.AppendFormat(b, defaultTimeStampFormat)
+		b = now.AppendFormat(b, DefaultTimeStampFormat)
 	}
 	// source
 	if source.Line != 0 {
 		b = append(b, ' ')
-		b = append(b, color.CyanStart...)
+		if h.color {
+			b = append(b, color.CyanStart...)
+		}
 		last := strings.LastIndex(source.File, "/")
 		b = append(b, source.File[last+1:]...)
 		b = append(b, ':')
 		b = strconv.AppendInt(b, int64(source.Line), 10)
-		b = append(b, color.End...)
+		if h.color {
+			b = append(b, color.End...)
+		}
 	}
 	// message
 	b = append(b, ' ')
@@ -60,18 +88,18 @@ func (h *Handler) HandleLog(level log.Level, now time.Time, msg string, source l
 	// context
 	if len(context) > 0 {
 		b = append(b, ' ')
-		b = formatFields(b, context)
+		b = formatFields(b, h.color, context)
 	}
 	// field
 	if len(fields) > 0 {
 		b = append(b, ' ')
-		b = formatFields(b, fields)
+		b = formatFields(b, h.color, fields)
 	}
 	b = append(b, '\n')
 	h.w.Write(b)
 }
 
-func (h *Handler) Flush() {
+func (h *handler) Flush() {
 	if s, ok := h.w.(log.Syncer); ok {
 		s.Sync()
 	}
@@ -97,12 +125,15 @@ func formatNum(u uint, digits int) []byte {
 	return b
 }
 
-// it has an extra tailing space, which can be updated inplace to a \n
-func formatFields(b []byte, fields log.Fields) []byte {
+func formatFields(b []byte, useColor bool, fields log.Fields) []byte {
 	for _, f := range fields {
-		b = append(b, color.CyanStart...)
+		if useColor {
+			b = append(b, color.CyanStart...)
+		}
 		b = append(b, f.Key...)
-		b = append(b, color.End...)
+		if useColor {
+			b = append(b, color.End...)
+		}
 		b = append(b, '=')
 		switch f.Type {
 		case log.IntType:
