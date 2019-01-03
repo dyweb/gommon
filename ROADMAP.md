@@ -10,6 +10,7 @@ From 0.0.9
 - [ ] organized error types
 - [ ] explain internals of some implementation
 - [ ] (optional) extension for collecting errors using third party services
+- [ ] switch from dep to go mod
 
 New
 
