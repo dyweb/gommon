@@ -1,6 +1,8 @@
 package httputil
 
 import (
+	"bufio"
+	"net"
 	"net/http"
 )
 
@@ -11,6 +13,7 @@ var (
 	_ http.ResponseWriter = (*TrackedWriter)(nil)
 	_ http.Flusher        = (*TrackedWriter)(nil)
 	_ http.Pusher         = (*TrackedWriter)(nil)
+	_ http.Hijacker       = (*TrackedWriter)(nil)
 )
 
 // NOTE: CloseNotifier is deprecated in favor of context
@@ -102,4 +105,14 @@ func (tracker *TrackedWriter) Push(target string, opts *http.PushOptions) error 
 		return p.Push(target, opts)
 	}
 	return http.ErrNotSupported
+}
+
+// Hijack implements http.Hijacker, which is used by websocket etc.
+// It returns http.ErrNotSupported with nil pointer if the underlying writer does not support it
+// NOTE: HTTP/1.x supports it but HTTP/2 does not
+func (tracker *TrackedWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	if h, ok := tracker.w.(http.Hijacker); ok {
+		return h.Hijack()
+	}
+	return nil, nil, http.ErrNotSupported
 }
