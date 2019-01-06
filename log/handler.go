@@ -48,7 +48,7 @@ type Syncer interface {
 	Sync() error
 }
 
-var defaultHandler = NewIOHandler(os.Stderr)
+var defaultHandler = NewTextHandler(os.Stderr)
 
 // DefaultHandler returns the singleton defaultHandler instance, which logs to stderr in text format
 func DefaultHandler() Handler {
@@ -61,22 +61,18 @@ func MultiHandler(handlers ...Handler) Handler {
 	return &multiHandler{handlers: handlers}
 }
 
-// TextHandler writes log to io.Writer, default handler is a TextHandler using os.Stderr
-type TextHandler struct {
+// textHandler writes log to io.Writer
+type textHandler struct {
 	w io.Writer
 }
 
-// NewIOHandler returns the default text handler, the name is for backward compatibility
-func NewIOHandler(w io.Writer) Handler {
-	return &TextHandler{w: w}
-}
-
 // NewTextHandler formats log in human readable format without any escape, thus it is NOT machine readable
+// Default handler is a textHandler using os.Stderr
 func NewTextHandler(w io.Writer) Handler {
-	return &TextHandler{w: w}
+	return &textHandler{w: w}
 }
 
-func (h *TextHandler) HandleLog(level Level, time time.Time, msg string, source Caller, context Fields, fields Fields) {
+func (h *textHandler) HandleLog(level Level, time time.Time, msg string, source Caller, context Fields, fields Fields) {
 	b := make([]byte, 0, 50+len(msg)+len(source.File)+30*len(context)+30*len(fields))
 	// level
 	b = append(b, level.AlignedUpperString()...)
@@ -101,6 +97,7 @@ func (h *TextHandler) HandleLog(level Level, time time.Time, msg string, source 
 	}
 	// fields
 	if len(fields) > 0 {
+		b = append(b, ' ')
 		b = formatFields(b, fields)
 	}
 	b = append(b, '\n')
@@ -108,7 +105,7 @@ func (h *TextHandler) HandleLog(level Level, time time.Time, msg string, source 
 }
 
 // Flush implements Handler interface
-func (h *TextHandler) Flush() {
+func (h *textHandler) Flush() {
 	if s, ok := h.w.(Syncer); ok {
 		s.Sync()
 	}

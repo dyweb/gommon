@@ -1,6 +1,8 @@
 package httputil
 
 import (
+	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"time"
@@ -62,4 +64,11 @@ func NewUnPooledClient() *http.Client {
 // If you do need multiple clients to reuse same connections, you should use NewClient and pass a transport
 func NewPooledClient() *http.Client {
 	return NewClient(NewPooledTransport())
+}
+
+// DiscardBody drain and close the body and ignore all the errors,
+// It should be used for test
+func DiscardBody(res *http.Response) {
+	io.Copy(ioutil.Discard, res.Body)
+	res.Body.Close()
 }

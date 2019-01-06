@@ -27,6 +27,13 @@ type TrackedWriter struct {
 	writeCalled int
 }
 
+// NewTrackedWriter set the underlying writer based on argument,
+// It returns a value instead of pointer so it can be allocated on stack.
+// TODO: add benchmark to prove it ...
+func NewTrackedWriter(w http.ResponseWriter) TrackedWriter {
+	return TrackedWriter{w: w, status: 200}
+}
+
 // Status return the tracked status code, returns 0 if WriteHeader has not been called
 func (tracker *TrackedWriter) Status() int {
 	return tracker.status
