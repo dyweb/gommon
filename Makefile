@@ -35,6 +35,7 @@ export GOMMON_MAKEFILE_HELP_MSG
 help:
 	@echo "$$GOMMON_MAKEFILE_HELP_MSG"
 
+GO = GO111MODULE=on go
 # -- build vars ---
 PKGS =./errors/... ./generator/... ./log/... ./noodle/... ./structure/... ./util/...
 PKGST =./cmd ./errors ./generator ./log ./noodle ./structure ./util
@@ -48,7 +49,7 @@ DOCKER_REPO = dyweb/gommon
 
 .PHONY: install
 install: fmt test
-	go install -ldflags "$(FLAGS)" ./cmd/gommon
+	$(GO) install -ldflags "$(FLAGS)" ./cmd/gommon
 
 .PHONY: fmt
 fmt:
@@ -60,13 +61,13 @@ clean:
 	rm ./build/gommon
 	rm ./build/gommon-*
 build:
-	go build -ldflags "$(FLAGS)" -o ./build/gommon ./cmd/gommon
+	$(GO) build -ldflags "$(FLAGS)" -o ./build/gommon ./cmd/gommon
 build-linux:
-	GOOS=linux GOARCH=amd64 go build -ldflags "$(FLAGS)" -o ./build/gommon-linux ./cmd/gommon
+	GOOS=linux GOARCH=amd64 $(GO) build -ldflags "$(FLAGS)" -o ./build/gommon-linux ./cmd/gommon
 build-mac:
-	GOOS=darwin GOARCH=amd64 go build -ldflags "$(FLAGS)" -o ./build/gommon-mac ./cmd/gommon
+	GOOS=darwin GOARCH=amd64 $(GO) build -ldflags "$(FLAGS)" -o ./build/gommon-mac ./cmd/gommon
 build-win:
-	GOOS=windows GOARCH=amd64 go build -ldflags "$(FLAGS)" -o ./build/gommon-win ./cmd/gommon
+	GOOS=windows GOARCH=amd64 $(GO) build -ldflags "$(FLAGS)" -o ./build/gommon-win ./cmd/gommon
 build-all: build build-linux build-mac build-win
 build-release: clean build-all
 	zip ./build/gommon-linux.zip ./build/gommon-linux
@@ -83,31 +84,31 @@ generate:
 .PHONY: test-log test-errors
 
 test:
-	go test -cover $(PKGS)
+	$(GO) test -cover $(PKGS)
 
 test-verbose:
-	go test -v -cover $(PKGS)
+	$(GO) test -v -cover $(PKGS)
 
 test-cover:
 # https://github.com/codecov/example-go
-	go test -coverprofile=coverage.txt -covermode=atomic $(PKGS)
+	$(GO) test -coverprofile=coverage.txt -covermode=atomic $(PKGS)
 
 test-cover-html: test-cover
-	go tool cover -html=coverage.txt
+	$(GO) tool cover -html=coverage.txt
 
 test-race:
-	go test -race $(PKGS)
+	$(GO) test -race $(PKGS)
 
 test-log:
-	go test -v -cover ./log/...
+	$(GO) test -v -cover ./log/...
 test-errors:
-	go test -v -cover ./errors/...
+	$(GO) test -v -cover ./errors/...
 # --- test ---
 
 # TODO: refer tools used in https://github.com/360EntSecGroup-Skylar/goreporter
 .PHONY: vet
 vet:
-	go vet $(PKGS)
+	$(GO) vet $(PKGS)
 
 .PHONY: doc
 doc:
@@ -121,12 +122,12 @@ loc:
 	tokei .
 
 # --- dependency management ---
-.PHONY: dep-install dep-update
-dep-install:
-	dep ensure -v
-
-dep-update:
-	dep ensure -v -update
+mod-init:
+	$(GOMOD) mod init
+mod-update:
+	$(GOMOD) mod tidy
+mod-graph:
+	$(GOMOD) mod graph
 # --- dependency management ---
 
 # --- docker ---
