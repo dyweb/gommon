@@ -10,3 +10,7 @@ This doc describes the goals for errors package in v0.0.10, need to continue the
 - (optional) error collecting interface
   - could be a simple in memory service and have `errors/repoter.Save(err)` and later send to remote
   - a lot of (distributed) tracing systems are taking error collection into account as well
+  
+## Reference
+
+- [2018-12-14 Reference](2018-12-14-reference.md)
