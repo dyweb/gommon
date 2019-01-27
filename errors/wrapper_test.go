@@ -86,12 +86,7 @@ func TestWrappedError_Message(t *testing.T) {
 	assert.Equal(t, msg, errw.(errors.Messenger).Message())
 }
 
-func ExampleWrap() {
-	err := errors.Wrap(os.ErrNotExist, "oops")
-	fmt.Println(err)
-	// Output:
-	// oops: file does not exist
-}
+
 
 // stubs
 func freshErr() error {

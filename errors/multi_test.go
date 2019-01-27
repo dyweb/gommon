@@ -1,7 +1,6 @@
 package errors_test
 
 import (
-	"fmt"
 	"os"
 	"sync"
 	"testing"
@@ -127,16 +126,4 @@ func TestMultiErr_ErrorOrNil(t *testing.T) {
 			assert.True(merr.HasError())
 		})
 	}
-}
-
-func ExampleMultiErr() {
-	// TODO: demo the return value of append
-	err := errors.NewMultiErr()
-	err.Append(os.ErrPermission)
-	err.Append(os.ErrNotExist)
-	fmt.Println(err.Error())
-	fmt.Println(err.Errors())
-	// Output:
-	// 2 errors; permission denied; file does not exist
-	// [permission denied file does not exist]
 }
