@@ -12,11 +12,18 @@ import (
 )
 
 func TestMultiErr_Error(t *testing.T) {
-	assert := asst.New(t)
-
-	merr := errors.NewMultiErr()
-	// TODO: (at15) I am not sure if this is the intended behavior ...
-	assert.Equal("0 errors", merr.Error())
+	errs := map[string]func() errors.MultiErr{
+		"unsafe": errors.NewMultiErr,
+		"safe":   errors.NewMultiErrSafe,
+	}
+	for name := range errs {
+		t.Run(name, func(t *testing.T) {
+			assert := asst.New(t)
+			merr := errs[name]()
+			// TODO: (at15) I am not sure if this is the intended behavior ...
+			assert.Equal("0 errors", merr.Error())
+		})
+	}
 }
 
 func TestMultiErrSafe_Append(t *testing.T) {
@@ -79,30 +86,47 @@ func TestMultiErr_Flatten(t *testing.T) {
 }
 
 func TestMultiErr_Errors(t *testing.T) {
-	assert := asst.New(t)
-
-	merr := errors.NewMultiErr()
-	assert.Nil(merr.Errors())
-
-	fakeErrs := []error{os.ErrClosed, os.ErrExist, os.ErrPermission, os.ErrNotExist}
-	for i := 0; i < len(fakeErrs); i++ {
-		assert.True(merr.Append(fakeErrs[i]))
+	errs := map[string]func() errors.MultiErr{
+		"unsafe": errors.NewMultiErr,
+		"safe":   errors.NewMultiErrSafe,
 	}
-	errs := merr.Errors()
-	assert.Equal(len(fakeErrs), len(errs))
-	for i := 0; i < len(fakeErrs); i++ {
-		assert.Equal(fakeErrs[i], errs[i])
+	for name := range errs {
+		t.Run(name, func(t *testing.T) {
+			assert := asst.New(t)
+			merr := errs[name]()
+			assert.Nil(merr.Errors())
+
+			fakeErrs := []error{os.ErrClosed, os.ErrExist, os.ErrPermission, os.ErrNotExist}
+			for i := 0; i < len(fakeErrs); i++ {
+				assert.True(merr.Append(fakeErrs[i]))
+			}
+			errs := merr.Errors()
+			assert.Equal(len(fakeErrs), merr.Len())
+			assert.Equal(len(fakeErrs), len(errs))
+			for i := 0; i < len(fakeErrs); i++ {
+				assert.Equal(fakeErrs[i], errs[i])
+			}
+		})
 	}
 }
 
 func TestMultiErr_ErrorOrNil(t *testing.T) {
-	assert := asst.New(t)
+	errs := map[string]func() errors.MultiErr{
+		"unsafe": errors.NewMultiErr,
+		"safe":   errors.NewMultiErrSafe,
+	}
+	for name := range errs {
+		t.Run(name, func(t *testing.T) {
+			assert := asst.New(t)
+			merr := errs[name]()
+			assert.Nil(merr.ErrorOrNil())
+			assert.False(merr.HasError())
 
-	merr := errors.NewMultiErr()
-	assert.Nil(merr.ErrorOrNil())
-
-	merr.Append(os.ErrPermission)
-	assert.NotNil(merr.ErrorOrNil())
+			merr.Append(os.ErrPermission)
+			assert.NotNil(merr.ErrorOrNil())
+			assert.True(merr.HasError())
+		})
+	}
 }
 
 func ExampleMultiErr() {

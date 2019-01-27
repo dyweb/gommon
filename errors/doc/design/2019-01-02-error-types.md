@@ -11,6 +11,28 @@ This doc describes the goals for errors package in v0.0.10, need to continue the
   - could be a simple in memory service and have `errors/repoter.Save(err)` and later send to remote
   - a lot of (distributed) tracing systems are taking error collection into account as well
   
+## Error in distributed tracing
+
+- opencensus seems to be still working on it https://github.com/census-instrumentation/opencensus-proto/pull/145
+  - I think I should ignore it for now ....
+
+## Common self defined error types
+
+- we can contains a helper func to convert error type to http status code
+  - k8s is a example [reference 12-22](2018-12-22-error-types-reference.md)
+- `AlreadyExists`
+- `NotFound`
+- `Unauthorized`
+- `Forbidden`
+- `NotImplemented`
+
+## Standard library error
+
+- `os.IsExist` `os.IsNotExist` `os.IsPermission`
+- `os.PathError`
+- `net.OpError`
+- `net.Error`
+
 ## Reference
 
 - [2018-12-14 Reference](2018-12-14-reference.md)

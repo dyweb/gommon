@@ -44,8 +44,7 @@ func (h *IntHeap) Poll() int {
 	return t
 }
 
-func (h *IntHeap) up(i0 int) {
-	i := i0
+func (h *IntHeap) up(i int) {
 	for {
 		p := (i - 1) / 2
 		if h.data[p] <= h.data[i] {

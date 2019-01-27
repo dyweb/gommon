@@ -292,6 +292,7 @@ if execErr != nil {
 
 ## Test
 
+- use `packagename_test` instead of `packagename` for test files, unless you need to test specific internal implementation
 - use helper function that accepts `testing.T` and don't return error
   - your code should handle error gracefully, your test should stop when there is error/unexpected result
   - this may cause error source line harder to find since go's test fail function does allow pass skip

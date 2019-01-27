@@ -16,8 +16,9 @@ type ErrorList interface {
 	Errors() []error
 }
 
-// MultiErr is a slice of Error. It has two implementation, NewMultiErr return a non thread safe version,
-// NewMultiErrSafe return a thread safe version using mutex
+// MultiErr is a slice of Error. It has two implementation,
+// NewMultiErr return a non thread safe version,
+// NewMultiErrSafe return a thread safe version using mutex.
 type MultiErr interface {
 	error
 	fmt.Formatter
@@ -30,6 +31,8 @@ type MultiErr interface {
 	ErrorOrNil() error
 	// HasError is ErrorOrNil != nil
 	HasError() bool
+	// Len returns length of underlying errors, it's a shortcut for `len(merr.Errors)`
+	Len() int
 }
 
 // NewMultiErr returns a non thread safe implementation
@@ -74,14 +77,14 @@ func (m *multiErr) Error() string {
 }
 
 func (m *multiErr) ErrorOrNil() error {
-	if m == nil || len(m.errs) == 0 {
+	if len(m.errs) == 0 {
 		return nil
 	}
 	return m
 }
 
 func (m *multiErr) HasError() bool {
-	if m == nil || len(m.errs) == 0 {
+	if len(m.errs) == 0 {
 		return false
 	}
 	return true
@@ -95,6 +98,10 @@ func (m *multiErr) Format(s fmt.State, verb rune) {
 	case 'q':
 		fmt.Fprintf(s, "%q", formatErrors(m.errs))
 	}
+}
+
+func (m *multiErr) Len() int {
+	return len(m.errs)
 }
 
 // multiErrSafe is thread safe
@@ -119,6 +126,13 @@ func (m *multiErrSafe) Append(err error) bool {
 
 func (m *multiErrSafe) Errors() []error {
 	m.mu.Lock()
+	// nothing
+	if m.errs == nil {
+		m.mu.Unlock()
+		return nil
+	}
+
+	// make a copy if there are content
 	t := make([]error, len(m.errs))
 	copy(t, m.errs)
 	m.mu.Unlock()
@@ -133,9 +147,6 @@ func (m *multiErrSafe) Error() string {
 }
 
 func (m *multiErrSafe) ErrorOrNil() error {
-	if m == nil {
-		return nil
-	}
 	m.mu.Lock()
 	if len(m.errs) == 0 {
 		m.mu.Unlock()
@@ -147,9 +158,6 @@ func (m *multiErrSafe) ErrorOrNil() error {
 }
 
 func (m *multiErrSafe) HasError() bool {
-	if m == nil {
-		return false
-	}
 	m.mu.Lock()
 	if len(m.errs) == 0 {
 		m.mu.Unlock()
@@ -160,10 +168,14 @@ func (m *multiErrSafe) HasError() bool {
 	}
 }
 
+func (m *multiErrSafe) Len() int {
+	m.mu.Lock()
+	l := len(m.errs)
+	m.mu.Unlock()
+	return l
+}
+
 func (m *multiErrSafe) Format(s fmt.State, verb rune) {
-	if m == nil {
-		return
-	}
 	m.mu.Lock()
 	switch verb {
 	case 'v', 's':
