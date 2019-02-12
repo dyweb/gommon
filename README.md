@@ -62,7 +62,7 @@ MIT
 
 ## Contribution
 
-Currently, gommon is in a very violate state, please open issues after it becomes stable.
+Currently, gommon is in a very volatile state, please open issues after it becomes stable.
 
 ## About
 
