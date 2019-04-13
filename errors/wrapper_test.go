@@ -86,8 +86,6 @@ func TestWrappedError_Message(t *testing.T) {
 	assert.Equal(t, msg, errw.(errors.Messenger).Message())
 }
 
-
-
 // stubs
 func freshErr() error {
 	return errors.New("I am a fresh error")
