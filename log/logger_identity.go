@@ -46,8 +46,13 @@ type Identity struct {
 
 var UnknownIdentity = Identity{Package: "unk", Type: UnknownLogger}
 
-const MagicStructLoggerFunctionName = "LoggerIdentity"
-const MagicPackageLoggerFunctionName = "init"
+const (
+	MagicStructLoggerFunctionName  = "LoggerIdentity"
+	MagicPackageLoggerFunctionName = "init"
+	// a hack for new init func name after 1.12
+	// See https://github.com/dyweb/gommon/issues/108
+	MagicPackageLoggerFunctionNameGo112 = "init.ializers"
+)
 
 // TODO: document all the black magic here ...
 // https://github.com/dyweb/gommon/issues/32
@@ -62,17 +67,18 @@ func NewIdentityFromCaller(skip int) Identity {
 	// TODO: does it handle vendor correctly, and what about vgo ...
 	pkg, function = runtimeutil.SplitPackageFunc(frame.Function)
 	tpe = FunctionLogger
-	// NOTE: we distinguish a struct logger and method logger using the magic name,
-	// which is normally the case as long as you are using the factory methods to create logger
-	// otherwise you have to manually update the type of logger
-	if runtimeutil.IsMethod(function) {
+	if function == MagicPackageLoggerFunctionNameGo112 || function == MagicPackageLoggerFunctionName {
+		// https://github.com/dyweb/gommon/issues/108 there are two names, init and init.ializers (after go1.12)
+		tpe = PackageLogger
+	} else if runtimeutil.IsMethod(function) {
+		// NOTE: we distinguish a struct logger and method logger using the magic name,
+		// which is normally the case as long as you are using the factory methods to create logger
+		// otherwise you have to manually update the type of logger
 		st, function = runtimeutil.SplitStructMethod(function)
 		tpe = MethodLogger
 		if function == MagicStructLoggerFunctionName {
 			tpe = StructLogger
 		}
-	} else if function == MagicPackageLoggerFunctionName {
-		tpe = PackageLogger
 	}
 
 	return Identity{

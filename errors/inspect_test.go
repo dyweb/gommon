@@ -124,4 +124,14 @@ func TestWalk(t *testing.T) {
 		// NOTE: it is not 2 because multi error itself is also an error ...
 		assert.Equal(t, 1+2, len(errs), "WalkFunc is called same times as length of error list")
 	})
+
+	t.Run("nil", func(t *testing.T) {
+		var err error
+		walked := 0
+		errors.Walk(err, func(err error) (stop bool) {
+			walked++
+			return false
+		})
+		assert.Equal(t, 0, walked)
+	})
 }

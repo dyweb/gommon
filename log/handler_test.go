@@ -15,7 +15,7 @@ func TestMultiHandler(t *testing.T) {
 	f2, err := os.Create("testdata/f2.log")
 	require.Nil(t, err)
 
-	mh := MultiHandler(NewIOHandler(f1), NewIOHandler(f2))
+	mh := MultiHandler(NewTextHandler(f1), NewTextHandler(f2))
 	logger := NewTestLogger(InfoLevel)
 	logger.AddFields(Str("s1", "v1"), Int("i1", 1))
 	logger.SetHandler(mh)
