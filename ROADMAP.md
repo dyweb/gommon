@@ -2,7 +2,14 @@
 
 ## Up coming
 
-### 0.0.10
+### 0.0.11
+
+- [ ] simplify log package, move deprecated package to its own repo
+- [ ] requests, download and upload file, a curl like example
+
+From 0.0.10
+
+- [ ] support better logging for errors
 
 From 0.0.9
 
@@ -10,17 +17,12 @@ From 0.0.9
 - [ ] organized error types
 - [ ] explain internals of some implementation
 - [ ] (optional) extension for collecting errors using third party services
-- [ ] switch from dep to go mod
-
-New
-
-- [ ] support better logging for errors
-
-### 0.0.11
-
-- [ ] requests, download and upload file, a curl like example
 
 ## Finished
+
+### 0.0.10
+
+- [x] switch from dep to go mod
 
 ### 0.0.9
 

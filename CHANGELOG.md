@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.0.10
+
+[release](https://github.com/dyweb/gommon/releases/tag/0.0.10) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aissue+milestone%3A0.0.10+is%3Aclosed)
+
+Breaking change
+
+- [#74](https://github.com/dyweb/gommon/issues/74) Switched to go mod from dep
+
+New feature
+
+- [#76](https://github.com/dyweb/gommon/issues/76) created `errors/errortype` package for inspecting standard library error types, 
+and add three common error interfaces `ErrNotFound`, `ErrAlreadyExists`, `ErrNotImplemented`
+
+Fixed
+
+- [#108](https://github.com/dyweb/gommon/issues/108) log package was using `init` to induct package level logger, it is changed to `init.ializers` 
+
 ## v0.0.9
 
 [release](https://github.com/dyweb/gommon/releases/tag/0.0.9) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aissue+milestone%3A0.0.9+is%3Aclosed)
