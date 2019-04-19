@@ -153,7 +153,7 @@ func WalkLogger(root *Registry, cb func(l *Logger)) {
 	walkLogger(root, nil, nil, cb)
 }
 
-// walkLogger loops loggers in current registry first, then visist its children in DFS
+// walkLogger loops loggers in current registry first, then visit its children in DFS
 // It will create the map if it is nil, so caller don't need to do the bootstrap,
 // However, caller can provide a map so they can use it to get all the loggers and registry
 func walkLogger(root *Registry, loggers map[*Logger]bool, registries map[*Registry]bool, cb func(l *Logger)) {
