@@ -18,3 +18,8 @@ its behavior directly, however having registry actually make things complex beca
 The main problem for logger is fields is still a bit hard to use because unlike other loggers, we only have a `Add`
 method to add fields in place and requires using `Copy` to create a copy, it most other loggers they make a copy 
 directly when adding fields (some like zap and zerolog serialize the fields when adding them)
+
+Go logging library rarely keep a tree hierarchy, it is not the case in Java.
+In [Solr](../survey/solr.md) where log4j1 is used, relationship is kept inside loggers,
+in [log4j 2](../survey/log4j.md) they introduced logger config with hierarchy, it is determined by logger name and dot.
+(TODO: is this hierarchy applied every time when log or only once on configuration change)
