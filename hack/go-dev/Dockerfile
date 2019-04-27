@@ -38,7 +38,7 @@ ARG BUILD_GO_VERSION=1.11.2
 
 # glide no longer have release, just hard code it to latest version
 ENV GO_VERSION=$BUILD_GO_VERSION \
-    GLIDE_VERSION=v0.13.1
+    GLIDE_VERSION=v0.13.2
 
 # TODO: might put glide under GOPATH/bin
 RUN \
