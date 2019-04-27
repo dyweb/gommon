@@ -2,7 +2,8 @@
 package fsutil // import "github.com/dyweb/gommon/util/fsutil"
 
 import (
-	"github.com/dyweb/gommon/util/logutil"
+	dlog "github.com/dyweb/gommon/log"
 )
 
-var log, _ = logutil.NewPackageLoggerAndRegistry()
+var logReg = dlog.NewRegistry()
+var log = logReg.Logger()

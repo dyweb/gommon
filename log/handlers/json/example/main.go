@@ -8,10 +8,11 @@ import (
 	"github.com/dyweb/gommon/log/handlers/json"
 )
 
-var log, logReg = dlog.NewApplicationLoggerAndRegistry("example")
+var logReg = dlog.NewRegistry()
+var log = logReg.Logger()
 
 func main() {
-	dlog.SetHandler(logReg, json.New(os.Stderr))
+	dlog.SetHandler(json.New(os.Stderr))
 	log.Info("hi")
 	log.Infof("open file %s", "foo.yml")
 	log.InfoF("open",
@@ -27,7 +28,7 @@ func main() {
 		}()
 		log.Panic("I just want to panic")
 	}()
-	dlog.SetLevel(logReg, dlog.DebugLevel)
+	dlog.SetLevel(dlog.DebugLevel)
 	log.Debug("I will sleep for a while")
 	time.Sleep(500 * time.Millisecond)
 	log.Fatal("I am red")

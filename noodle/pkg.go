@@ -4,7 +4,7 @@ package noodle
 import (
 	"net/http"
 
-	"github.com/dyweb/gommon/util/logutil"
+	dlog "github.com/dyweb/gommon/log"
 )
 
 const (
@@ -12,7 +12,8 @@ const (
 	DefaultName           = "Bowel"
 )
 
-var log, _ = logutil.NewPackageLoggerAndRegistry()
+var logReg = dlog.NewRegistry()
+var log = logReg.Logger()
 
 // Bowel is the container for different types of noodles
 type Bowel interface {

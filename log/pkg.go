@@ -9,3 +9,27 @@ type LoggableStruct interface {
 	SetLogger(logger *Logger)
 	LoggerIdentity(justCallMe func() Identity) Identity
 }
+
+func SetLevel(level Level) {
+	WalkLogger(func(l *Logger) {
+		l.SetLevel(level)
+	})
+}
+
+func SetHandler(handler Handler) {
+	WalkLogger(func(l *Logger) {
+		l.SetHandler(handler)
+	})
+}
+
+func EnableSource() {
+	WalkLogger(func(l *Logger) {
+		l.EnableSource()
+	})
+}
+
+func DisableSource() {
+	WalkLogger(func(l *Logger) {
+		l.DisableSource()
+	})
+}

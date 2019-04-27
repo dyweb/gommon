@@ -16,15 +16,6 @@ func NewPackageLoggerWithSkip(skip int) *Logger {
 	return newLogger(nil, l)
 }
 
-// Deprecated: use Copy method on package logger
-func NewFunctionLogger(packageLogger *Logger) *Logger {
-	id := NewIdentityFromCaller(1)
-	l := &Logger{
-		id: &id,
-	}
-	return newLogger(packageLogger, l)
-}
-
 func NewStructLogger(packageLogger *Logger, loggable LoggableStruct) *Logger {
 	id := loggable.LoggerIdentity(func() Identity {
 		return NewIdentityFromCaller(1)
@@ -37,15 +28,6 @@ func NewStructLogger(packageLogger *Logger, loggable LoggableStruct) *Logger {
 	return l
 }
 
-// Deprecated: use Copy method on struct logger
-func NewMethodLogger(structLogger *Logger) *Logger {
-	id := NewIdentityFromCaller(1)
-	l := &Logger{
-		id: &id,
-	}
-	return newLogger(structLogger, l)
-}
-
 // NewTestLogger does not have identity and handler, it is mainly used for benchmark test
 func NewTestLogger(level Level) *Logger {
 	l := &Logger{
@@ -54,6 +36,7 @@ func NewTestLogger(level Level) *Logger {
 	return l
 }
 
+// TODO: change this func signature ...
 func newLogger(parent *Logger, child *Logger) *Logger {
 	if parent != nil {
 		child.h = parent.h
