@@ -1,6 +1,17 @@
 package log
 
-import "github.com/dyweb/gommon/util/color"
+import (
+	"fmt"
+	"os"
+	"strings"
+
+	"github.com/dyweb/gommon/util/color"
+)
+
+// LevelEnvKey is the environment variable name for setting default log level
+const LevelEnvKey = "GOMMON_LOG_LEVEL"
+
+var defaultLevel = InfoLevel
 
 // Level is log level
 // TODO: allow change default logging level at compile time
@@ -28,6 +39,29 @@ const (
 
 // PrintLevel is for library/application that requires a Printf based logger interface
 const PrintLevel = InfoLevel
+
+// ParseLevel converts a level string to log level, it is case insensitive.
+// For invalid input, it returns InfoLevel and a non nil error
+func ParseLevel(s string) (Level, error) {
+	switch strings.ToLower(s) {
+	case "fatal":
+		return FatalLevel, nil
+	case "panic":
+		return PanicLevel, nil
+	case "error":
+		return ErrorLevel, nil
+	case "warn":
+		return WarnLevel, nil
+	case "info":
+		return InfoLevel, nil
+	case "debug":
+		return DebugLevel, nil
+	case "trace":
+		return TraceLevel, nil
+	default:
+		return InfoLevel, fmt.Errorf("not a valid gommon log level %s", s)
+	}
+}
 
 var levelColoredStrings = []string{
 	FatalLevel: color.RedStart + "fatal" + color.End,
@@ -103,4 +137,18 @@ func (level Level) ColoredString() string {
 // wrapped by terminal color characters, only works on *nix
 func (level Level) ColoredAlignedUpperString() string {
 	return levelColoredAlignedUpperStrings[level]
+}
+
+func init() {
+	// Set default log level based on env var so debug log in `init` would show
+	// https://github.com/dyweb/gommon/issues/60
+	envLevel := os.Getenv(LevelEnvKey)
+	if envLevel == "" {
+		return
+	}
+	lvl, err := ParseLevel(envLevel)
+	if err != nil {
+		return
+	}
+	defaultLevel = lvl
 }

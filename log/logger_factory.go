@@ -2,6 +2,8 @@ package log
 
 // logger_factory.go creates logger without register them to registry
 
+// TODO: they should all become private ...
+
 func NewPackageLogger() *Logger {
 	return NewPackageLoggerWithSkip(1)
 }
@@ -64,7 +66,7 @@ func newLogger(parent *Logger, child *Logger) *Logger {
 		}
 	} else {
 		child.h = DefaultHandler()
-		child.level = InfoLevel
+		child.level = defaultLevel
 	}
 	return child
 }
