@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.0.11
+
+Released on 2019/04/28
+
+[release](https://github.com/dyweb/gommon/releases/tag/0.0.11) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aissue+milestone%3A0.0.11+is%3Aclosed)
+
+Breaking change
+
+- [#112](https://github.com/dyweb/gommon/issues/112) Legacy package moved to its own repo [gommon-legacy](https://github.com/dyweb/gommon-legacy)
+- [#110](https://github.com/dyweb/gommon/issues/110) Simplify log registry, no longer have tree
+- [#97](https://github.com/dyweb/gommon/issues/97) Contains a global registry
+
+New feature
+
+- [#60](https://github.com/dyweb/gommon/issues/60) Use env var `GOMMON_LOG_LEVEL` to set default log level
+
+Removed package
+
+- [#113](https://github.com/dyweb/gommon/issues/113) structure package is moved to legacy
+
 ## v0.0.10
 
 [release](https://github.com/dyweb/gommon/releases/tag/0.0.10) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aissue+milestone%3A0.0.10+is%3Aclosed)

@@ -2,9 +2,12 @@
 
 ## Up coming
 
-### 0.0.11
+### 0.0.12
 
-- [ ] simplify log package, move deprecated package to its own repo
+- [ ] align errors with x/errors which will become the default [#109](https://github.com/dyweb/gommon/issues/109)
+
+From 0.0.11
+
 - [ ] requests, download and upload file, a curl like example
 
 From 0.0.10
@@ -19,6 +22,11 @@ From 0.0.9
 - [ ] (optional) extension for collecting errors using third party services
 
 ## Finished
+
+### 0.0.11
+
+- [x] simplify log package [#110](https://github.com/dyweb/gommon/issues/110)
+- [x] move deprecated package to its own repo [#112](https://github.com/dyweb/gommon/issues/112)
 
 ### 0.0.10
 
