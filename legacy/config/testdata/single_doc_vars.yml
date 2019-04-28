@@ -1,3 +1,0 @@
-vars:
-  foo: bar
-foo: {{ var "foo" }}
