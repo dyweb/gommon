@@ -51,6 +51,7 @@ type Syncer interface {
 var defaultHandler = NewTextHandler(os.Stderr)
 
 // DefaultHandler returns the singleton defaultHandler instance, which logs to stderr in text format
+// TODO: should allow customize default handler like default level, i.e. use json as default handler
 func DefaultHandler() Handler {
 	return defaultHandler
 }

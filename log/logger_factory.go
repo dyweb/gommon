@@ -48,6 +48,7 @@ func newLogger(parent *Logger, child *Logger) *Logger {
 			child.fields = fields
 		}
 	} else {
+		// TODO: allow customize DefaultHandler
 		child.h = DefaultHandler()
 		child.level = defaultLevel
 	}
