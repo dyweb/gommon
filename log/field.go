@@ -63,11 +63,8 @@ func Stringer(k string, v fmt.Stringer) Field {
 }
 
 // copyFields make a copy of the slice so modifying one won't have effect on another,
-// It is only used in test
 func copyFields(fields Fields) Fields {
 	copied := make([]Field, len(fields))
-	for i := 0; i < len(fields); i++ {
-		copied[i] = fields[i]
-	}
+	copy(copied, fields)
 	return copied
 }

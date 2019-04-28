@@ -40,11 +40,8 @@ type Logger struct {
 // Copy create a new logger with different identity, the identity is based on where Copy is called
 // Normally you should call Copy inside func or method on a package/strcut logger
 func (l *Logger) Copy() *Logger {
-	id := NewIdentityFromCaller(1)
-	c := &Logger{
-		id: &id,
-	}
-	return newLogger(l, c)
+	id := newIdentityFromCaller(1)
+	return copyOrCreateLogger(l, &id)
 }
 
 // AddField add field to current logger in place, it does NOT create a copy of logger

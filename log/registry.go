@@ -60,7 +60,7 @@ func NewRegistry() *Registry {
 	pkg, _ := runtimeutil.SplitPackageFunc(frame.Function)
 	reg := Registry{
 		identity: pkg,
-		loggers:  []*Logger{NewPackageLoggerWithSkip(1)},
+		loggers:  []*Logger{newPackageLoggerWithSkip(1)},
 	}
 	globalRegistryGroup.add(&reg)
 	return &reg
@@ -84,13 +84,10 @@ func (r *Registry) Logger() *Logger {
 // to avoid register them in registry
 func (r *Registry) NewLogger() *Logger {
 	// no lock is added because addLogger also acquire lock
-	id := NewIdentityFromCaller(1)
-	l := Logger{
-		id: &id,
-	}
-	newLogger(r.Logger(), &l)
-	r.addLogger(&l)
-	return &l
+	id := newIdentityFromCaller(1)
+	l := copyOrCreateLogger(r.Logger(), &id)
+	r.addLogger(l)
+	return l
 }
 
 // addLogger registers a logger into registry. It's a nop if the logger is already there
