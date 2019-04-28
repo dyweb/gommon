@@ -35,7 +35,7 @@ GO = GO111MODULE=on go
 # -- build vars ---
 PKGS =./errors/... ./generator/... ./log/... ./noodle/... ./util/...
 PKGST =./cmd ./errors ./generator ./log ./noodle ./util
-VERSION = 0.0.10
+VERSION = 0.0.11
 BUILD_COMMIT := $(shell git rev-parse HEAD)
 BUILD_TIME := $(shell date +%Y-%m-%dT%H:%M:%S%z)
 CURRENT_USER = $(USER)

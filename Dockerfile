@@ -12,11 +12,6 @@ ARG PROJECT_ROOT=/go/src/github.com/dyweb/gommon/
 
 WORKDIR $PROJECT_ROOT
 
-# Gopkg.toml and Gopkg.lock lists project dependencies
-# These layers will only be re-built when Gopkg files are updated
-COPY Gopkg.lock Gopkg.toml $PROJECT_ROOT
-RUN dep ensure -v -vendor-only
-
 # Copy all project and build it
 COPY . $PROJECT_ROOT
 RUN make install
