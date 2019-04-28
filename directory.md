@@ -6,7 +6,6 @@
 - [doc](doc) style guide and developer log
 - [errors](errors) error wrapping, multi error and error inspection
 - [generator](generator) generating interface methods, render go template, execute shell command.
-- [legacy](legacy) legacy code base
 - [noodle](noodle) embed static assets for go binary with .ignore file support
 - [playground](playground) test library and replay issues
 - [scripts](scripts) test scripts

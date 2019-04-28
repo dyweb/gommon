@@ -11,10 +11,6 @@ test              unit test
 generate          generate code using gommon
 loc               lines of code (cloc required, brew install cloc)
 
-Dev first time:
-dep-install    install dependencies based on lock file
-dep-update     update dependency based on spec and code
-
 Build:
 install        install all binaries under ./cmd to $$GOPATH/bin
 build          compile all binary to ./build for current platform

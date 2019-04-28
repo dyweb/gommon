@@ -1,7 +1,10 @@
 # This Dockerfile is a demo of using go-dev to build a go binary using multi stage build
 # It is based on
 # https://docs.docker.com/v17.09/engine/userguide/eng-image/dockerfile_best-practices/#use-multi-stage-builds
-FROM dyweb/go-dev:1.11.4 as builder
+#
+# The builder-image go-dev can be found in hack/go-dev
+# Versions can be found on https://hub.docker.com/r/dyweb/go-dev/tags
+FROM dyweb/go-dev:1.12.4 as builder
 
 LABEL maintainer="contact@dongyue.io"
 
