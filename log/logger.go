@@ -37,6 +37,29 @@ type Logger struct {
 	id *Identity // use nil so we can have logger without identity
 }
 
+// WithField is Copy + AddField
+// Use WithField when a common context is shared inside entire func/method
+// Use *F methods if you just want adhoc fields, this won't create copy of entire logger
+// i.e. logger.InfoF(dlog.Str("user", "cat007")) instead of logger.WithField(dlog.Str("user", "cat007"))
+// TODO: there are some optimization here, i.e. the length is known to be + 1 and there is no need to lock
+func (l *Logger) WithField(f Field) *Logger {
+	// can't call Copy here because it will result in wrong identity
+	id := newIdentityFromCaller(1)
+	c := copyOrCreateLogger(l, &id)
+	c.AddField(f)
+	return c
+}
+
+// WithFields is Copy + AddFields, see WithField doc on when and when not to use it.
+// It is faster than calling WithField multiple times because of reduced alloc & copy on existing fields
+func (l *Logger) WithFields(fields ...Field) *Logger {
+	// can't call Copy here because it will result in wrong identity
+	id := newIdentityFromCaller(1)
+	c := copyOrCreateLogger(l, &id)
+	c.AddFields(fields...)
+	return c
+}
+
 // Copy create a new logger with different identity, the identity is based on where Copy is called
 // Normally you should call Copy inside func or method on a package/strcut logger
 func (l *Logger) Copy() *Logger {
@@ -45,7 +68,7 @@ func (l *Logger) Copy() *Logger {
 }
 
 // AddField add field to current logger in place, it does NOT create a copy of logger
-// Use Copy if you want a copy
+// Use WithField if you want a copy
 // It does NOT check duplication
 func (l *Logger) AddField(f Field) *Logger {
 	l.mu.Lock()
@@ -56,7 +79,7 @@ func (l *Logger) AddField(f Field) *Logger {
 }
 
 // AddFields add fields to current logger in place, it does NOT create a copy of logger
-// Use Copy if you want a copy
+// Use WithFields if you want a copy
 // It does NOT check duplication
 func (l *Logger) AddFields(fields ...Field) *Logger {
 	l.mu.Lock()
@@ -71,10 +94,12 @@ func (l *Logger) Flush() {
 	l.h.Flush()
 }
 
+// Level returns current level of logger
 func (l *Logger) Level() Level {
 	return l.level
 }
 
+// SetLevel sets level of logger, it is thread safe
 func (l *Logger) SetLevel(level Level) *Logger {
 	l.mu.Lock()
 	l.level = level
@@ -82,6 +107,7 @@ func (l *Logger) SetLevel(level Level) *Logger {
 	return l
 }
 
+// SetHandler sets handler of logger, it is thread safe
 func (l *Logger) SetHandler(h Handler) *Logger {
 	l.mu.Lock()
 	l.h = h
@@ -89,6 +115,7 @@ func (l *Logger) SetHandler(h Handler) *Logger {
 	return l
 }
 
+// EnableSource turns on logging source file and line number
 func (l *Logger) EnableSource() *Logger {
 	l.mu.Lock()
 	l.source = true
@@ -96,6 +123,7 @@ func (l *Logger) EnableSource() *Logger {
 	return l
 }
 
+// DisableSource turns off logging source file and line number
 func (l *Logger) DisableSource() *Logger {
 	l.mu.Lock()
 	l.source = false

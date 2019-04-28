@@ -2,15 +2,8 @@ package log
 
 // logger_factory.go creates logger without register them to registry
 
-// TODO: they should all become private ...
-
 func NewPackageLogger() *Logger {
 	return newPackageLoggerWithSkip(1)
-}
-
-func newPackageLoggerWithSkip(skip int) *Logger {
-	id := newIdentityFromCaller(skip + 1)
-	return copyOrCreateLogger(nil, &id)
 }
 
 func NewStructLogger(packageLogger *Logger, loggable LoggableStruct) *Logger {
@@ -28,6 +21,11 @@ func NewTestLogger(level Level) *Logger {
 		level: level,
 	}
 	return l
+}
+
+func newPackageLoggerWithSkip(skip int) *Logger {
+	id := newIdentityFromCaller(skip + 1)
+	return copyOrCreateLogger(nil, &id)
 }
 
 // copyOrCreateLogger inherit handler, level, make copy of fields from parent (if present)
