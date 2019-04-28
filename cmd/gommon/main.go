@@ -18,10 +18,10 @@ import (
 	"github.com/dyweb/gommon/log/handlers/cli"
 	"github.com/dyweb/gommon/noodle"
 	"github.com/dyweb/gommon/util/fsutil"
-	"github.com/dyweb/gommon/util/logutil"
 )
 
-var log, logReg = dlog.NewApplicationLoggerAndRegistry("gommon")
+var logReg = dlog.NewRegistry()
+var log = logReg.Logger()
 
 var verbose = false
 var (
@@ -40,8 +40,8 @@ func main() {
 		Long:  "Generate go files for gommon",
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			if verbose {
-				dlog.SetLevel(logReg, dlog.DebugLevel)
-				dlog.EnableSource(logReg)
+				dlog.SetLevel(dlog.DebugLevel)
+				dlog.EnableSource()
 			}
 		},
 		Run: func(cmd *cobra.Command, args []string) {
@@ -195,6 +195,5 @@ func addBuildIgnoreCmd() *cobra.Command {
 }
 
 func init() {
-	logReg.AddRegistry(logutil.Registry())
-	dlog.SetHandler(logReg, cli.New(os.Stderr, true))
+	dlog.SetHandler(cli.New(os.Stderr, true))
 }

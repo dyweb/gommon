@@ -8,14 +8,15 @@ import (
 	"github.com/dyweb/gommon/log/handlers/cli"
 )
 
-var log, logReg = dlog.NewApplicationLoggerAndRegistry("example")
+var logReg = dlog.NewRegistry()
+var log = logReg.Logger()
 
 func main() {
-	dlog.SetHandler(logReg, cli.New(os.Stderr, true))
+	dlog.SetHandler(cli.New(os.Stderr, true))
 
 	if len(os.Args) > 1 {
 		if os.Args[1] == "nocolor" || os.Args[1] == "no" {
-			dlog.SetHandler(logReg, cli.NewNoColor(os.Stderr))
+			dlog.SetHandler(cli.NewNoColor(os.Stderr))
 		}
 	}
 
@@ -34,7 +35,7 @@ func main() {
 		}()
 		log.Panic("I just want to panic")
 	}()
-	dlog.SetLevel(logReg, dlog.DebugLevel)
+	dlog.SetLevel(dlog.DebugLevel)
 	log.Debug("I will sleep for a while")
 	time.Sleep(500 * time.Millisecond)
 	log.Fatal("I am red")

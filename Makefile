@@ -11,10 +11,6 @@ test              unit test
 generate          generate code using gommon
 loc               lines of code (cloc required, brew install cloc)
 
-Dev first time:
-dep-install    install dependencies based on lock file
-dep-update     update dependency based on spec and code
-
 Build:
 install        install all binaries under ./cmd to $$GOPATH/bin
 build          compile all binary to ./build for current platform
@@ -37,8 +33,8 @@ help:
 
 GO = GO111MODULE=on go
 # -- build vars ---
-PKGS =./errors/... ./generator/... ./log/... ./noodle/... ./structure/... ./util/...
-PKGST =./cmd ./errors ./generator ./log ./noodle ./structure ./util
+PKGS =./errors/... ./generator/... ./log/... ./noodle/... ./util/...
+PKGST =./cmd ./errors ./generator ./log ./noodle ./util
 VERSION = 0.0.10
 BUILD_COMMIT := $(shell git rev-parse HEAD)
 BUILD_TIME := $(shell date +%Y-%m-%dT%H:%M:%S%z)

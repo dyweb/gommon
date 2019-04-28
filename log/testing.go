@@ -33,7 +33,7 @@ func NewTestHandler() *TestHandler {
 
 func (h *TestHandler) HandleLog(level Level, time time.Time, msg string, source Caller, context Fields, fields Fields) {
 	h.mu.Lock()
-	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, source: source, context: CopyFields(context), fields: CopyFields(fields)})
+	h.entries = append(h.entries, entry{level: level, time: time, msg: msg, source: source, context: copyFields(context), fields: copyFields(fields)})
 	h.mu.Unlock()
 }
 

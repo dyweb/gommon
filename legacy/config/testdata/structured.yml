@@ -1,8 +1,0 @@
-logging:
-  level: info
-  color: true
-  source: false
-mode: local
-base: {{ env "HOME" }}
-base2: {{ envOr "NOBODY_HAVE_SET_ME" "base2" }}
-base3: {{ envOr "HOME" "/home/gommon" }}

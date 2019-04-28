@@ -11,7 +11,7 @@ func TestCopyFields(t *testing.T) {
 		Str("k1", "v1"),
 		Int("k2", 2),
 	}
-	copied := CopyFields(fields)
+	copied := copyFields(fields)
 	assert.Equal(t, 2, cap(copied), "capacity is same as length")
 	fields[0].Key = "k1modified"
 	copied[0].Str = "v1modified"

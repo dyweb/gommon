@@ -34,7 +34,8 @@ func (tpe LoggerType) String() string {
 
 // Identity is set based on logger's initialization location,
 // it is close to, but NOT exactly same as location of actual log.
-// It is used for applying filter rules and print logger hierarchy.
+// It can be used to inspect logger when traverse and print package hierarchy.
+// NOTE: logger hierarchy is flat instead of tree after https://github.com/dyweb/gommon/issues/110
 type Identity struct {
 	Package  string
 	Function string
@@ -48,15 +49,17 @@ var UnknownIdentity = Identity{Package: "unk", Type: UnknownLogger}
 
 const (
 	MagicStructLoggerFunctionName  = "LoggerIdentity"
-	MagicPackageLoggerFunctionName = "init"
+	magicPackageLoggerFunctionName = "init"
 	// a hack for new init func name after 1.12
 	// See https://github.com/dyweb/gommon/issues/108
-	MagicPackageLoggerFunctionNameGo112 = "init.ializers"
+	magicPackageLoggerFunctionNameGo112 = "init.ializers"
 )
 
+// newIdentityFromCaller get package, struct, func/method using runtime package to avoid user manually set identity
+// of a logger to specific package, which is error prone and go out of sync quickly.
 // TODO: document all the black magic here ...
 // https://github.com/dyweb/gommon/issues/32
-func NewIdentityFromCaller(skip int) Identity {
+func newIdentityFromCaller(skip int) Identity {
 	frame := runtimeutil.GetCallerFrame(skip + 1)
 	var (
 		pkg      string
@@ -64,10 +67,10 @@ func NewIdentityFromCaller(skip int) Identity {
 		st       string
 	)
 	tpe := UnknownLogger
-	// TODO: does it handle vendor correctly, and what about vgo ...
+	// TODO: does it handle vendor correctly, and what about go mod ...
 	pkg, function = runtimeutil.SplitPackageFunc(frame.Function)
 	tpe = FunctionLogger
-	if function == MagicPackageLoggerFunctionNameGo112 || function == MagicPackageLoggerFunctionName {
+	if function == magicPackageLoggerFunctionNameGo112 || function == magicPackageLoggerFunctionName {
 		// https://github.com/dyweb/gommon/issues/108 there are two names, init and init.ializers (after go1.12)
 		tpe = PackageLogger
 	} else if runtimeutil.IsMethod(function) {
@@ -101,6 +104,7 @@ func (id *Identity) SourceLocation() string {
 }
 
 func (id *Identity) String() string {
+	// TODO: add struct and func? or switch based on type
 	return fmt.Sprintf("%s logger %s:%d", id.Type, id.File, id.Line)
 }
 

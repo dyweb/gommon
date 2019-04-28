@@ -112,7 +112,7 @@ func BenchmarkDisabledLevelNoFormat(b *testing.B) {
 	msg := "If you support level you should not see me and should not cause allocation, I know I talk too much"
 	b.Run("gommon", func(b *testing.B) {
 		logger := dlog.NewTestLogger(dlog.ErrorLevel)
-		logger.SetHandler(dlog.NewIOHandler(ioutil.Discard))
+		logger.SetHandler(dlog.NewTextHandler(ioutil.Discard))
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
@@ -124,7 +124,7 @@ func BenchmarkDisabledLevelNoFormat(b *testing.B) {
 	})
 	b.Run("gommon.F", func(b *testing.B) {
 		logger := dlog.NewTestLogger(dlog.ErrorLevel)
-		logger.SetHandler(dlog.NewIOHandler(ioutil.Discard))
+		logger.SetHandler(dlog.NewTextHandler(ioutil.Discard))
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
@@ -134,7 +134,7 @@ func BenchmarkDisabledLevelNoFormat(b *testing.B) {
 	})
 	b.Run("gommon.check", func(b *testing.B) {
 		logger := dlog.NewTestLogger(dlog.ErrorLevel)
-		logger.SetHandler(dlog.NewIOHandler(ioutil.Discard))
+		logger.SetHandler(dlog.NewTextHandler(ioutil.Discard))
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
@@ -220,7 +220,7 @@ func BenchmarkWithoutFieldsText(b *testing.B) {
 
 	b.Run("gommon", func(b *testing.B) {
 		logger := dlog.NewTestLogger(dlog.InfoLevel)
-		logger.SetHandler(dlog.NewIOHandler(ioutil.Discard))
+		logger.SetHandler(dlog.NewTextHandler(ioutil.Discard))
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
@@ -230,7 +230,7 @@ func BenchmarkWithoutFieldsText(b *testing.B) {
 	})
 	b.Run("gommon.F", func(b *testing.B) {
 		logger := dlog.NewTestLogger(dlog.InfoLevel)
-		logger.SetHandler(dlog.NewIOHandler(ioutil.Discard))
+		logger.SetHandler(dlog.NewTextHandler(ioutil.Discard))
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
@@ -313,7 +313,7 @@ func BenchmarkWithoutFieldsTextFormat(b *testing.B) {
 
 	b.Run("gommon", func(b *testing.B) {
 		logger := dlog.NewTestLogger(dlog.InfoLevel)
-		logger.SetHandler(dlog.NewIOHandler(ioutil.Discard))
+		logger.SetHandler(dlog.NewTextHandler(ioutil.Discard))
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {

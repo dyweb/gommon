@@ -5,7 +5,7 @@ import (
 )
 
 // FieldType avoids doing type assertion or calling reflection
-// TODO: difference between the two methods above
+// TODO: difference between type assertion and reflection
 type FieldType uint8
 
 const (
@@ -17,17 +17,9 @@ const (
 // Fields is a slice of Field
 type Fields []Field
 
-// CopyFields make a copy of the slice so modifying one won't have effect on another,
-func CopyFields(fields Fields) Fields {
-	copied := make([]Field, len(fields))
-	for i := 0; i < len(fields); i++ {
-		copied[i] = fields[i]
-	}
-	return copied
-}
-
 // Field is based on uber-go/zap https://github.com/uber-go/zap/blob/master/zapcore/field.go
 // It can be treated as a Union, the value is stored in either Int, Str or Interface
+// TODO: interface{} is actually not used ...
 type Field struct {
 	Key  string
 	Type FieldType
@@ -68,4 +60,11 @@ func Stringer(k string, v fmt.Stringer) Field {
 		Type: StringType,
 		Str:  v.String(),
 	}
+}
+
+// copyFields make a copy of the slice so modifying one won't have effect on another,
+func copyFields(fields Fields) Fields {
+	copied := make([]Field, len(fields))
+	copy(copied, fields)
+	return copied
 }

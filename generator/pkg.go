@@ -4,7 +4,6 @@ package generator // import "github.com/dyweb/gommon/generator"
 import (
 	dlog "github.com/dyweb/gommon/log"
 	"github.com/dyweb/gommon/noodle"
-	"github.com/dyweb/gommon/util/logutil"
 )
 
 const (
@@ -15,7 +14,8 @@ const (
 	DefaultGeneratedFile = "gommon_generated.go"
 )
 
-var log, logReg = logutil.NewPackageLoggerAndRegistry()
+var logReg = dlog.NewRegistry()
+var log = logReg.Logger()
 
 type ConfigFile struct {
 	// Loggers is helper methods on struct for gommon/log to build a tree for logger, this is subject to change

@@ -17,42 +17,21 @@
 
 Gommon is a collection of common util libraries written in Go.
 
-It has the following components:
-
 - [errors](errors) error wrapping, inspection, multi error (error list), common error types
-- [log](log) fine grained level control and reasonable performance
+- [log](log) per package logger with [reasonable performance](log/_benchmarks/README.md)
 - [noodle](noodle) embed static assets for web application with `.noodleignore` support
 - [generator](generator) render go template, generate methods for logger interface based on `gommon.yml`
-- [structure](structure) data structure like Set etc. to go
-- [util](util) small utils over standard libraries utils
+- [util](util) wrappers for standard libraries
 
-Legacy
-
-- [config v1](config) A YAML config reader with template support
-- [log v1](legacy/log) A logrus like structured logger
-- [runner](legacy/runner) A os/exec wrapper
-- [requests](requests) A pythonic wrapper for `net/http`, HTTP for Gopher
-
-## Dependencies
-
-Currently we only have one non standard library dependencies (cmd and examples are not considered), see [Gopkg.lock](Gopkg.lock)
-
-- [go-yaml/yaml](https://github.com/go-yaml/yaml) for read config written in YAML
-  - we don't need most feature of YAML, and want to have access to the parser directly to report which line has incorrect semantic (after checking it in application).
-    - might write one in [ANTLR](https://github.com/antlr/antlr4)
-  - we also have a DSL work in progress [RCL: Reika Configuration Language](https://github.com/at15/reika/issues/49), which is like [HCL](https://github.com/hashicorp/hcl2)
-
-Removed
-
-- [pkg/errors](https://github.com/pkg/errors) for including context in error, removed in [#59](https://github.com/dyweb/gommon/pull/59) 
-replaced by `gommon/errors`
+It has little third party dependencies, only [go-yaml/yaml](https://github.com/go-yaml/yaml) in [util/cast](util/cast),
+[go-shellquote](github.com/kballard/go-shellquote) in [generator](generator),
+other dependencies like cobra are only for cli, see [go.mod](go.mod).
 
 ## Development
 
-- install go https://golang.org/
-- install dep https://github.com/golang/dep
-- `make dep-install`
-- `make test`
+- requires go1.12+. go1.11.x should work as well, the Makefile set `GO111MODULE=on` so you can use in GOPATH
+- `make help`
+- [Directory layout](directory.md)
 
 ## License
 

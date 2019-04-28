@@ -1,4 +1,0 @@
-# configuration for gommon
-loggers:
-  - struct: "*YAMLConfig"
-    receiver: c

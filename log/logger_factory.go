@@ -3,48 +3,19 @@ package log
 // logger_factory.go creates logger without register them to registry
 
 func NewPackageLogger() *Logger {
-	return NewPackageLoggerWithSkip(1)
-}
-
-func NewPackageLoggerWithSkip(skip int) *Logger {
-	id := NewIdentityFromCaller(skip + 1)
-	l := &Logger{
-		id: &id,
-	}
-	return newLogger(nil, l)
-}
-
-// Deprecated: use Copy method on package logger
-func NewFunctionLogger(packageLogger *Logger) *Logger {
-	id := NewIdentityFromCaller(1)
-	l := &Logger{
-		id: &id,
-	}
-	return newLogger(packageLogger, l)
+	return newPackageLoggerWithSkip(1)
 }
 
 func NewStructLogger(packageLogger *Logger, loggable LoggableStruct) *Logger {
 	id := loggable.LoggerIdentity(func() Identity {
-		return NewIdentityFromCaller(1)
+		return newIdentityFromCaller(1)
 	})
-	l := &Logger{
-		id: &id,
-	}
-	l = newLogger(packageLogger, l)
+	l := copyOrCreateLogger(packageLogger, &id)
 	loggable.SetLogger(l)
 	return l
 }
 
-// Deprecated: use Copy method on struct logger
-func NewMethodLogger(structLogger *Logger) *Logger {
-	id := NewIdentityFromCaller(1)
-	l := &Logger{
-		id: &id,
-	}
-	return newLogger(structLogger, l)
-}
-
-// NewTestLogger does not have identity and handler, it is mainly used for benchmark test
+// NewTestLogger does NOT have identity nor handler, it is mainly used for benchmark
 func NewTestLogger(level Level) *Logger {
 	l := &Logger{
 		level: level,
@@ -52,19 +23,28 @@ func NewTestLogger(level Level) *Logger {
 	return l
 }
 
-func newLogger(parent *Logger, child *Logger) *Logger {
+func newPackageLoggerWithSkip(skip int) *Logger {
+	id := newIdentityFromCaller(skip + 1)
+	return copyOrCreateLogger(nil, &id)
+}
+
+// copyOrCreateLogger inherit handler, level, make copy of fields from parent (if present)
+// Or create a new one using default handler, level and no fields
+func copyOrCreateLogger(parent *Logger, id *Identity) *Logger {
+	child := Logger{
+		id: id,
+	}
 	if parent != nil {
 		child.h = parent.h
 		child.level = parent.level
 		child.source = parent.source
 		if len(parent.fields) != 0 {
-			fields := make([]Field, len(parent.fields))
-			copy(fields, parent.fields)
-			child.fields = fields
+			child.fields = copyFields(parent.fields)
 		}
 	} else {
+		// TODO: allow customize DefaultHandler
 		child.h = DefaultHandler()
-		child.level = InfoLevel
+		child.level = defaultLevel
 	}
-	return child
+	return &child
 }
