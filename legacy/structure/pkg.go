@@ -1,3 +1,5 @@
+// +build ignore
+
 /*
 Package structure add some missing common data structures to Golang
 */

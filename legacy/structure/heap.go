@@ -1,3 +1,5 @@
+// +build ignore
+
 package structure
 
 // https://golang.org/src/container/heap/heap.go

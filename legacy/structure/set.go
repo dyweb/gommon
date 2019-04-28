@@ -1,3 +1,5 @@
+// +build ignore
+
 package structure
 
 // Set is a map with string key and bool value
