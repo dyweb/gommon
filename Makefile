@@ -33,8 +33,8 @@ help:
 
 GO = GO111MODULE=on go
 # -- build vars ---
-PKGS =./errors/... ./generator/... ./log/... ./noodle/... ./util/...
-PKGST =./cmd ./errors ./generator ./log ./noodle ./util
+PKGS =./errors/... ./generator/... ./httpclient/... ./log/... ./noodle/... ./util/...
+PKGST =./cmd ./errors ./generator ./httpclient ./log ./noodle ./util
 VERSION = 0.0.11
 BUILD_COMMIT := $(shell git rev-parse HEAD)
 BUILD_TIME := $(shell date +%Y-%m-%dT%H:%M:%S%z)
@@ -119,11 +119,11 @@ loc:
 
 # --- dependency management ---
 mod-init:
-	$(GOMOD) mod init
+	$(GO) mod init
 mod-update:
-	$(GOMOD) mod tidy
+	$(GO) mod tidy
 mod-graph:
-	$(GOMOD) mod graph
+	$(GO) mod graph
 # --- dependency management ---
 
 # --- docker ---
