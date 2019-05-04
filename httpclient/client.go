@@ -13,6 +13,7 @@ import (
 	"github.com/dyweb/gommon/util/httputil"
 )
 
+// Client is not goroutine safe when you modify headers
 type Client struct {
 	// configured by user
 	base string
@@ -240,7 +241,7 @@ func (c *Client) Transport() (tr *http.Transport, ok bool) {
 	if !ok {
 		return
 	}
-	// it's default, you should not modify it
+	// if it's default, you should NOT modify it
 	switch tr {
 	// stdlib
 	case http.DefaultTransport:

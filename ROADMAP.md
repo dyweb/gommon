@@ -2,7 +2,7 @@
 
 ## Up coming
 
-### 0.0.12
+### 0.0.13
 
 - [ ] align errors with x/errors which will become the default [#109](https://github.com/dyweb/gommon/issues/109)
 
@@ -20,6 +20,10 @@ From 0.0.9
 - [ ] organized error types
 - [ ] explain internals of some implementation
 - [ ] (optional) extension for collecting errors using third party services
+
+### 0.0.12
+
+- [ ] move httpclient from go.ice
 
 ## Finished
 
