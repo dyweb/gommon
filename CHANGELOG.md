@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.0.12
+
+Released on 2019/05/04
+
+[release](https://github.com/dyweb/gommon/releases/tag/0.0.12) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aclosed+milestone%3A0.0.12)
+
+New feature
+
+- [#114](https://github.com/dyweb/gommon/issues/114) move httpclient library from [go.ice](https://github.com/dyweb/go.ice)
+
 ## v0.0.11
 
 Released on 2019/04/28

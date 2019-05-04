@@ -35,7 +35,7 @@ GO = GO111MODULE=on go
 # -- build vars ---
 PKGS =./errors/... ./generator/... ./httpclient/... ./log/... ./noodle/... ./util/...
 PKGST =./cmd ./errors ./generator ./httpclient ./log ./noodle ./util
-VERSION = 0.0.11
+VERSION = 0.0.12
 BUILD_COMMIT := $(shell git rev-parse HEAD)
 BUILD_TIME := $(shell date +%Y-%m-%dT%H:%M:%S%z)
 CURRENT_USER = $(USER)
@@ -135,10 +135,10 @@ docker-build:
 docker-push:
 	docker push $(DOCKER_REPO):$(VERSION)
 
-# TODO: deprecated docker-compose based test
 docker-test:
-	docker-compose -f scripts/docker-compose.yml run --rm golang1.10
-	docker-compose -f scripts/docker-compose.yml run --rm golanglatest
+	docker-compose -f hack/docker-compose.yml run --rm golang1.12
+# TODO: not sure why the latest one is not using ...
+#	docker-compose -f hack/docker-compose.yml run --rm golanglatest
 
 #.PHONY: docker-remove-all-containers
 #docker-remove-all-containers:
