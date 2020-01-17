@@ -60,3 +60,7 @@ func main() {
 }
 
 ````
+
+## References and Alternatives
+
+- [Proposal to add it to cmd/go](https://github.com/golang/go/issues/35950)

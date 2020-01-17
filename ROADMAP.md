@@ -24,8 +24,6 @@ From 0.0.9
 - [ ] explain internals of some implementation
 - [ ] (optional) extension for collecting errors using third party services
 
-
-
 ## Finished
 
 ### 0.0.12

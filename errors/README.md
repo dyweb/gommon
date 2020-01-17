@@ -5,7 +5,6 @@ A error package that allows you to wrap/unwrap, multi error and inspect error
 ## Issues
 
 - [#54](https://github.com/dyweb/gommon/issues/54) init 
-- 
 
 ## Implementation
 
@@ -26,3 +25,8 @@ A error package that allows you to wrap/unwrap, multi error and inspect error
   - [uber/multierr](doc/uber-multierr.md)
     - Wish we could tell if the append happened  https://github.com/uber-go/multierr/issues/21
   - [ ] https://godoc.org/github.com/gorilla/securecookie#MultiError
+
+## References and Alternatives
+
+- [golang/xerrors](https://github.com/golang/xerrors) Official error wrapping `fmt.Errorf("oh my %w", err)`
+- [rotisserie/eris](https://github.com/rotisserie/eris)
