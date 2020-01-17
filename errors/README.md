@@ -1,6 +1,6 @@
 # Errors
 
-A error package that allows you to wrap/unwrap, multi error and inspect error
+A drop in replacement for `errors` and `pkg/errors`. Supports error wrapping, inspection and multi errors.
 
 ## Issues
 
@@ -9,7 +9,7 @@ A error package that allows you to wrap/unwrap, multi error and inspect error
 ## Implementation
 
 - [doc/design](doc/design) contains some survey and design choices we made
-- `Wrap` checks if this is already a `WrappedErr`, if not, it attach stack
+- `Wrap` checks if this is already a `WrappedErr`, if not, it attaches stack
 - `MultiErr` keep a slice of errors, the thread safe version use mutex and returns copy of slice when `Errors` is called
 
 ## Survey
