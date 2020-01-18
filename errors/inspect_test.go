@@ -1,6 +1,7 @@
 package errors_test
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -98,6 +99,29 @@ func TestGetType(t *testing.T) {
 		err, ok := errors.GetType(merr, &os.PathError{})
 		assert.True(t, ok)
 		assert.Equal(t, "open", err.(*os.PathError).Op)
+	})
+}
+
+func TestAs(t *testing.T) {
+	t.Run("flat", func(t *testing.T) {
+		e := &os.PathError{Op: "open"}
+		var e2 *os.PathError
+		assert.True(t, errors.As(e, &e2))
+		assert.Equal(t, "open", e2.Op)
+	})
+
+	t.Run("unwrap wrapper", func(t *testing.T) {
+		errw := errors.Wrap(&os.PathError{Op: "open"}, "can't read config")
+		var e2 *os.PathError
+		assert.True(t, errors.As(errw, &e2))
+		assert.Equal(t, "open", e2.Op)
+	})
+
+	t.Run("fmt.Errorf", func(t *testing.T) {
+		errw := fmt.Errorf("can't read config %w", &os.PathError{Op: "open"})
+		var e2 *os.PathError
+		assert.True(t, errors.As(errw, &e2))
+		assert.Equal(t, "open", e2.Op)
 	})
 }
 

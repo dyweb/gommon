@@ -11,15 +11,17 @@ import (
 // It returns true on the first match.
 // It returns false when there is no match.
 //
-// It unwraps both wrapped error and multi error
+// It unwraps both wrapped error and multi error.
 func Is(err, target error) bool {
-	// TODO: Is(nil, nil)? should we return true for that ... user should just use if err == nil ...
+	// NOTE: in std it returns err == target when target == nil
 	if err == nil || target == nil {
-		return false
+		return err == target
 	}
 
-	var found bool
+	found := false
 	Walk(err, func(err error) (stop bool) {
+		// TODO: in std it checks if err and target are comparable
+		// TODO: std supports Is method on err to define custom equality logic
 		if err == target {
 			found = true
 			return true
@@ -32,7 +34,7 @@ func Is(err, target error) bool {
 // IsType walks the error chain and match by type using reflect.
 // It only returns match result, if you need the matched error, use GetType
 //
-// It should be used for checking errors that defined their own types,
+// It should be used for checking errors that defined their own types.
 // errors created using errors.New, errors.Errof should NOT be checked using this method
 // because they have same type, string if you are using standard library, freshError if you are using gommon/errors
 //
@@ -84,19 +86,38 @@ func GetTypeOf(err error, tpe reflect.Type) (matched error, ok bool) {
 	return matched, matched != nil
 }
 
-// AsValue is in go 2 proposal as workaround if go 2 does not have polymorphism,
-// however, it's pretty hard to use and user can have error easily,
-// we decided to use GetType
-//func AsValue(val interface{}, err error) bool {
-//
-//}
+// As walks the error chain and save the matched error in target.
+// target should be a pointer to an error type.
+func As(err error, target interface{}) bool {
+	if err == nil || target == nil {
+		// TODO: std panic when target is nil
+		return false
+	}
+
+	val := reflect.ValueOf(target)
+	if val.Kind() != reflect.Ptr || val.IsNil() {
+		return false
+	}
+	targetType := val.Type().Elem()
+
+	found := false
+	Walk(err, func(err error) (stop bool) {
+		if reflect.TypeOf(err).AssignableTo(targetType) {
+			val.Elem().Set(reflect.ValueOf(err))
+			found = true
+			return true
+		}
+		return false
+	})
+	return found
+}
 
 // WalkFunc accepts an error and based on its inspection logic it can tell
 // Walk if it should stop walking the error chain or error list
 type WalkFunc func(err error) (stop bool)
 
 // Walk traverse error chain and error list, it stops when there is no
-// underlying error or the WalkFunc decides to stop
+// underlying error or the WalkFunc decides to stop.
 func Walk(err error, cb WalkFunc) {
 	for {
 		if err == nil {
