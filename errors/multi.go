@@ -91,7 +91,7 @@ func (m *multiErr) HasError() bool {
 }
 
 func (m *multiErr) Format(s fmt.State, verb rune) {
-	// TODO:
+	// TODO: support different verb
 	switch verb {
 	case 'v', 's':
 		s.Write([]byte(formatErrors(m.errs)))
@@ -191,7 +191,7 @@ func formatErrors(errs []error) string {
 	if len(errs) == 1 {
 		return errs[0].Error()
 	}
-	// TODO: (at15) might use strings.Join implementation, two loops, first calculate the length of the strings to
+	// TODO(at15): might use strings.Join implementation, two loops, first calculate the length of the strings to
 	// get total buf size, then copy the first element, the second loop copy separator and the n-1 elements, and there is
 	// no need to trim the last separator
 	buf := make([]byte, 0, len(errs)*10)

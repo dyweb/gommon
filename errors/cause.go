@@ -13,7 +13,7 @@ type causer interface {
 // If you want get direct cause, use DirectCause.
 // If error is nil, it will return nil. If error is not wrapped it will return the error itself.
 // error wrapped using https://github.com/pkg/errors also satisfies this interface and can be unwrapped as well.
-// TODO: might consider rename it to Unwrap since we are deprecating causer interface
+// Deprecated: Use Walk if you need root cause or Unwrap if you need direct cause.
 func Cause(err error) error {
 	if err == nil {
 		return nil
@@ -29,21 +29,4 @@ func Cause(err error) error {
 		}
 	}
 	return err
-}
-
-// DirectCause returns the direct cause of the error (if any).
-// It does NOT follow the cause chain all the way down, just the first one (if any),
-// If you want to get root cause, use Cause
-func DirectCause(err error) error {
-	if err == nil {
-		return nil
-	}
-	switch err.(type) {
-	case Wrapper:
-		return err.(Wrapper).Unwrap()
-	case causer:
-		return err.(causer).Cause()
-	default:
-		return err
-	}
 }
