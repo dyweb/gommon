@@ -1,5 +1,7 @@
 # Errors
 
+[![GoDoc](https://godoc.org/github.com/dyweb/gommon/errors?status.svg)](https://godoc.org/github.com/dyweb/gommon/errors)
+
 A replacement for `errors` and `pkg/errors`. Supports error wrapping, inspection and multi errors.
 
 - [Survey](doc/survey)
