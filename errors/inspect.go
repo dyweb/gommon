@@ -6,6 +6,21 @@ import (
 
 // inspect.go defines functions for inspecting wrapped error or error list
 
+// Unwrap returns the underlying error. If the error is not wrapped, it returns nil.
+// Its behavior is same as standard library.
+func Unwrap(err error) error {
+	if err == nil {
+		return nil
+	}
+	switch err.(type) {
+	case Wrapper:
+		return err.(Wrapper).Unwrap()
+	case causer:
+		return err.(causer).Cause()
+	}
+	return nil
+}
+
 // Is walks the error chain and do direct compare.
 // It should be used for checking sentinel errors like io.EOF
 // It returns true on the first match.

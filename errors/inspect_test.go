@@ -9,6 +9,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestUnwrap(t *testing.T) {
+	t.Run("flat", func(t *testing.T) {
+		assert.Nil(t, errors.Unwrap(nil))
+		assert.Equal(t, nil, errors.Unwrap(os.ErrClosed))
+	})
+
+	t.Run("fmt.Errorf", func(t *testing.T) {
+		assert.Equal(t, os.ErrClosed, errors.Unwrap(fmt.Errorf("can't read config %w", os.ErrClosed)))
+	})
+}
+
 func TestIs(t *testing.T) {
 	t.Run("flat", func(t *testing.T) {
 		assert.False(t, errors.Is(nil, os.ErrClosed), "nil does not match sentinel error")

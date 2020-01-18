@@ -9,6 +9,7 @@ A replacement for `errors` and `pkg/errors`. Supports error wrapping, inspection
 ## Issues
 
 - [#54](https://github.com/dyweb/gommon/issues/54) init 
+- [#62](https://github.com/dyweb/gommon/issues/62) support fmt.Formatter
 
 ## Implementation
 
