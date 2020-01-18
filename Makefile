@@ -35,7 +35,7 @@ GO = GO111MODULE=on go
 # -- build vars ---
 PKGS =./errors/... ./generator/... ./httpclient/... ./log/... ./noodle/... ./util/...
 PKGST =./cmd ./errors ./generator ./httpclient ./log ./noodle ./util
-VERSION = 0.0.12
+VERSION = 0.0.13
 BUILD_COMMIT := $(shell git rev-parse HEAD)
 BUILD_TIME := $(shell date +%Y-%m-%dT%H:%M:%S%z)
 CURRENT_USER = $(USER)
@@ -54,8 +54,8 @@ fmt:
 # --- build ---
 .PHONY: clean build build-linux build-mac build-win build-all
 clean:
-	rm ./build/gommon
-	rm ./build/gommon-*
+	rm -f ./build/gommon
+	rm -f ./build/gommon-*
 build:
 	$(GO) build -ldflags "$(FLAGS)" -o ./build/gommon ./cmd/gommon
 build-linux:

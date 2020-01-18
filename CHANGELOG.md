@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.0.13
+
+Released on 2020/01/17
+
+[release](https://github.com/dyweb/gommon/releases/tag/0.0.13) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aclosed+milestone%3A0.0.13)
+
+Breaking change
+
+- Removed `errors.DireCause`
+
+New feature
+
+- Added `errors.Unwrap` and `errors.As` to align with go 1.13 [#109](https://github.com/dyweb/gommon/issues/109)
+
 ## v0.0.12
 
 Released on 2019/05/04

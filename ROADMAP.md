@@ -2,12 +2,11 @@
 
 ## Up coming
 
-### 0.0.13
+### 0.0.14
 
-Was 0.0.12 but move httpclient from go.ice is needed and improve the error package is going to take a while,
-so changed milestone to 0.0.13.
+From 0.0.13
 
-- [ ] align errors with x/errors which will become the default [#109](https://github.com/dyweb/gommon/issues/109)
+- [ ] log UI, parse log output etc.
 
 From 0.0.11
 
@@ -25,6 +24,10 @@ From 0.0.9
 - [ ] (optional) extension for collecting errors using third party services
 
 ## Finished
+
+### 0.0.13
+
+- [x] align errors with x/errors which will become the default [#109](https://github.com/dyweb/gommon/issues/109)
 
 ### 0.0.12
 
