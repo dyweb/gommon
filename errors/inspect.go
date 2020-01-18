@@ -6,8 +6,8 @@ import (
 
 // inspect.go defines functions for inspecting wrapped error or error list
 
-// Unwrap returns the underlying error. If the error is not wrapped, it returns nil.
-// Its behavior is same as standard library.
+// Unwrap returns the first underlying error. If the error is not wrapped, it returns nil.
+// It does NOT follow the entire error chain. Its behavior is same as standard library.
 func Unwrap(err error) error {
 	if err == nil {
 		return nil
