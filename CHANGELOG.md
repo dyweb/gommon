@@ -4,11 +4,11 @@
 
 Released on 2020/01/17
 
-[release](https://github.com/dyweb/gommon/releases/tag/0.0.13) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aclosed+milestone%3A0.0.13)
+[release](https://github.com/dyweb/gommon/releases/tag/v0.0.13) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aclosed+milestone%3A0.0.13)
 
 Breaking change
 
-- Removed `errors.DireCause`
+- Removed `errors.DirectCause`
 
 New feature
 
@@ -18,7 +18,7 @@ New feature
 
 Released on 2019/05/04
 
-[release](https://github.com/dyweb/gommon/releases/tag/0.0.12) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aclosed+milestone%3A0.0.12)
+[release](https://github.com/dyweb/gommon/releases/tag/v0.0.12) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aclosed+milestone%3A0.0.12)
 
 New feature
 
@@ -28,7 +28,7 @@ New feature
 
 Released on 2019/04/28
 
-[release](https://github.com/dyweb/gommon/releases/tag/0.0.11) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aissue+milestone%3A0.0.11+is%3Aclosed)
+[release](https://github.com/dyweb/gommon/releases/tag/v0.0.11) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aissue+milestone%3A0.0.11+is%3Aclosed)
 
 Breaking change
 
@@ -46,7 +46,7 @@ Removed package
 
 ## v0.0.10
 
-[release](https://github.com/dyweb/gommon/releases/tag/0.0.10) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aissue+milestone%3A0.0.10+is%3Aclosed)
+[release](https://github.com/dyweb/gommon/releases/tag/v0.0.10) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aissue+milestone%3A0.0.10+is%3Aclosed)
 
 Breaking change
 
@@ -63,7 +63,7 @@ Fixed
 
 ## v0.0.9
 
-[release](https://github.com/dyweb/gommon/releases/tag/0.0.9) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aissue+milestone%3A0.0.9+is%3Aclosed)
+[release](https://github.com/dyweb/gommon/releases/tag/v0.0.9) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aissue+milestone%3A0.0.9+is%3Aclosed)
 
 New feature
 
@@ -82,7 +82,7 @@ Removed package
 
 ## v0.0.8
 
-[release](https://github.com/dyweb/gommon/releases/tag/0.0.8) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aclosed+milestone%3A0.0.8)
+[release](https://github.com/dyweb/gommon/releases/tag/v0.0.8) [closed issues](https://github.com/dyweb/gommon/issues?q=is%3Aclosed+milestone%3A0.0.8)
 
 Breaking change in factory functions
 
@@ -96,20 +96,20 @@ Breaking change in factory functions
 
 ## v0.0.7
 
-[release](https://github.com/dyweb/gommon/releases/tag/0.0.7)
+[release](https://github.com/dyweb/gommon/releases/tag/v0.0.7)
 
 - deprecated config v1, move it to legacy folder
 - move cast into util
 
 ## v0.0.6
 
-[release](https://github.com/dyweb/gommon/releases/tag/0.0.6)
+[release](https://github.com/dyweb/gommon/releases/tag/v0.0.6)
 
 - improve doc, fix typo
 
 ## v0.0.5
 
-[release](https://github.com/dyweb/gommon/releases/tag/0.0.5)
+[release](https://github.com/dyweb/gommon/releases/tag/v0.0.5)
 
 - remove usage of `pkg/errors`, use `gommon/errors` instead
   - support multiple errors (includes a thread safe version using mutex)
