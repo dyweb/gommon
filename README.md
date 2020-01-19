@@ -29,7 +29,7 @@ other dependencies like cobra are only for cli, see [go.mod](go.mod).
 
 ## Development
 
-- requires go1.12+. go1.11.x should work as well, the Makefile set `GO111MODULE=on` so you can use in GOPATH
+- requires go1.13
 - `make help`
 - [Directory layout](directory.md)
 
