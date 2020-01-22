@@ -20,8 +20,16 @@ import (
 func Generate(root string) error {
 	var files []string
 	// TODO: limit level
-	// TODO: allow read ignore from file
-	fsutil.Walk(root, DefaultIgnores(), func(path string, info os.FileInfo) {
+	ignores := DefaultIgnores()
+	if fsutil.FileExists(filepath.Join(root, GommonIgnoreFile)) {
+		// TODO: ReadIgnore should be put into fsutil package
+		userIgnores, err := noodle.ReadIgnoreFile(filepath.Join(root, GommonIgnoreFile))
+		if err != nil {
+			return err
+		}
+		ignores = userIgnores
+	}
+	fsutil.Walk(root, ignores, func(path string, info os.FileInfo) {
 		//log.Trace(path + "/" + info.Name())
 		if info.Name() == GommonConfigFile {
 			files = append(files, join(path, info.Name()))
