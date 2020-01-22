@@ -7,10 +7,8 @@ import (
 )
 
 const (
-	// PkgName TODO: is reserved for the incoming library package (liblibrary?) to allow control logger etc.
-	PkgName              = "gommon"
+	GommonIgnoreFile     = ".gommonignore"
 	GommonConfigFile     = "gommon.yml"
-	Name                 = "gommon"
 	DefaultGeneratedFile = "gommon_generated.go"
 )
 

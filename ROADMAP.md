@@ -23,6 +23,8 @@ From 0.0.9
 - [ ] explain internals of some implementation
 - [ ] (optional) extension for collecting errors using third party services
 
+- [x] support `.gommonignore`, used by `gommon generate` on `_legacy` folder
+
 ## Finished
 
 ### 0.0.13
