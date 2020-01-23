@@ -1,9 +1,19 @@
 // Package hashutil provides alloc free alternatives for pkg/hash
-package hashutil // import "github.com/dyweb/gommon/util/hashutil"
+package hashutil
 
 func HashStringFnv64a(str string) uint64 {
 	h := NewInlineFNV64a()
-	h.WriteString(str)
+	if _, err := h.WriteString(str); err != nil {
+		panic(err)
+	}
+	return h.Sum64()
+}
+
+func HashFnv64a(b []byte) uint64 {
+	h := NewInlineFNV64a()
+	if _, err := h.Write(b); err != nil {
+		panic(err)
+	}
 	return h.Sum64()
 }
 
