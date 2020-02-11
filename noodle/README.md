@@ -64,3 +64,4 @@ func main() {
 ## References and Alternatives
 
 - [Proposal to add it to cmd/go](https://github.com/golang/go/issues/35950)
+- [Feature request to go.rice back in 2016](https://github.com/GeertJohan/go.rice/issues/83)

@@ -22,19 +22,21 @@ func Generate(root string) error {
 	// TODO: limit level
 	ignores := DefaultIgnores()
 	if fsutil.FileExists(filepath.Join(root, GommonIgnoreFile)) {
-		// TODO: ReadIgnore should be put into fsutil package
-		userIgnores, err := noodle.ReadIgnoreFile(filepath.Join(root, GommonIgnoreFile))
+		userIgnores, err := fsutil.ReadIgnoreFile(filepath.Join(root, GommonIgnoreFile))
 		if err != nil {
 			return err
 		}
 		ignores = userIgnores
 	}
-	fsutil.Walk(root, ignores, func(path string, info os.FileInfo) {
+	err := fsutil.Walk(root, ignores, func(path string, info os.FileInfo) {
 		//log.Trace(path + "/" + info.Name())
 		if info.Name() == GommonConfigFile {
 			files = append(files, join(path, info.Name()))
 		}
 	})
+	if err != nil {
+		return err
+	}
 	for _, file := range files {
 		if err := GenerateSingle(file); err != nil {
 			return err

@@ -136,7 +136,7 @@ func readIgnoreFile(root string) (*fsutil.Ignores, error) {
 	ignoreFile := join(root, DefaultIgnoreFileName)
 	if fsutil.FileExists(ignoreFile) {
 		log.Debugf("found ignore file %s", ignoreFile)
-		if ignores, err = ReadIgnoreFile(ignoreFile); err != nil {
+		if ignores, err = fsutil.ReadIgnoreFile(ignoreFile); err != nil {
 			return ignores, err
 		}
 		// set common prefix so ignore path would work

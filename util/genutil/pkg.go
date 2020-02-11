@@ -1,6 +1,6 @@
 // Package genutil contains helper when generating files,
 // it is used to break dependency cycle between generator package
-// and packages that contain generator logic like log, noodle
+// and packages that contain generator logic like log, noodle etc.
 package genutil
 
 // DefaultHeader calls Header and set generator to gommon

@@ -24,6 +24,7 @@ From 0.0.9
 - [ ] (optional) extension for collecting errors using third party services
 
 - [x] support `.gommonignore`, used by `gommon generate` on `_legacy` folder
+- [x] clean up `.ignore` file support, move it to `fsutil` package
 
 ## Finished
 
