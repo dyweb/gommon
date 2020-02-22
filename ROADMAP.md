@@ -25,6 +25,7 @@ From 0.0.9
 
 - [x] support `.gommonignore`, used by `gommon generate` on `_legacy` folder
 - [x] clean up `.ignore` file support, move it to `fsutil` package
+- [x] clean up `go.mod` by using a separated `go.mod` for `gommon` binary, thus removing cobra, viper, etcd.
 
 ## Finished
 
