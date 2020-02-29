@@ -1,0 +1,17 @@
+package mathutil
+
+{{ range .}}
+func Max{{. | UcFirst }} (a, b {{.}}) {{.}} {
+    if a > b {
+        return a
+    }
+    return b
+}
+
+func Min{{. | UcFirst }} (a, b {{.}}) {{.}} {
+    if a < b {
+        return a
+    }
+    return b
+}
+{{ end }}

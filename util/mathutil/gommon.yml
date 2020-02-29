@@ -1,0 +1,11 @@
+gotmpls:
+  - src: max_generated.go.tmpl
+    dst: max_generated.go
+    go: true
+    data:
+      - int
+      - uint
+      - int32
+      - uint32
+      - int64
+      - uint64

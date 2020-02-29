@@ -46,6 +46,7 @@ DOCKER_REPO = dyweb/gommon
 .PHONY: install
 install: fmt test
 	cd ./cmd/gommon && $(GO) install -ldflags "$(FLAGS)" .
+	mv $(GOPATH)/bin/gommonbin $(GOPATH)/bin/gommon
 
 .PHONY: fmt
 fmt:
