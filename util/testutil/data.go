@@ -47,15 +47,7 @@ func FormatJson(t *testing.T, src []byte) []byte {
 
 // TODO: it's dump w/ Print in pretty.go ... wrote too much and forgot ...
 func DumpAsJson(t *testing.T, v interface{}) {
-	b, err := json.MarshalIndent(v, "", "  ")
-	if err != nil {
-		t.Fatalf("failed to encode as json %v", v)
-		return
-	}
-	if _, err := os.Stdout.Write(b); err != nil {
-		t.Fatalf("failed to write encoded json to stdout: %s", err)
-		return
-	}
+	DumpAsJsonTo(t, v, os.Stdout)
 }
 
 func DumpAsJsonTo(t *testing.T, v interface{}, w io.Writer) {
@@ -84,15 +76,7 @@ func SaveAsJson(t *testing.T, v interface{}, file string) {
 
 func SaveAsJsonf(t *testing.T, v interface{}, format string, args ...interface{}) {
 	file := fmt.Sprintf(format, args...)
-	b, err := json.Marshal(v)
-	if err != nil {
-		t.Fatalf("failed to encode as json: %s %v", err, v)
-		return
-	}
-	if err := ioutil.WriteFile(file, b, 0664); err != nil {
-		t.Fatalf("failed to save file %s: %v", file, err)
-		return
-	}
+	SaveAsJson(t, v, file)
 }
 
 func SaveAsPrettyJson(t *testing.T, v interface{}, file string) {
@@ -110,16 +94,7 @@ func SaveAsPrettyJson(t *testing.T, v interface{}, file string) {
 
 func SaveAsPrettyJsonf(t *testing.T, v interface{}, format string, args ...interface{}) {
 	file := fmt.Sprintf(format, args...)
-	b, err := json.MarshalIndent(v, "", "  ")
-	if err != nil {
-		t.Fatalf("failed to encode as json %v", v)
-		return
-	}
-	if err := ioutil.WriteFile(file, b, 0664); err != nil {
-		t.Fatalf("failed to save file %s: %v", file, err)
-		return
-	}
-	t.Logf("saved json to %s", file)
+	SaveAsPrettyJson(t, v, file)
 }
 
 // -------------------- end of json -----------------------
@@ -156,16 +131,7 @@ func SaveAsYAML(t *testing.T, v interface{}, file string) {
 
 func SaveAsYAMLf(t *testing.T, v interface{}, format string, args ...interface{}) {
 	file := fmt.Sprintf(format, args...)
-	b, err := yaml.Marshal(v)
-	if err != nil {
-		t.Fatalf("failed to encode as YAML: %s %v", err, v)
-		return
-	}
-	if err := ioutil.WriteFile(file, b, 0664); err != nil {
-		t.Fatalf("failed to save file %s: %v", file, err)
-		return
-	}
-	t.Logf("saved YAML to %s", file)
+	SaveAsYAML(t, v, file)
 }
 
 // -------------------- end of yaml -----------------------
