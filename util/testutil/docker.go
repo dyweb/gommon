@@ -98,7 +98,11 @@ func (c *Container) DockerPsArgs() []string {
 
 // run calls docker run in foreground and collect its id.
 func (c *Container) run() error {
-	// TODO(at15): we do a docker pull first to return message for image not exist error
+	pullCmd := exec.Command("docker", "pull", c.cfg.Image)
+	out, err := pullCmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("docker pull failed: %w %s", err, string(out))
+	}
 
 	// docker run
 	runCmd := exec.Command("docker", c.DockerRunArgs()...)
@@ -109,10 +113,6 @@ func (c *Container) run() error {
 
 	// TODO(#126): manual retry until we have a retry package
 	// The drawback of shell out is we don't know when the container will be ready especially when pulling is needed.
-	var (
-		out []byte
-		err error
-	)
 	for i := 0; i < 5; i++ {
 		// docker ps to get id
 		psCmd := exec.Command("docker", c.DockerPsArgs()...)
