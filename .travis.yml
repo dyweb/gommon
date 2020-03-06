@@ -1,8 +1,12 @@
 language: go
 sudo: false
 
+services:
+  - docker
+
 go:
   - "1.13"
+  - "1.14"
   - tip
 
 env:
@@ -18,5 +22,9 @@ script:
   - make vet
   - make test-cover
 
+after_script:
+  - docker rm -f $(docker ps --filter="label=gommon-container" -q)
+
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+

@@ -10,9 +10,13 @@ import (
 
 	"github.com/dyweb/gommon/util/netutil"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestContainerConfig_ToDockerArgs(t *testing.T) {
+func TestContainer_DockerRunArgs(t *testing.T) {
+	tStart := time.Unix(1583459680, 0)
+	SetTestStart(tStart)
+	tCreate := time.Unix(1583459690, 0)
 	cfg := ContainerConfig{
 		Image: "nginx",
 		Ports: []PortMapping{
@@ -21,10 +25,12 @@ func TestContainerConfig_ToDockerArgs(t *testing.T) {
 				Container: 80,
 			},
 		},
+		now: tCreate,
 	}
-	args, err := cfg.ToDockerArgs()
-	assert.Nil(t, err)
-	assert.Equal(t, "run -p 8093:80 nginx", strings.Join(args, " "))
+	c, err := NewContainerWithoutRun(cfg)
+	require.Nil(t, err)
+	args := c.DockerRunArgs()
+	assert.Equal(t, "run -p 8093:80 -l gommon-container=1 -l gommon-test-start-time=1583459680000000000 -l gommon-create-time=1583459690000000000 nginx", strings.Join(args, " "))
 }
 
 func TestContainer_Stop(t *testing.T) {
@@ -44,7 +50,7 @@ func TestContainer_Stop(t *testing.T) {
 	c, err := NewContainer(cfg)
 	assert.Nil(t, err)
 	// TODO: wait until container is ready, this needs to be provided by the client ...
-	time.Sleep(2 * time.Second)
+	time.Sleep(1 * time.Second)
 	res, err := http.Get(fmt.Sprintf("http://localhost:%d", port))
 	assert.Nil(t, err)
 	b, err := ioutil.ReadAll(res.Body)
