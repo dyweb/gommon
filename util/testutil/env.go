@@ -9,6 +9,8 @@ import (
 	"testing"
 )
 
+// env.go load .env file during testing
+
 // LoadDotEnv load .env in current directory into environment variable, line start with # are comments
 // It is modeled after https://github.com/motdotla/dotenv
 func LoadDotEnv(t *testing.T) {

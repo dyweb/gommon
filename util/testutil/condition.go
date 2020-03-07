@@ -1,7 +1,9 @@
 package testutil
 
 import (
+	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 	"testing"
 )
@@ -14,7 +16,7 @@ const (
 
 type Condition interface {
 	Eval() (res bool, msg string, err error)
-	// B is used for normal if condition
+	// B calls Eval and returns false if there is an error when eval.
 	B() bool
 }
 
@@ -60,6 +62,8 @@ func RunIf(t *testing.T, con Condition) {
 		return
 	}
 }
+
+// Start of boolean expressions, And, Or, Not
 
 func And(l Condition, r Condition) Condition {
 	return &con{
@@ -118,6 +122,8 @@ func Not(c Condition) Condition {
 	}
 }
 
+// end of boolean expressions.
+
 // Bool checks if a bool is true
 func Bool(name string, b bool) Condition {
 	return &con{
@@ -173,11 +179,28 @@ func EnvHas(name string) Condition {
 	}
 }
 
+// BinaryExist returns a test condition that looks up binary from PATH using exec.LookPath.
+func BinaryExist(name string) Condition {
+	return &con{stmt: func() (res bool, msg string, err error) {
+		p, err := exec.LookPath(name)
+		if err == nil {
+			return true, fmt.Sprintf("binary %s is in %s", name, p), nil
+		}
+		return false, fmt.Sprintf("binary %s not found: %s", name, err), err
+	}}
+}
+
 // wrapper for common conditions, NOTE: some are defined in other files like golden.go
 
 // IsTravis check if env TRAVIS is true
 func IsTravis() Condition {
 	return EnvTrue("TRAVIS")
+}
+
+// HasDocker returns a test condition that checks if docker client exists.
+// NOTE: it does not check if the docker daemon is running or the current user has the privilege to execute docker cli.
+func HasDocker() Condition {
+	return BinaryExist("docker")
 }
 
 // Dump check if env DUMP or GOMMON_DUMP is set, so print detail or use go-spew to dump structs etc.
