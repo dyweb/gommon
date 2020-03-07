@@ -24,17 +24,16 @@ type ContainerConfig struct {
 	Image string
 	Ports []PortMapping
 
+	// override current time for testing
 	now time.Time
 }
 
+// Container is the meta data for a running docker container.
 type Container struct {
 	cfg        ContainerConfig
 	createTime time.Time
-
-	// TODO: do we really need to save the docker run process? we are not doing anything with it after switch to docker rm
-	cmd    *exec.Cmd
-	id     string
-	labels []string
+	id         string
+	labels     []string // labels are used to identify test containers created by gommon
 }
 
 // NewContainer shell out to docker cli and runs a container in foreground.
@@ -53,6 +52,7 @@ func NewContainer(cfg ContainerConfig) (*Container, error) {
 }
 
 // NewContainerWithoutRun validate config, generate labels and does not execute any docker command.
+// It is mainly used for testing the util package itself. You should use NewContainer in your test most of the time.
 func NewContainerWithoutRun(cfg ContainerConfig) (*Container, error) {
 	if cfg.Image == "" {
 		return nil, errors.New("image is empty")
@@ -97,6 +97,7 @@ func (c *Container) DockerPsArgs() []string {
 }
 
 // run calls docker run in foreground and collect its id.
+// we don't export it because it's pretty easy to forget calling run.
 func (c *Container) run() error {
 	pullCmd := exec.Command("docker", "pull", c.cfg.Image)
 	out, err := pullCmd.CombinedOutput()
@@ -105,11 +106,11 @@ func (c *Container) run() error {
 	}
 
 	// docker run
+	// TODO(at15): maybe we should capture its output to allow inspect container logs in test
 	runCmd := exec.Command("docker", c.DockerRunArgs()...)
 	if err := runCmd.Start(); err != nil {
 		return fmt.Errorf("error start docker command %w", err)
 	}
-	c.cmd = runCmd
 
 	// TODO(#126): manual retry until we have a retry package
 	// The drawback of shell out is we don't know when the container will be ready especially when pulling is needed.
@@ -128,10 +129,8 @@ func (c *Container) run() error {
 	return fmt.Errorf("error get conatienr id : %w %s", err, string(out))
 }
 
-// Stop removes the (running) container by id
+// Stop force removes the running container by id.
 func (c *Container) Stop() error {
-	// TODO: kill the foreground docker run process? though it will exit once the container is removed
-
 	delCmd := exec.Command("docker", "rm", "-f", c.id)
 	out, err := delCmd.CombinedOutput()
 	if err != nil {

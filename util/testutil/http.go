@@ -7,6 +7,9 @@ import (
 )
 
 func GetBody(t *testing.T, c *http.Client, url string) []byte {
+	if c == nil {
+		c = http.DefaultClient
+	}
 	res, err := c.Get(url)
 	if err != nil {
 		t.Fatalf("error GET %s: %s", url, err)

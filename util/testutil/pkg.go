@@ -1,4 +1,10 @@
 // Package testutil defines helper functions like condition, golden file, docker container etc.
+//
+// Condition allows you to skip/run test with message explaining why it is skipped, e.g. env RUN_ABC=false, skip ABC.
+//
+// Container is used to run one off test containers by shelling out to docker cli.
+//
+// Golden switch golden file generation and validation based on environment variable using condition.
 package testutil
 
 import "time"

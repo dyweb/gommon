@@ -2,8 +2,6 @@ package testutil
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"strings"
 	"testing"
 	"time"
@@ -49,12 +47,9 @@ func TestContainer_Stop(t *testing.T) {
 	}
 	c, err := NewContainer(cfg)
 	assert.Nil(t, err)
-	// TODO: wait until container is ready, this needs to be provided by the client ...
+	// TODO: wait until container is ready, this needs to be provided in config
 	time.Sleep(1 * time.Second)
-	res, err := http.Get(fmt.Sprintf("http://localhost:%d", port))
-	assert.Nil(t, err)
-	b, err := ioutil.ReadAll(res.Body)
-	assert.Nil(t, err)
+	b := GetBody(t, nil, fmt.Sprintf("http://localhost:%d", port))
 	assert.Contains(t, string(b), "Welcome to nginx")
 	err = c.Stop()
 	assert.Nil(t, err)
