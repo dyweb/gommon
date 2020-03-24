@@ -10,3 +10,5 @@ dcli is a light weight cli builder.
 
 - [spf13/cobra](https://github.com/spf13/cobra)
 - [peterbourgon/ff](https://github.com/peterbourgon/ff) Flag first package for configuration
+- [urfave/cli](https://github.com/urfave/cli)
+- [mitchellh/cli](https://github.com/mitchellh/cli) Used by consul, terraform etc.

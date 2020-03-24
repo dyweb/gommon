@@ -4,6 +4,10 @@
 
 ### 0.0.14
 
+- [ ] wait package, similar to the polling package in k8s
+  - [ ] have retry as alias and provides backoff
+  - [ ] allow use wait for container
+
 From 0.0.13
 
 - [ ] log UI, parse log output etc.

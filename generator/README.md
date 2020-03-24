@@ -1,6 +1,5 @@
 # Generator
 
-
 ## Usage
 
 Put a `gommon.yml` in folder, gommon will traverse folders and generate go file based on instruction
@@ -51,4 +50,4 @@ gotmpl
 
 shell
 
-- [ ] support using `sh -c`
+- [x] support using `sh -c`
