@@ -33,8 +33,8 @@ help:
 
 GO = GO111MODULE=on go
 # -- build vars ---
-PKGS =./errors/... ./generator/... ./httpclient/... ./log/... ./noodle/... ./util/...
 PKGST =./cmd ./errors ./generator ./httpclient ./log ./noodle ./util
+PKGS = $(addsuffix ...,$(PKGST))
 VERSION = 0.0.13
 BUILD_COMMIT := $(shell git rev-parse HEAD)
 BUILD_TIME := $(shell date +%Y-%m-%dT%H:%M:%S%z)
