@@ -190,6 +190,22 @@ func BinaryExist(name string) Condition {
 	}}
 }
 
+// CommandSuccess returns a test condition that executes a command and wait its completion.
+// It evaluates to true if the process exist with 0.
+// TODO: maybe have a default timeout?
+func CommandSuccess(cmd string, args ...string) Condition {
+	return &con{stmt: func() (res bool, msg string, err error) {
+		cmd := exec.Command(cmd, args...)
+		full := fmt.Sprintf("%s %s", cmd, strings.Join(args, " "))
+		b, err := cmd.CombinedOutput()
+		if err == nil {
+			return true, "command success: " + full, nil
+		}
+		// FIXME: we return nil error to avoid failing the test in RunIf, might need to change the design
+		return false, "command failed: " + full + string(b), nil
+	}}
+}
+
 // wrapper for common conditions, NOTE: some are defined in other files like golden.go
 
 // IsTravis check if env TRAVIS is true
@@ -197,10 +213,10 @@ func IsTravis() Condition {
 	return EnvTrue("TRAVIS")
 }
 
-// HasDocker returns a test condition that checks if docker client exists.
-// NOTE: it does not check if the docker daemon is running or the current user has the privilege to execute docker cli.
+// HasDocker returns a test condition that checks if docker client exists and the daemon is up and running.
+// TODO: cache the result of docker version?
 func HasDocker() Condition {
-	return BinaryExist("docker")
+	return And(BinaryExist("docker"), CommandSuccess("docker", "version"))
 }
 
 // Dump check if env DUMP or GOMMON_DUMP is set, so print detail or use go-spew to dump structs etc.

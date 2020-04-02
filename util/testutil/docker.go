@@ -138,3 +138,14 @@ func (c *Container) Stop() error {
 	}
 	return nil
 }
+
+// IsDockerRunning returns true if docker version exit with 0.
+// Meaning there is docker cli and the server it points to is up and running
+func IsDockerRunning() bool {
+	cmd := exec.Command("docker", "version")
+	_, err := cmd.CombinedOutput()
+	if err != nil {
+		return false
+	}
+	return true
+}

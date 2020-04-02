@@ -2,10 +2,8 @@ package generator
 
 import (
 	"bytes"
-	"go/format"
 	"io/ioutil"
 	"text/template"
-	"unicode"
 
 	"github.com/dyweb/gommon/errors"
 	"github.com/dyweb/gommon/util/fsutil"
@@ -32,7 +30,7 @@ func (c *GoTemplateConfig) Render(root string) error {
 	}
 	if t, err = template.New(c.Src).
 		Funcs(template.FuncMap{
-			"UcFirst": UcFirst,
+			"UcFirst": genutil.UcFirst,
 		}).
 		Parse(string(b)); err != nil {
 		return errors.Wrap(err, "can't parse template")
@@ -42,7 +40,7 @@ func (c *GoTemplateConfig) Render(root string) error {
 		return errors.Wrap(err, "can't render template")
 	}
 	if c.Go {
-		if b, err = format.Source(buf.Bytes()); err != nil {
+		if b, err = genutil.Format(buf.Bytes()); err != nil {
 			return errors.Wrap(err, "can't format as go code")
 		}
 	} else {
@@ -53,15 +51,4 @@ func (c *GoTemplateConfig) Render(root string) error {
 	}
 	log.Debugf("rendered go tmpl %s to %s", join(root, c.Src), join(root, c.Dst))
 	return nil
-}
-
-// UcFirst change first character to upper case.
-// It is based on https://github.com/99designs/gqlgen/blob/master/codegen/templates/templates.go#L205
-func UcFirst(s string) string {
-	if s == "" {
-		return ""
-	}
-	r := []rune(s)
-	r[0] = unicode.ToUpper(r[0])
-	return string(r)
 }

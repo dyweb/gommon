@@ -5,13 +5,13 @@ import (
 	"testing"
 	"text/template"
 
-	"github.com/dyweb/gommon/generator"
+	"github.com/dyweb/gommon/util/genutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestUcFirst(t *testing.T) {
-	tmpl, err := template.New("test_ucfirst").Funcs(template.FuncMap{"UcFirst": generator.UcFirst}).Parse(`{{ .foo | UcFirst }}`)
+	tmpl, err := template.New("test_ucfirst").Funcs(template.FuncMap{"UcFirst": genutil.UcFirst}).Parse(`{{ .foo | UcFirst }}`)
 	require.Nil(t, err)
 	var buf bytes.Buffer
 	err = tmpl.Execute(&buf, map[string]string{
