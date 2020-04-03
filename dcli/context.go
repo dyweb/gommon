@@ -17,7 +17,7 @@ type DefaultContext struct {
 	stdCtx context.Context
 }
 
-// TODO(generator): those default context wrapper should be generated. It is also used httpclient
+// TODO(generator): those default context wrapper should be generated. It is also used in httpclient package
 // Deadline returns Deadline() from underlying context.Context if set
 func (c *DefaultContext) Deadline() (deadline time.Time, ok bool) {
 	if c != nil && c.stdCtx != nil {

@@ -1,5 +1,11 @@
 package dcli
 
-type Command interface {
+import "context"
 
+type Command interface {
+	Name() string
+	Run(ctx context.Context) error
+}
+
+type Cmd struct {
 }

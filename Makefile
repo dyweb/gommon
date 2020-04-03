@@ -37,16 +37,23 @@ PKGST =./cmd ./errors ./generator ./httpclient ./log ./noodle ./util
 PKGS = $(addsuffix ...,$(PKGST))
 VERSION = 0.0.13
 BUILD_COMMIT := $(shell git rev-parse HEAD)
+BUILD_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 BUILD_TIME := $(shell date +%Y-%m-%dT%H:%M:%S%z)
 CURRENT_USER = $(USER)
 FLAGS = -X main.version=$(VERSION) -X main.commit=$(BUILD_COMMIT) -X main.buildTime=$(BUILD_TIME) -X main.buildUser=$(CURRENT_USER)
 DOCKER_REPO = dyweb/gommon
+DCLI_PKG = github.com/dyweb/gommon/dcli.
+DCLI_LDFLAGS = -X $(DCLI_PKG)buildVersion=$(VERSION) -X $(DCLI_PKG)buildCommit=$(BUILD_COMMIT) -X $(DCLI_PKG)buildBranch=$(BUILD_BRANCH) -X $(DCLI_PKG)/buildTime=$(BUILD_TIME) -X $(DCLI_PKG)buildUser=$(CURRENT_USER)
 # -- build vars ---
 
 .PHONY: install
 install: fmt test
 	cd ./cmd/gommon && $(GO) install -ldflags "$(FLAGS)" .
 	mv $(GOPATH)/bin/gommonbin $(GOPATH)/bin/gommon
+
+.PHONY: install2
+install2:
+	cd ./cmd/gommon2 && $(GO) install -ldflags "$(DCLI_LDFLAGS)" .
 
 .PHONY: fmt
 fmt:
