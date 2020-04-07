@@ -6,7 +6,7 @@ import (
 )
 
 // Context implements context.Context and provides cli specific helper func.
-// A default implementation DefaultContext is provided. 
+// A default implementation DefaultContext is provided.
 type Context interface {
 	context.Context
 }

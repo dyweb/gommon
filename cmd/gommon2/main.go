@@ -2,11 +2,21 @@
 package main
 
 import (
-	"fmt"
+	"context"
 
 	"github.com/dyweb/gommon/dcli"
+	dlog "github.com/dyweb/gommon/log"
 )
 
+var logReg = dlog.NewRegistry()
+var log = logReg.NewLogger()
+
 func main() {
-	fmt.Printf("info %v", dcli.DefaultBuildInfo())
+	dcli.RunApplication("gommon2", &dcli.Cmd{
+		Name: "gommon2",
+		Run: func(ctx context.Context) error {
+			log.Info("gommon2 does nothing")
+			return nil
+		},
+	})
 }

@@ -1,12 +1,14 @@
 package dcli
 
-import "runtime"
+import (
+	"context"
+	"os"
+	"runtime"
 
-type Application struct {
-	Name        string
-	Description string
-	Version     string
-}
+	"github.com/dyweb/gommon/errors"
+)
+
+// app.go defines application struct and build info.
 
 var (
 	// set using -ldflags "-X github.com/dyweb/gommon/dcli.buildVersion=0.0.1"
@@ -46,4 +48,49 @@ func DefaultBuildInfo() BuildInfo {
 		User:      buildUser,
 		GoVersion: runtime.Version(),
 	}
+}
+
+type Application struct {
+	Description string
+	Version     string
+
+	name    string  // binary name
+	command Command // entry command, its Name should be same as Application.Name but it is ignored when execute.
+}
+
+// RunApplication creates a new application and run it directly.
+// It logs and exit with 1 if application creation or execution failed.
+func RunApplication(name string, cmd Command) {
+	app, err := NewApplication(name, cmd)
+	if err != nil {
+		log.Fatal(err)
+	}
+	app.Run()
+}
+
+func NewApplication(name string, cmd Command) (*Application, error) {
+	if err := validate(cmd); err != nil {
+		return nil, errors.Wrap(err, "command validation failed")
+	}
+	return &Application{
+		Description: "",
+		Version:     "",
+		name:        name,
+		command:     cmd,
+	}, nil
+}
+
+// Run calls RunArgs with command line arguments (os.Args[1:]) and exit 1 when there is error.
+func (a *Application) Run() {
+	if err := a.RunArgs(context.Background(), os.Args[1:]); err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+}
+
+func (a *Application) RunArgs(ctx context.Context, args []string) error {
+	if len(args) == 0 {
+		return a.command.GetRun()(ctx)
+	}
+	return errors.New("not implemented")
 }

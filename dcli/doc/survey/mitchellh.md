@@ -17,3 +17,22 @@ If you use a CLI with nested subcommands, some semantics change due to ambiguiti
 > Any parent commands that don't exist are automatically created as
     no-op commands that just show help for other subcommands. For example,
     if you only register "foo bar", then "foo" is automatically created.
+
+
+```go
+package main
+
+func main() {
+    c := cli.NewCLI("app", "1.0.0")
+	c.Args = os.Args[1:]
+	c.Commands = map[string]cli.CommandFactory{
+		"foo": fooCommandFactory,
+		"bar": barCommandFactory,
+	}
+
+	exitStatus, err := c.Run()
+	if err != nil {
+		log.Println(err)
+	}
+}
+```
