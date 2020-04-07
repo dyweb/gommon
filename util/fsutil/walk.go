@@ -13,6 +13,9 @@ type WalkFunc func(path string, info os.FileInfo)
 // Walk traverse the directory with ignore patterns in Pre-Order DFS
 func Walk(root string, ignores *Ignores, walkFunc WalkFunc) error {
 	// TODO: validate ignores or assign a default accept all
+	if ignores == nil {
+		ignores = AcceptAll
+	}
 	files, err := ioutil.ReadDir(root)
 	if err != nil {
 		return errors.Wrapf(err, "can't read dir %s", root)

@@ -10,6 +10,8 @@ import (
 	"github.com/dyweb/gommon/errors"
 )
 
+var AcceptAll = NewIgnores(nil, nil)
+
 // ReadIgnoreFile reads a .ignore file and parse the patterns.
 func ReadIgnoreFile(path string) (*Ignores, error) {
 	f, err := os.Open(path)
