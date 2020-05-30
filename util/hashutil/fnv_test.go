@@ -2,6 +2,7 @@ package hashutil
 
 import (
 	"fmt"
+	"hash/fnv"
 	"testing"
 
 	asst "github.com/stretchr/testify/assert"
@@ -18,6 +19,24 @@ func TestNewInlineFNV64a(t *testing.T) {
 	r2 := h2.Sum64()
 	fmt.Println(r1)
 	assert.Equal(r1, r2)
+}
+
+func TestInlineFNV32a_Write(t *testing.T) {
+	data := []string{
+		"8KBF520",
+		"BJUB",
+		"AMD YES!",
+	}
+	for _, d := range data {
+		b := []byte(d)
+		stdfnv := fnv.New32a()
+		myfnv := NewInlineFNV32a()
+		stdfnv.Write(b)
+		myfnv.Write(b)
+		if stdfnv.Sum32() != myfnv.Sum32() {
+			t.Errorf("Mismatch for %s std %d my %d", d, stdfnv.Sum32(), myfnv.Sum32())
+		}
+	}
 }
 
 // for ascii, Write and WriteString has same result, for non-ascii, NO
@@ -52,4 +71,4 @@ func TestInlineFNV64a_WriteString(t *testing.T) {
 	}
 }
 
-// TODO: benchmark byte alloc when using Write([]byte(str)) and WriteString()
+// TODO: benchmark InlineFNV64a with the hash/fnv
