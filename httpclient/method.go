@@ -6,7 +6,7 @@ import (
 	"github.com/dyweb/gommon/util/httputil"
 )
 
-// method.go contains wrapper for common http verbs, GET, POST, PATCH, DELETE
+// method.go contains wrapper for common http verbs, GET, POST, PUT, PATCH, DELETE
 
 // GET
 
@@ -34,6 +34,20 @@ func (c *Client) PostRaw(ctx *Context, path string, reqBody interface{}) (*http.
 
 func (c *Client) PostIgnoreRes(ctx *Context, path string, reqBody interface{}) error {
 	return c.FetchToNull(ctx, httputil.Post, path, reqBody)
+}
+
+// PUT
+
+func (c *Client) Put(ctx *Context, path string, reqBody interface{}, resBody interface{}) error {
+	return c.FetchTo(ctx, httputil.Put, path, reqBody, resBody)
+}
+
+func (c *Client) PutRaw(ctx *Context, path string, reqBody interface{}) (*http.Response, error) {
+	return c.Do(ctx, httputil.Put, path, reqBody)
+}
+
+func (c *Client) PutIgnoreRes(ctx *Context, path string, reqBody interface{}) error {
+	return c.FetchToNull(ctx, httputil.Put, path, reqBody)
 }
 
 // PATCH

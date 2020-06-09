@@ -29,6 +29,12 @@ func WithErrorHandlerFunc(f ErrorHandlerFunc) Option {
 		return nil
 	}
 }
+func WithClient(h *http.Client) Option {
+	return func(c *Client) error {
+		c.h = h
+		return nil
+	}
+}
 
 func WithTransport(tr *http.Transport) Option {
 	return func(c *Client) error {

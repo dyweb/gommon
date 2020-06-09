@@ -14,12 +14,12 @@ var (
 
 // GenGolden check if env GOLDEN or GEN_GOLDEN is set, sometimes you need to generate test fixture in test
 func GenGolden() Condition {
-	return Or(EnvHas("GOLDEN"), EnvHas("GEN_GOLDEN"))
+	return Or(EnvTrue("GOLDEN"), EnvTrue("GEN_GOLDEN"))
 }
 
 // GenGoldenT check if current test is manually set to generate golden file
 func GenGoldenT(t *testing.T) Condition {
-	return Or(Or(EnvHas("GOLDEN"), EnvHas("GEN_GOLDEN")), &con{
+	return Or(GenGolden(), &con{
 		stmt: func() (res bool, msg string, err error) {
 			enabledGoldenMu.RLock()
 			enabled := enabledGolden[t]
@@ -49,7 +49,7 @@ func WriteOrCompare(t *testing.T, file string, data []byte) {
 		WriteFixture(t, file, data)
 	} else {
 		b := ReadFixture(t, file)
-		assert.Equal(t, b, data)
+		assert.Equal(t, b, data, file)
 	}
 }
 

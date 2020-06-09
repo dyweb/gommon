@@ -69,7 +69,7 @@ func (c *Client) SetHeader(k, v string) *Client {
 }
 
 // GetHeaders a copy of headers set on the client,
-// it will return a empty but non nil map even if no header is set
+// it will return a empty but non nil map even if no header is set.
 func (c *Client) GetHeaders() map[string]string {
 	if c.headers == nil {
 		return make(map[string]string)

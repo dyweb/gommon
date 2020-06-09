@@ -8,8 +8,7 @@ import (
 var _ context.Context = (*Context)(nil)
 
 // Context implements context.Context and provides HTTP request specific helpers.
-// It is lazy initialized, only call `make` when they are actually write to,
-// so all the maps are EMPTY even when using factory func.
+// It is lazy initialized, only call `make` when there is write to internal maps.
 // User (including this package itself) should use setter when set value.
 type Context struct {
 	// base overrides base path set in client if it is not empty
@@ -54,6 +53,8 @@ func ConvertContext(ctx context.Context) *Context {
 	return NewContext(ctx)
 }
 
+// SetBase allow a single request to override client level request base.
+// This is useful when most request is /api/bla and suddenly there is a /bla/api.
 func (c *Context) SetBase(s string) *Context {
 	c.base = s
 	return c
