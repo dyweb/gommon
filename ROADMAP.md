@@ -4,6 +4,7 @@
 
 ### 0.0.14
 
+- [ ] dcli
 - [ ] wait package, similar to the polling package in k8s
   - [ ] have retry as alias and provides backoff
   - [ ] allow use wait for container

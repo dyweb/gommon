@@ -3,80 +3,54 @@ package dcli
 import (
 	"context"
 	"os"
-	"runtime"
 
 	"github.com/dyweb/gommon/errors"
 )
 
-// app.go defines application struct and build info.
-
-var (
-	// set using -ldflags "-X github.com/dyweb/gommon/dcli.buildVersion=0.0.1"
-	buildVersion string
-	buildCommit  string
-	buildBranch  string
-	buildTime    string
-	buildUser    string
-)
-
-// BuildInfo contains information that should be set at build time.
-// e.g. go install ./cmd/myapp -ldflags "-X github.com/dyweb/gommon/dcli.buildVersion=0.0.1"
-// You can use DefaultBuildInfo and copy paste its Makefile rules.
-type BuildInfo struct {
-	Version   string
-	Commit    string
-	Branch    string
-	Time      string
-	User      string
-	GoVersion string
-}
-
-// DefaultBuildInfo returns a info based on ld flags sets to github.com/dyweb/gommon/dcli.*
-// You can copy the following rules in your Makefile
-//
-// DCLI_PKG = github.com/dyweb/gommon/dcli.
-// DCLI_LDFLAGS = -X $(DCLI_PKG)buildVersion=$(VERSION) -X $(DCLI_PKG)buildCommit=$(BUILD_COMMIT) -X $(DCLI_PKG)buildBranch=$(BUILD_BRANCH) -X $(DCLI_PKG)/buildTime=$(BUILD_TIME) -X $(DCLI_PKG)buildUser=$(CURRENT_USER)
-//
-// install:
-// 	go install -ldflags $(DCLI_LDFLAGS) ./cmd/myapp
-func DefaultBuildInfo() BuildInfo {
-	return BuildInfo{
-		Version:   buildVersion,
-		Commit:    buildCommit,
-		Branch:    buildBranch,
-		Time:      buildTime,
-		User:      buildUser,
-		GoVersion: runtime.Version(),
-	}
-}
+// app.go defines application struct, a wrapper for top level command.
 
 type Application struct {
-	Description string
-	Version     string
-
-	name    string  // binary name
-	command Command // entry command, its Name should be same as Application.Name but it is ignored when execute.
+	Build BuildInfo
+	Root  Command // entry command, its Name should be same as Application.Name but it is ignored when execute.
 }
 
 // RunApplication creates a new application and run it directly.
 // It logs and exit with 1 if application creation or execution failed.
-func RunApplication(name string, cmd Command) {
-	app, err := NewApplication(name, cmd)
+func RunApplication(cmd Command) {
+	app, err := NewApplication(cmd)
 	if err != nil {
 		log.Fatal(err)
 	}
 	app.Run()
 }
 
-func NewApplication(name string, cmd Command) (*Application, error) {
-	if err := validate(cmd); err != nil {
+const versionCmd = "version"
+
+// NewApplication validate root command and injects version command if not exists.
+func NewApplication(cmd Command) (*Application, error) {
+	if err := ValidateCommand(cmd); err != nil {
 		return nil, errors.Wrap(err, "command validation failed")
 	}
+	info := DefaultBuildInfo()
+	// Inject version command if it does not exist
+	if !hasChildCommand(cmd, versionCmd) {
+		// TODO: a better way is to wrap it so we don't modify original command
+		// or a new interface for mutable command that allows adding command
+		c, ok := cmd.(*Cmd)
+		if ok {
+			//log.Info("adding version command")
+			c.Children = append(c.Children, &Cmd{
+				Name: versionCmd,
+				Run: func(_ context.Context) error {
+					PrintBuildInfo(os.Stdout, info)
+					return nil
+				},
+			})
+		}
+	}
 	return &Application{
-		Description: "",
-		Version:     "",
-		name:        name,
-		command:     cmd,
+		Build: info,
+		Root:  cmd,
 	}, nil
 }
 
@@ -89,8 +63,11 @@ func (a *Application) Run() {
 }
 
 func (a *Application) RunArgs(ctx context.Context, args []string) error {
-	if len(args) == 0 {
-		return a.command.GetRun()(ctx)
+	// TODO: extra arg and flags
+	//log.Infof("args %v", args)
+	c, err := FindCommand(a.Root, args)
+	if err != nil {
+		return err
 	}
-	return errors.New("not implemented")
+	return c.GetRunnable()(ctx)
 }

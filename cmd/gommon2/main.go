@@ -12,11 +12,12 @@ var logReg = dlog.NewRegistry()
 var log = logReg.NewLogger()
 
 func main() {
-	dcli.RunApplication("gommon2", &dcli.Cmd{
+	root := &dcli.Cmd{
 		Name: "gommon2",
 		Run: func(ctx context.Context) error {
 			log.Info("gommon2 does nothing")
 			return nil
 		},
-	})
+	}
+	dcli.RunApplication(root)
 }

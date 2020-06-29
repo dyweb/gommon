@@ -1,14 +1,13 @@
 # Attribution & Comparison
 
-Gommon is inspired by many awesome libraries. 
-However, we chose to reinvent the wheel for most of them.
-Doing so allow us to shrink codebase, introduce break changes frequently, unify error handling and logging.
+Gommon is inspired by many awesome libraries. However, we chose to reinvent the wheel for most functionalities.
+Doing so allow us to introduce break changes frequently ...
 
 ## errors
 
-- [pkg/errors](https://github.com/pkg/errors) it can not introduce breaking change, but `WithMessage` and `WithStack` is annoying
-  - see [#54](https://github.com/dyweb/gommon/issues/54) and [errors/doc](errors/doc) about other error packages
-  - https://github.com/pkg/errors/pull/122 for check existing stack before attach new one
+- [pkg/errors](https://github.com/pkg/errors) it cannot introduce breaking change, but `WithMessage` and `WithStack` is annoying
+  - see [#54](https://github.com/dyweb/gommon/issues/54) and [errors/doc](../errors/doc) about other error packages
+  - https://github.com/pkg/errors/pull/122 implemented checking existing stack before attach new one
 - [uber-go/multierr#21]( https://github.com/uber-go/multierr/issues/21) for return bool after append
 - [hashicorp/go-multierror](https://github.com/hashicorp/go-multierror) for `ErrorOrNil`
 
@@ -46,5 +45,5 @@ Doing so allow us to shrink codebase, introduce break changes frequently, unify 
 - [benbjohnson/tmpl](https://github.com/benbjohnson/tmpl) for go template based generator
   - first saw it in [influxdata/influxdb](https://github.com/influxdata/influxdb/blob/master/tsdb/engine/tsm1/encoding.gen.go.tmpl)
   - we put template data in `gommon.yml`, so we don't need to pass data as json via cli.
-  Using YAML instead of cli is inspired by [docker-compose](https://github.com/docker/compose)
+  - Using YAML instead of flags based on [docker-compose](https://github.com/docker/compose)
 
