@@ -76,12 +76,14 @@ func validate(c Command, prefix string, visited map[Command]string) error {
 // Validate End
 
 // Dispatch Start
+
 func FindCommand(root Command, args []string) (Command, error) {
 	if len(args) == 0 {
 		return root, nil
 	}
 	// TODO: strip flag
 	sub := args[0]
+	// TODO: this only checks first level, `foo bar boar` should run boar instead of bar
 	for _, child := range root.GetChildren() {
 		if child.GetName() == sub {
 			return child, nil

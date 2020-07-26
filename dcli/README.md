@@ -1,6 +1,12 @@
 # dcli
 
-dcli is a light weight cli builder.
+dcli is a lightweight cli builder.
+
+## Usage
+
+```go
+
+```
 
 ## Issues
 

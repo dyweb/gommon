@@ -3,6 +3,7 @@ package fsutil
 import (
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/dyweb/gommon/errors"
 )
@@ -31,4 +32,12 @@ func MkdirIfNotExists(path string) error {
 		return errors.New("path to create dir is a file already: " + path)
 	}
 	return os.MkdirAll(path, DefaultDirPerm)
+}
+
+// CreateFileAndPath creates the folder if it does not exists and create a new file using os.Create.
+func CreateFileAndPath(path, file string) (*os.File, error) {
+	if err := MkdirIfNotExists(path); err != nil {
+		return nil, err
+	}
+	return os.Create(filepath.Join(path, file))
 }

@@ -36,6 +36,7 @@ type MultiErr interface {
 }
 
 // NewMultiErr returns a non thread safe implementation
+// TODO: Add a NewMulti and deprecate NewMultiErr
 func NewMultiErr() MultiErr {
 	return &multiErr{}
 }
