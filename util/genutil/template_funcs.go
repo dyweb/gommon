@@ -38,6 +38,27 @@ func UcFirst(s string) string {
 	return string(r)
 }
 
+// SnakeToCamel converts snake_case to CamelCase.
+func SnakeToCamel(s string) string {
+	src := []rune(s)
+	var dst []rune
+	toUpper := true
+	for _, r := range src {
+		if r == '_' {
+			toUpper = true
+			continue
+		}
+
+		r2 := r
+		if toUpper {
+			r2 = unicode.ToUpper(r)
+			toUpper = false
+		}
+		dst = append(dst, r2)
+	}
+	return string(dst)
+}
+
 // LcFirst changes first character to lower case.
 func LcFirst(s string) string {
 	if s == "" {

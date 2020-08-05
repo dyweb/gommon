@@ -63,5 +63,6 @@ func main() {
 
 ## References and Alternatives
 
+- [Go Embed Draft](https://go.googlesource.com/proposal/+/master/design/draft-embed.md)
 - [Proposal to add it to cmd/go](https://github.com/golang/go/issues/35950)
 - [Feature request to go.rice back in 2016](https://github.com/GeertJohan/go.rice/issues/83)
