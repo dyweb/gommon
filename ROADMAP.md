@@ -1,5 +1,7 @@
 # Roadmap
 
+NOTE: it is being moved to [milestones](doc/milestones)
+
 ## Up coming
 
 ### 0.0.14
