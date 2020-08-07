@@ -28,7 +28,7 @@ func HTMLTemplateFuncMap() htmltemplate.FuncMap {
 }
 
 // UcFirst changes first character to upper case.
-// It is based on https://github.com/99designs/gqlgen/blob/master/codegen/templates/templates.go#L205
+// Deprecated: use stringuitl.UcFirst
 func UcFirst(s string) string {
 	if s == "" {
 		return ""
@@ -39,6 +39,7 @@ func UcFirst(s string) string {
 }
 
 // SnakeToCamel converts snake_case to CamelCase.
+// Deprecated: use stringutil.SnakeToCamel
 func SnakeToCamel(s string) string {
 	src := []rune(s)
 	var dst []rune
@@ -60,6 +61,7 @@ func SnakeToCamel(s string) string {
 }
 
 // LcFirst changes first character to lower case.
+// Deprecated: use stringutil.SnakeToCamel
 func LcFirst(s string) string {
 	if s == "" {
 		return ""

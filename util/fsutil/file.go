@@ -3,6 +3,7 @@ package fsutil
 import (
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"github.com/dyweb/gommon/errors"
@@ -40,4 +41,59 @@ func CreateFileAndPath(path, file string) (*os.File, error) {
 		return nil, err
 	}
 	return os.Create(filepath.Join(path, file))
+}
+
+// WriteTempFile creates a temporary file and writes data to it.
+// Dir can be empty string. It returns path of the created file.
+// NOTE: It is based on goimports command.
+func WriteTempFile(dir, prefix string, data []byte) (string, error) {
+	f, err := ioutil.TempFile(dir, prefix)
+	if err != nil {
+		return "", err
+	}
+	_, err = f.Write(data)
+	if errClose := f.Close(); err == nil {
+		err = errClose
+	}
+	if err != nil {
+		os.Remove(f.Name())
+		return "", err
+	}
+	return f.Name(), nil
+}
+
+// WriteTempFiles creates multiple files under same dir w/ same prefix.
+// It stops if there are any error and always returns created files.
+func WriteTempFiles(dir, prefix string, dataList ...[]byte) ([]string, error) {
+	var names []string
+	for _, data := range dataList {
+		n, err := WriteTempFile(dir, prefix, data)
+		if err != nil {
+			return names, err
+		}
+		names = append(names, n)
+	}
+	return names, nil
+}
+
+// RemoveFiles removes multiple files. It keeps track of error for each removal.
+// But it does NOT stop when there is error.
+// Returned non nil error must be a dyweb/gommon/errors.MultiErr.
+func RemoveFiles(names []string) error {
+	merr := errors.NewMultiErr()
+	for _, name := range names {
+		merr.Append(os.Remove(name))
+	}
+	return merr.ErrorOrNil()
+}
+
+// Diff compares two files by shelling out to system diff binary.
+// NOTE: It is based on goimports command.
+// TODO: there are pure go diff package, and there is also diff w/ syntax highlight written in rust
+func Diff(p1 string, p2 string) ([]byte, error) {
+	b, err := exec.Command("diff", "-u", p1, p2).CombinedOutput()
+	if err != nil {
+		return nil, errors.Wrap(err, "error shell out to diff")
+	}
+	return b, nil
 }

@@ -26,6 +26,8 @@ type MultiErr interface {
 	// It returns true if the appended error is not nil, inspired by https://github.com/uber-go/multierr/issues/21
 	Append(error) bool
 	// Errors returns errors stored, if no error
+	// TODO: multiErr returns internal []error while multiErrSafe returns a copy
+	// but even for thread safe error, Errors() normally get called in one go routine.
 	Errors() []error
 	// ErrorOrNil returns itself or nil if there are no errors, inspired by https://github.com/hashicorp/go-multierror
 	ErrorOrNil() error
@@ -36,14 +38,28 @@ type MultiErr interface {
 }
 
 // NewMultiErr returns a non thread safe implementation
-// TODO: Add a NewMulti and deprecate NewMultiErr
+// Deprecated: use NewMulti instead, this is an error package and *Err is redundant.
 func NewMultiErr() MultiErr {
+	return &multiErr{}
+}
+
+// NewMulti returns a non thread safe MultiErr implementation.
+// Use NewMultiSafe if you need one protected with sync.Mutex.
+// Or you can use your own locking for access from multiple goroutines.
+func NewMulti() MultiErr {
 	return &multiErr{}
 }
 
 // NewMultiErrSafe returns a thread safe implementation which protects the underlying slice using mutex.
 // It returns a copy of slice when Errors is called
 func NewMultiErrSafe() MultiErr {
+	return &multiErrSafe{}
+}
+
+// NewMultiSafe returns a MultiErr protected with sync.Mutex.
+// Use NewMulti if you use multi error in one go routine or have your own locking.
+// It returns a copy of slice when Errors is called. TODO(at15): consider change this behavior or update interface doc.
+func NewMultiSafe() MultiErr {
 	return &multiErrSafe{}
 }
 

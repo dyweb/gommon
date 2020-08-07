@@ -11,8 +11,6 @@ import (
 	"strings"
 
 	"github.com/dyweb/gommon/linter"
-	"golang.org/x/tools/imports"
-
 	"github.com/spf13/cobra"
 
 	"github.com/dyweb/gommon/errors"
@@ -200,28 +198,9 @@ func addBuildIgnoreCmd() *cobra.Command {
 }
 
 func formatCmd() *cobra.Command {
-	// flags from goimports
-	var (
-		list   bool
-		write  bool
-		doDiff bool
-		// TODO: srcdir, single file as if in dir xxx
-		allErrors   bool
-		localPrefix string
-		formatOnly  bool
-	)
-
-	importsOpt := &imports.Options{
-		TabWidth:  8,
-		TabIndent: true,
-		Comments:  true,
-		Fragment:  true,
-		// NOTE: we don't have Env because it is in internal/imports and relies on default env.
-	}
-	var _ = importsOpt
-
+	var flags linter.GoimportFlags
 	processFile := func(path string, info os.FileInfo, err error) error {
-		return linter.CheckAndFormatFile(path)
+		return linter.CheckAndFormatFile(path, flags)
 	}
 
 	run := func(paths []string) error {
@@ -247,10 +226,6 @@ func formatCmd() *cobra.Command {
 		Use:   "format",
 		Short: "Format go code like goimports with custom rules",
 		Run: func(cmd *cobra.Command, args []string) {
-			if localPrefix != "" {
-				imports.LocalPrefix = localPrefix
-			}
-
 			paths := args
 			if len(paths) == 0 {
 				log.Fatal("format stdin is not implemented")
@@ -261,12 +236,12 @@ func formatCmd() *cobra.Command {
 			}
 		},
 	}
-	cmd.Flags().BoolVarP(&list, "list", "l", false, "list files whose formatting differs from goimports")
-	cmd.Flags().BoolVarP(&write, "write", "w", false, "write result to (source) file instead of stdout, i.e. in place update")
-	cmd.Flags().BoolVarP(&doDiff, "display", "d", false, "display diffs instead of rewriting files")
-	cmd.Flags().BoolVarP(&allErrors, "errors", "e", false, "report all errors (not just the first 10 on different lines)")
-	cmd.Flags().StringVar(&localPrefix, "local", "", "put imports beginning with this string after 3rd-party packages; comma-separated list")
-	cmd.Flags().BoolVar(&formatOnly, "format-only", false, "if true, don't fix imports and only format. In this mode, goimports is effectively gofmt, with the addition that imports are grouped into sections.")
+	cmd.Flags().BoolVarP(&flags.List, "list", "l", false, "list files whose formatting differs from goimports")
+	cmd.Flags().BoolVarP(&flags.Write, "write", "w", false, "write result to (source) file instead of stdout, i.e. in place update")
+	cmd.Flags().BoolVarP(&flags.Diff, "diff", "d", false, "display diffs instead of rewriting files")
+	cmd.Flags().BoolVarP(&flags.AllErrors, "errors", "e", false, "report all errors (not just the first 10 on different lines)")
+	cmd.Flags().StringVar(&flags.LocalPrefix, "local", "", "put imports beginning with this string after 3rd-party packages; comma-separated list")
+	cmd.Flags().BoolVar(&flags.FormatOnly, "format-only", false, "if true, don't fix imports and only format. In this mode, goimports is effectively gofmt, with the addition that imports are grouped into sections.")
 	return &cmd
 }
 

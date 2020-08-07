@@ -58,9 +58,11 @@ install2:
 	cd ./cmd/gommon2 && $(GO) install -ldflags "$(DCLI_LDFLAGS)" .
 
 .PHONY: fmt
-# NOTE: only use gommon format when it is implemented
 fmt:
 	goimports -d -l -w $(PKGST)
+
+# TODO: replace goimports with gommon format when it is fully implemented
+fmt2:
 	gommon format -d -l -w $(PKGST)
 
 # --- build ---
