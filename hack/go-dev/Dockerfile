@@ -36,11 +36,11 @@ RUN mkdir -p "$GOPATH/src" "$GOPATH/bin"
 
 ARG BUILD_GO_VERSION=1.11.2
 
-# glide no longer have release, just hard code it to latest version
+# TODO: Deprecate glide and dep, we are all go mod now
+
 ENV GO_VERSION=$BUILD_GO_VERSION \
     GLIDE_VERSION=v0.13.2
 
-# TODO: might put glide under GOPATH/bin or just remove it entirely, not sure if anyone is still using it
 RUN \
     curl -L https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz | tar -C /usr/local -xz \
     && curl -sSL https://github.com/Masterminds/glide/releases/download/$GLIDE_VERSION/glide-$GLIDE_VERSION-linux-amd64.tar.gz \

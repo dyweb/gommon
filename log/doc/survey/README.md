@@ -1,4 +1,4 @@
-# Survey
+# Go Log Library Survey
 
 https://github.com/avelino/awesome-go#logging
 
@@ -22,11 +22,15 @@ Structured
 
 Java(ish)
 
-- [solr](solr.md) the last straw that drive us to log v2, gives you [a tree graph to control log level of ALL the packages](solr-log-admin.png), including dependencies
-- [seelog](seelog.md) javaish, fine grained control log filtering (by func, file etc.)
+- [solr](solr.md) the last straw that drives us to log v2, gives you [a tree graph to control log level of ALL the packages](solr-log-admin.png), including dependencies
+- [seelog](seelog.md) javaish, fine grained control log filtering (by func, file etc.) at log site
 - [log4j](log4j.md) java logger
 - [ ] TODO: might check open tracing as well, instrument like code should be put into other package
 
 Logging library used by popular go projects
 
 - k8s, [CockroachDB](https://github.com/cockroachdb/cockroach/tree/master/pkg/util/log) glog
+
+Rotate
+
+- [ ] https://github.com/lestrrat-go/file-rotatelogs

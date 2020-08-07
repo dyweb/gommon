@@ -12,7 +12,7 @@ The [issues](https://github.com/dyweb/gommon/issues?page=1&q=is%3Aissue+is%3Aope
 - new features on existing packages
 - bug
 
-Some issues are so old that the original packages are removed (config, requests etc.).
+Some issues are so old the original packages are removed (config, requests etc.).
 
 ## Issues
 
@@ -58,3 +58,28 @@ Small
   - [oauth2 client with access token](https://github.com/dyweb/gommon/issues/70)
 - config
   - [validate config struct using tag](https://github.com/dyweb/gommon/issues/19)
+
+### Bug
+
+- [go vet error in example](https://github.com/dyweb/gommon/issues/107)
+
+## Priority
+
+It's impossible to fix all the gommon issues at once, and there are several active projects using gommon (benchhub, gce4-go, pm).
+Some features are nice to have e.g. adjust log level using http API while some features are essential e.g. dcli.
+
+- dcli
+  - used by all projects that requires a cli, benchhub, gce4-go, pm, ayi
+- log
+  - used by all projects, the API is hard to use, and it's hard to read the log
+- error
+  - used by all projects, but most time I am just wrapping w/o analysing i.e. no unwrap
+- generator
+  - used by projects that uses protobuf, benchhub
+- test
+  - helps develop all the go packages
+  - used by benchhub for gobench and gotest framework
+- util
+  - mathutil, stringutil, maputil etc.
+- noodle
+  - I rarely use it because I read from local fs, it will be useful for projects that distribute binary w/ UI
