@@ -47,7 +47,9 @@ DCLI_LDFLAGS = -X $(DCLI_PKG)buildVersion=$(VERSION) -X $(DCLI_PKG)buildCommit=$
 # -- build vars ---
 
 .PHONY: install
-install: fmt test
+install: fmt test install-only
+
+install-only:
 	cd ./cmd/gommon && $(GO) install -ldflags "$(FLAGS)" .
 	mv $(GOPATH)/bin/gommonbin $(GOPATH)/bin/gommon
 
@@ -56,8 +58,10 @@ install2:
 	cd ./cmd/gommon2 && $(GO) install -ldflags "$(DCLI_LDFLAGS)" .
 
 .PHONY: fmt
+# NOTE: only use gommon format when it is implemented
 fmt:
 	goimports -d -l -w $(PKGST)
+	gommon format -d -l -w $(PKGST)
 
 # --- build ---
 .PHONY: clean build build-linux build-mac build-win build-all

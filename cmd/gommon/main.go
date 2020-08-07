@@ -10,6 +10,9 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/dyweb/gommon/linter"
+	"golang.org/x/tools/imports"
+
 	"github.com/spf13/cobra"
 
 	"github.com/dyweb/gommon/errors"
@@ -33,7 +36,6 @@ var (
 )
 
 func main() {
-	// TODO: most code here are copied from go.ice's cli package, dependency management might break if we import go.ice which also import gommon
 	rootCmd := &cobra.Command{
 		Use:   "gommon",
 		Short: "gommon helpers",
@@ -73,6 +75,7 @@ func main() {
 		versionCmd,
 		genCmd(),
 		addBuildIgnoreCmd(),
+		formatCmd(),
 	)
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -80,6 +83,7 @@ func main() {
 	}
 }
 
+// triggers generator for logger, go template and embedding asset
 func genCmd() *cobra.Command {
 	gen := cobra.Command{
 		Use:     "generate",
@@ -141,6 +145,7 @@ func genCmd() *cobra.Command {
 	return &gen
 }
 
+// add // +build ignore to files before moving them to legacy folder
 func addBuildIgnoreCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:   "add-build-ignore",
@@ -191,6 +196,77 @@ func addBuildIgnoreCmd() *cobra.Command {
 			}
 		},
 	}
+	return &cmd
+}
+
+func formatCmd() *cobra.Command {
+	// flags from goimports
+	var (
+		list   bool
+		write  bool
+		doDiff bool
+		// TODO: srcdir, single file as if in dir xxx
+		allErrors   bool
+		localPrefix string
+		formatOnly  bool
+	)
+
+	importsOpt := &imports.Options{
+		TabWidth:  8,
+		TabIndent: true,
+		Comments:  true,
+		Fragment:  true,
+		// NOTE: we don't have Env because it is in internal/imports and relies on default env.
+	}
+	var _ = importsOpt
+
+	processFile := func(path string, info os.FileInfo, err error) error {
+		return linter.CheckAndFormatFile(path)
+	}
+
+	run := func(paths []string) error {
+		for _, p := range paths {
+			switch dir, err := os.Stat(p); {
+			case err != nil:
+				return err
+			case dir.IsDir():
+				// TODO: walk w/ ignore like generator
+				if err := filepath.Walk(p, processFile); err != nil {
+					return err
+				}
+			default:
+				if err := processFile(p, dir, nil); err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	}
+
+	cmd := cobra.Command{
+		Use:   "format",
+		Short: "Format go code like goimports with custom rules",
+		Run: func(cmd *cobra.Command, args []string) {
+			if localPrefix != "" {
+				imports.LocalPrefix = localPrefix
+			}
+
+			paths := args
+			if len(paths) == 0 {
+				log.Fatal("format stdin is not implemented")
+				return
+			}
+			if err := run(paths); err != nil {
+				log.Fatal(err)
+			}
+		},
+	}
+	cmd.Flags().BoolVarP(&list, "list", "l", false, "list files whose formatting differs from goimports")
+	cmd.Flags().BoolVarP(&write, "write", "w", false, "write result to (source) file instead of stdout, i.e. in place update")
+	cmd.Flags().BoolVarP(&doDiff, "display", "d", false, "display diffs instead of rewriting files")
+	cmd.Flags().BoolVarP(&allErrors, "errors", "e", false, "report all errors (not just the first 10 on different lines)")
+	cmd.Flags().StringVar(&localPrefix, "local", "", "put imports beginning with this string after 3rd-party packages; comma-separated list")
+	cmd.Flags().BoolVar(&formatOnly, "format-only", false, "if true, don't fix imports and only format. In this mode, goimports is effectively gofmt, with the addition that imports are grouped into sections.")
 	return &cmd
 }
 

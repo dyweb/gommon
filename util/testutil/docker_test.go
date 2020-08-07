@@ -32,6 +32,9 @@ func TestContainer_DockerRunArgs(t *testing.T) {
 }
 
 func TestContainer_Stop(t *testing.T) {
+	t.Skip("always skip docker test")
+
+	// TODO: need more rules, the test always run for machine that has active docker running
 	RunIf(t, HasDocker())
 
 	port, err := netutil.AvailablePortBySystem()
