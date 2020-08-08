@@ -37,6 +37,8 @@ walkDir {
 
 ## Implementation
 
+See [import.go](../import.go)
+
 - `walkDir` and `diff` can copy from `goimports` binary until we have a better `fsutil.WalkWithIgnore` implementation
 - `CheckImport` should use a default set of rules
   - so user can provide their own rules by writing their own binary

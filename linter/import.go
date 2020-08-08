@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"go/ast"
 	"io"
-	"github.com/dyweb/gommon/errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/dyweb/gommon/errors"
 	"github.com/dyweb/gommon/util/fsutil"
 	"golang.org/x/tools/imports"
 )
@@ -104,8 +105,9 @@ func diffBytes(a []byte, b []byte, p string) ([]byte, error) {
 	defer fsutil.RemoveFiles(files)
 
 	diff, err := fsutil.Diff(files[0], files[1])
-	// TODO: ignore until fsutil.Diff handles non zero code from diff
-	errors.Ignore(err)
+	if err != nil {
+		return nil, err
+	}
 	// No diff
 	if len(diff) == 0 {
 		return nil, nil

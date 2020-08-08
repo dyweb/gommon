@@ -97,11 +97,12 @@ func RemoveFiles(names []string) error {
 // Diff compares two files by shelling out to system diff binary.
 // NOTE: It is based on goimports command.
 // TODO: there are pure go diff package, and there is also diff w/ syntax highlight written in rust
+// TODO: allow force color output, default is auto and I guess it detects tty
 func Diff(p1 string, p2 string) ([]byte, error) {
 	b, err := exec.Command("diff", "-u", p1, p2).CombinedOutput()
-	// TODO: diff exits w/ non zero code when files don't match ... it will cause exit code error, which we should ignore.
-	if err != nil {
-		return nil, errors.Wrap(err, "error shell out to diff")
+	// NOTE: diff returns 1 when there are diff, so we ignore the error as long as there is valid output.
+	if len(b) != 0 {
+		return b, nil
 	}
-	return b, nil
+	return b, errors.Wrapf(err, "error shell out to diff -u %s %s", p1, p2)
 }
