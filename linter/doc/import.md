@@ -3,12 +3,19 @@
 ## TODO
 
 - [ ] `LocalPrefix` kind of does the extra grouping
+- [ ] Check forbidden import
+- [ ] More groups for import
+
+## Overview
+
+`goimports` with custom grouping rules, package black list and alias naming check.
 
 ## Motivation
 
 `goimports` improves `gofmt` by doing additional import grouping. However it is missing the following features:
 
 - customize group rules, e.g. put all proto import at the bottom, split import from current project with external libs
+- black list specific packages, sometimes IDE are too smart and introduced unknown import on the fly
 - validation on import rename, e.g. rename lengthy proto package to `foopb`
 
 ## Design

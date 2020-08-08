@@ -6,12 +6,18 @@ import (
 	"github.com/dyweb/gommon/errors"
 )
 
+// command.go defines interface and the default implementation Cmd
+
 type Runnable func(ctx context.Context) error
 
 type Command interface {
 	GetName() string
 	GetRunnable() Runnable
 	GetChildren() []Command
+}
+
+type MutableCommand interface {
+	AddChild(child Command) error
 }
 
 var _ Command = (*Cmd)(nil)
@@ -33,6 +39,12 @@ func (c *Cmd) GetRunnable() Runnable {
 
 func (c *Cmd) GetChildren() []Command {
 	return c.Children
+}
+
+func (c *Cmd) AddChild(child Command) error {
+	// TODO: check name conflict and import cycle
+	c.Children = append(c.Children, child)
+	return nil
 }
 
 // Validate Start

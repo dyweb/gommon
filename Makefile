@@ -4,14 +4,16 @@ Make commands for gommon
 
 help           show help
 
-Dev:
+Dev
+-----------------------------------------
 install           install binaries under ./cmd to $$GOPATH/bin
 fmt               goimports
-test              unit test
+test              run unit test
 generate          generate code using gommon
 loc               lines of code (cloc required, brew install cloc)
 
-Build:
+Build
+-----------------------------------------
 install        install all binaries under ./cmd to $$GOPATH/bin
 build          compile all binary to ./build for current platform
 build-linux    compile all linux binary to ./build with -linux suffix
@@ -19,7 +21,8 @@ build-mac      compile all mac binary to ./build with -mac suffix
 build-win      compile all windows binary to ./build with -win suffix
 build-release  compile binary for all platforms and generate tarball to ./build
 
-Docker:
+Docker
+-----------------------------------------
 docker-build   build runner image w/ all binaries using mulitstage build
 docker-push    push runner image to docker registry
 
@@ -59,11 +62,11 @@ install2:
 
 .PHONY: fmt
 fmt:
-	goimports -d -l -w $(PKGST)
-
-# TODO: replace goimports with gommon format when it is fully implemented
-fmt2:
 	gommon format -d -l -w $(PKGST)
+
+# gommon format is a drop in replacement for goimports
+deprecated-fmt:
+	goimports -d -l -w $(PKGST)
 
 # --- build ---
 .PHONY: clean build build-linux build-mac build-win build-all

@@ -34,18 +34,18 @@ func NewApplication(cmd Command) (*Application, error) {
 	info := DefaultBuildInfo()
 	// Inject version command if it does not exist
 	if !hasChildCommand(cmd, versionCmd) {
-		// TODO: a better way is to wrap it so we don't modify original command
-		// or a new interface for mutable command that allows adding command
-		c, ok := cmd.(*Cmd)
+		c, ok := cmd.(MutableCommand)
 		if ok {
-			//log.Info("adding version command")
-			c.Children = append(c.Children, &Cmd{
+			verCmd := &Cmd{
 				Name: versionCmd,
 				Run: func(_ context.Context) error {
 					PrintBuildInfo(os.Stdout, info)
 					return nil
 				},
-			})
+			}
+			if err := c.AddChild(verCmd); err != nil {
+				return nil, errors.Wrap(err, "error adding version command")
+			}
 		}
 	}
 	return &Application{
@@ -63,11 +63,15 @@ func (a *Application) Run() {
 }
 
 func (a *Application) RunArgs(ctx context.Context, args []string) error {
-	// TODO: extra arg and flags
+	// TODO: extract both arg and flags
 	//log.Infof("args %v", args)
+	// TODO: use special handler for command not found
 	c, err := FindCommand(a.Root, args)
 	if err != nil {
 		return err
 	}
-	return c.GetRunnable()(ctx)
+	if err := c.GetRunnable()(ctx); err != nil {
+		handleCommandError(c, err)
+	}
+	return nil
 }
