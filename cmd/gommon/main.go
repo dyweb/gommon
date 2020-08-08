@@ -197,10 +197,15 @@ func addBuildIgnoreCmd() *cobra.Command {
 	return &cmd
 }
 
+// gommon format
 func formatCmd() *cobra.Command {
 	var flags linter.GoimportFlags
 	processFile := func(path string, info os.FileInfo, err error) error {
-		return linter.CheckAndFormatFile(path, flags)
+		if err == nil && fsutil.IsGoFile(info) {
+			return linter.CheckAndFormatImport(path, flags)
+		}
+		// Skip directory and stop on walk error
+		return err
 	}
 
 	run := func(paths []string) error {

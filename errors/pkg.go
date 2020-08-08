@@ -34,7 +34,7 @@ func Ignore(_ error) {
 	// do nothing
 }
 
-// Ignore2 allow you to ignore return value and error, it is useful for io.Writer like functions
+// Ignore2 ignores return value and error, it is useful for functions like Write(b []byte) (int64, error)
 // It is also inspired by dgraph x/error.go
 func Ignore2(_ interface{}, _ error) {
 	// do nothing

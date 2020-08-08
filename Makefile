@@ -33,7 +33,7 @@ help:
 
 GO = GO111MODULE=on go
 # -- build vars ---
-PKGST =./cmd ./dcli ./errors ./generator ./httpclient ./log ./noodle ./util
+PKGST =./cmd ./dcli ./errors ./generator ./httpclient ./linter ./log ./noodle ./util
 PKGS = $(addsuffix ...,$(PKGST))
 VERSION = 0.0.13
 BUILD_COMMIT := $(shell git rev-parse HEAD)

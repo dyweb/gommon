@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/dyweb/gommon/errors"
 )
@@ -13,6 +14,12 @@ const (
 	DefaultFilePerm = 0664
 	DefaultDirPerm  = 0775
 )
+
+func IsGoFile(info os.FileInfo) bool {
+	name := info.Name()
+	// not a folder & not hidden & .go
+	return !info.IsDir() && !strings.HasPrefix(name, ".") && strings.HasSuffix(name, ".go")
+}
 
 // WriteFile use 0664 as permission and wrap standard error
 func WriteFile(path string, data []byte) error {
@@ -92,6 +99,7 @@ func RemoveFiles(names []string) error {
 // TODO: there are pure go diff package, and there is also diff w/ syntax highlight written in rust
 func Diff(p1 string, p2 string) ([]byte, error) {
 	b, err := exec.Command("diff", "-u", p1, p2).CombinedOutput()
+	// TODO: diff exits w/ non zero code when files don't match ... it will cause exit code error, which we should ignore.
 	if err != nil {
 		return nil, errors.Wrap(err, "error shell out to diff")
 	}
