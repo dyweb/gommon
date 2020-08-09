@@ -1,11 +1,27 @@
 package linter
 
 import (
+	"github.com/dyweb/gommon/util/fsutil"
+	"github.com/stretchr/testify/require"
 	"golang.org/x/tools/imports"
 	"testing"
 )
 
-func TestImport(t *testing.T)  {
+func TestImport(t *testing.T) {
 	// for jump into x/tools/imports and x/tools/internal/imports
-	imports.Process("foo", nil, nil)
+	opt := imports.Options{
+		TabWidth:   8,
+		TabIndent:  true,
+		Comments:   true,
+		AllErrors:  true,
+		FormatOnly: true,
+	}
+	// This allow extra grouping
+	imports.LocalPrefix = "golang.org"
+	defer func() {
+		imports.LocalPrefix = ""
+	}()
+	b, err := imports.Process("unordered_import.go", nil, &opt)
+	require.Nil(t, err)
+	fsutil.WriteFile("unordered_import_goimport.txt", b)
 }

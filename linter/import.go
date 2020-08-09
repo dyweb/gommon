@@ -33,11 +33,17 @@ func CheckAndFormatImport(p string, flags GoimportFlags) error {
 }
 
 func CheckAndFormatImportTo(out io.Writer, p string, flags GoimportFlags) error {
-	opt := &imports.Options{
+	log.Debugf("check and format %s", p)
+	src, err := ioutil.ReadFile(p)
+	if err != nil {
+		return err
+	}
+
+	opt := imports.Options{
 		TabWidth:  8,
 		TabIndent: true,
 		Comments:  true,
-		Fragment:  true,
+		Fragment:  false, // Set it to false because we are reading a full go file
 		// NOTE: we don't have Env because it is in internal/imports and relies on default env.
 		AllErrors:  flags.AllErrors,
 		FormatOnly: flags.FormatOnly,
@@ -46,13 +52,7 @@ func CheckAndFormatImportTo(out io.Writer, p string, flags GoimportFlags) error 
 	if flags.LocalPrefix != "" {
 		imports.LocalPrefix = flags.LocalPrefix
 	}
-
-	log.Debugf("check and format %s", p)
-	src, err := ioutil.ReadFile(p)
-	if err != nil {
-		return err
-	}
-	goimportRes, err := imports.Process(p, src, opt)
+	goimportRes, err := imports.Process(p, src, &opt)
 	if err != nil {
 		return errors.Wrap(err, "error calling goimports")
 	}

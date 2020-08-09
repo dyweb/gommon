@@ -16,6 +16,7 @@ install:
   - go get -u golang.org/x/tools/cmd/goimports
 
 script:
+  - make install-only
   - make install
   - make test
   - make test-race
