@@ -43,7 +43,7 @@ func NewApplication(cmd Command) (*Application, error) {
 					return nil
 				},
 			}
-			if err := c.AddChild(verCmd); err != nil {
+			if err := c.AddChildren(verCmd); err != nil {
 				return nil, errors.Wrap(err, "error adding version command")
 			}
 		}

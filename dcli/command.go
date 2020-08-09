@@ -17,7 +17,7 @@ type Command interface {
 }
 
 type MutableCommand interface {
-	AddChild(child Command) error
+	AddChildren(children ...Command) error
 }
 
 var _ Command = (*Cmd)(nil)
@@ -41,9 +41,9 @@ func (c *Cmd) GetChildren() []Command {
 	return c.Children
 }
 
-func (c *Cmd) AddChild(child Command) error {
+func (c *Cmd) AddChildren(children ...Command) error {
 	// TODO: check name conflict and import cycle
-	c.Children = append(c.Children, child)
+	c.Children = append(c.Children, children...)
 	return nil
 }
 
@@ -58,7 +58,7 @@ func ValidateCommand(c Command) error {
 }
 
 func validate(c Command, prefix string, visited map[Command]string) error {
-	merr := errors.NewMultiErr()
+	merr := errors.NewMulti()
 	name := "unknown"
 	if c.GetName() == "" {
 		merr.Append(errors.Errorf("command has no name, prefix: %s", prefix))
@@ -95,11 +95,15 @@ func FindCommand(root Command, args []string) (Command, error) {
 	}
 	// TODO: strip flag
 	sub := args[0]
-	// TODO: this only checks first level, `foo bar boar` should run boar instead of bar
-	for _, child := range root.GetChildren() {
-		if child.GetName() == sub {
-			return child, nil
+	for _, cur := range root.GetChildren() {
+		if cur.GetName() != sub {
+			continue
 		}
+		// Check if there can be more matches
+		if len(cur.GetChildren()) == 0 || len(args) == 1 {
+			return cur, nil
+		}
+		return FindCommand(cur, args[1:])
 	}
 	// TODO: typed error and suggestion using edit distance
 	return nil, errors.New("command not found")
