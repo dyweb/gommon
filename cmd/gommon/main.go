@@ -202,7 +202,7 @@ func formatCmd() *cobra.Command {
 	var flags linter.GoimportFlags
 	processFile := func(path string, info os.FileInfo, err error) error {
 		if err == nil && fsutil.IsGoFile(info) {
-			return linter.CheckAndFormatImport(path, flags)
+			return linter.CheckAndFormatImportToStdout(path, flags)
 		}
 		// Skip directory and stop on walk error
 		return err

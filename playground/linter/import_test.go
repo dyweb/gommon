@@ -1,6 +1,7 @@
 package linter
 
 import (
+	"github.com/dyweb/gommon/linter"
 	"github.com/dyweb/gommon/util/fsutil"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/tools/imports"
@@ -24,4 +25,14 @@ func TestImport(t *testing.T) {
 	b, err := imports.Process("unordered_import.go", nil, &opt)
 	require.Nil(t, err)
 	fsutil.WriteFile("unordered_import_goimport.txt", b)
+}
+
+func TestGommonImport(t *testing.T) {
+	res, err := linter.CheckAndFormatImport("unordered_import.go", linter.GoimportFlags{
+		List:       true,
+		Diff:       true,
+		FormatOnly: true,
+	})
+	require.Nil(t, err)
+	fsutil.WriteFile("unordered_import_gommon.txt", res.Formatted)
 }
