@@ -9,3 +9,14 @@ var (
 	logReg = dlog.NewRegistry()
 	log    = logReg.Logger()
 )
+
+// Level describes lint error level
+// TODO: sync w/ existing lint tools
+type Level int
+
+const (
+	UnknownLevel Level = iota
+	Deprecated
+	Warn
+	Error
+)

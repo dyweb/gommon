@@ -13,7 +13,7 @@ NOTE: Unlike other doc, most gommon components has their own dock folder. This f
   - golden
   - visualization
 - [generator](../generator)
-- [ ] linter
+- [linter](../linter)
   - format
   - check import
 - [httpclient](../httpclient)
