@@ -20,6 +20,7 @@ func DefaultIgnores() *fsutil.Ignores {
 	)
 }
 
+// join is alias for filepath.Join
 func join(s ...string) string {
 	return filepath.Join(s...)
 }

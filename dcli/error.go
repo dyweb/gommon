@@ -8,6 +8,7 @@ import (
 // error.go Defines special errors and handlers.
 
 // ErrHelpOnlyCommand means the command does not contain execution logic and simply print usage info for sub commands.
+// TODO: we should consider add a factory method
 type ErrHelpOnlyCommand struct {
 	Command string
 }

@@ -2,8 +2,12 @@ package generator
 
 import (
 	"bytes"
+	"io"
 	"io/ioutil"
 	"text/template"
+
+	"github.com/dyweb/gommon/util/stringutil"
+	"golang.org/x/tools/imports"
 
 	"github.com/dyweb/gommon/errors"
 	"github.com/dyweb/gommon/util/fsutil"
@@ -18,37 +22,86 @@ type GoTemplateConfig struct {
 }
 
 func (c *GoTemplateConfig) Render(root string) error {
-	var (
-		b   []byte
-		buf bytes.Buffer
-		err error
-		t   *template.Template
-	)
+	var buf bytes.Buffer
 	//log.Infof("data is %v", c.Data)
-	if b, err = ioutil.ReadFile(join(root, c.Src)); err != nil {
+	src := join(root, c.Src)
+	b, err := ioutil.ReadFile(src)
+	if err != nil {
 		return errors.Wrap(err, "can't read template file")
 	}
-	if t, err = template.New(c.Src).
-		Funcs(template.FuncMap{
-			"UcFirst": genutil.UcFirst,
-		}).
-		Parse(string(b)); err != nil {
-		return errors.Wrap(err, "can't parse template")
-	}
 	buf.WriteString(genutil.DefaultHeader(join(root, c.Src)))
-	if err = t.Execute(&buf, c.Data); err != nil {
-		return errors.Wrap(err, "can't render template")
+	tmpl := GoCodeTemplate{
+		Name:     src,
+		Content:  string(b),
+		Data:     c.Data,
+		NoFormat: !c.Go,
+		Funcs:    genutil.TemplateFuncMap(),
 	}
-	if c.Go {
-		if b, err = genutil.Format(buf.Bytes()); err != nil {
-			return errors.Wrap(err, "can't format as go code")
-		}
-	} else {
-		b = buf.Bytes()
-	}
-	if err = fsutil.WriteFile(join(root, c.Dst), b); err != nil {
+	if err := RenderGoCodeTo(&buf, tmpl); err != nil {
 		return err
 	}
-	log.Debugf("rendered go tmpl %s to %s", join(root, c.Src), join(root, c.Dst))
+	dst := join(root, c.Dst)
+	if err = fsutil.WriteFile(dst, buf.Bytes()); err != nil {
+		return err
+	}
+	log.Debugf("rendered go tmpl %s to %s", src, dst)
 	return nil
+}
+
+type GoCodeTemplate struct {
+	Name     string           // name used in error message e.g. generic-btree
+	Content  string           // the actual template content
+	Data     interface{}      // template data
+	NoFormat bool             // disable calling goimports
+	Funcs    template.FuncMap // additional template function map
+}
+
+func RenderGoCode(tmpl GoCodeTemplate) ([]byte, error) {
+	// Sanity check
+	if len(tmpl.Name) > len(tmpl.Content) {
+		return nil, errors.Errorf("template name is longer than content, wrong order? shorter one is %s",
+			stringutil.Shorter(tmpl.Name, tmpl.Content))
+	}
+	parsed, err := template.New(tmpl.Name).Parse(tmpl.Content)
+	if err != nil {
+		return nil, err
+	}
+	var buf bytes.Buffer
+	if err := parsed.Execute(&buf, tmpl.Data); err != nil {
+		return nil, errors.Wrapf(err, "error render template %s", tmpl.Name)
+	}
+	if tmpl.NoFormat {
+		return buf.Bytes(), nil
+	}
+	formatted, err := FormatGo(buf.Bytes())
+	if err != nil {
+		return nil, errors.Wrap(err, "error format generated code")
+	}
+	return formatted, nil
+}
+
+func RenderGoCodeTo(dst io.Writer, tmpl GoCodeTemplate) error {
+	// Sanity check
+	if dst == nil {
+		return errors.New("nil writer for RenderGoCode, forgot to check error when create file?")
+	}
+	b, err := RenderGoCode(tmpl)
+	if err != nil {
+		return err
+	}
+	_, err = dst.Write(b)
+	return err
+}
+
+// FormatGo formats go code using goimports without out fixing missing imports.
+func FormatGo(src []byte) ([]byte, error) {
+	opt := &imports.Options{
+		Fragment:   false,
+		AllErrors:  true,
+		Comments:   true,
+		TabIndent:  true,
+		TabWidth:   8,
+		FormatOnly: true,
+	}
+	return imports.Process("", src, opt)
 }

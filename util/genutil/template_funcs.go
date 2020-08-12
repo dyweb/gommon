@@ -4,6 +4,8 @@ import (
 	htmltemplate "html/template"
 	texttemplate "text/template"
 	"unicode"
+
+	"github.com/dyweb/gommon/util/stringutil"
 )
 
 // template_funcs.go defines common template functions used in go template
@@ -11,8 +13,8 @@ import (
 // TemplateFuncMap returns a new func map that includes all template func in this page.
 func TemplateFuncMap() map[string]interface{} {
 	return map[string]interface{}{
-		"UcFirst": UcFirst,
-		"LcFirst": LcFirst,
+		"UcFirst": stringutil.UcFirst,
+		"LcFirst": stringutil.LcFirst,
 	}
 }
 

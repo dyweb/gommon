@@ -246,7 +246,7 @@ func adjustImport(f *ast.File, fset *token.FileSet, rules []ImportGroupRule) err
 	}
 	// TODO: linter says decl.Specs can be nil ... writing a linter w/ linter error
 	for _, imp := range specs {
-		log.Infof("spec %s %s", nameIfNotNil(imp.Name), imp.Path.Value)
+		log.Debugf("adjustImport: spec %s %s", nameIfNotNil(imp.Name), imp.Path.Value)
 	}
 	return nil
 }

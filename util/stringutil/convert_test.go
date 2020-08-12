@@ -1,9 +1,9 @@
-package genutil_test
+package stringutil_test
 
 import (
 	"testing"
 
-	"github.com/dyweb/gommon/util/genutil"
+	"github.com/dyweb/gommon/util/stringutil"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -20,6 +20,6 @@ func TestSnakeToCamel(t *testing.T) {
 		{"snake__case", "SnakeCase"},
 	}
 	for _, tc := range cases {
-		assert.Equal(t, tc.c, genutil.SnakeToCamel(tc.s))
+		assert.Equal(t, tc.c, stringutil.SnakeToCamel(tc.s))
 	}
 }
