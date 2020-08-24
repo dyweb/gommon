@@ -21,6 +21,21 @@ const (
 	Trace   Method = http.MethodTrace
 )
 
+// AllMethods returns all the http methods (defined in this package)
+func AllMethods() []Method {
+	return []Method{
+		Get,
+		Head,
+		Post,
+		Put,
+		Patch,
+		Delete,
+		Connect,
+		Options,
+		Trace,
+	}
+}
+
 // UserAgent data are from https://techblog.willshouse.com/2012/01/03/most-common-user-agents/
 // For UserAgent spec, see MDN https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent
 type UserAgent string

@@ -14,6 +14,9 @@ import (
 	"github.com/dyweb/gommon/util/genutil"
 )
 
+// GoTemplateConfig maps to gomtpls config in gommon.yml.
+// It reads go template source from Src and writes to Dst using Data as data.
+// The Go flag determines if the rendered template is formatted as go code.
 type GoTemplateConfig struct {
 	Src  string      `yaml:"src"`
 	Dst  string      `yaml:"dst"`
@@ -47,6 +50,9 @@ func (c *GoTemplateConfig) Render(root string) error {
 	log.Debugf("rendered go tmpl %s to %s", src, dst)
 	return nil
 }
+
+// ----------------------------------------------------------------------------
+// GoCodeTemplate
 
 type GoCodeTemplate struct {
 	Name     string           // name used in error message e.g. generic-btree
@@ -91,6 +97,20 @@ func RenderGoCodeTo(dst io.Writer, tmpl GoCodeTemplate) error {
 	}
 	_, err = dst.Write(b)
 	return err
+}
+
+// ----------------------------------------------------------------------------
+// Go Util
+
+type GoStructDef struct {
+	Name   string
+	Fields []GoFieldDef
+}
+
+type GoFieldDef struct {
+	Name string
+	Type string
+	Tag  string
 }
 
 // FormatGo formats go code using goimports without out fixing missing imports.

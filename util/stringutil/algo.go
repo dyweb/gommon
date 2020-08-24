@@ -2,6 +2,16 @@ package stringutil
 
 // algo.go implements common string algorithms like EditDistance.
 
+// CopySlice makes a deep copy of string slice.
+// NOTE: it assumes the underlying string is immutable, i.e. the are not created using unsafe.
+func CopySlice(src []string) []string {
+	cp := make([]string, len(src))
+	for i, s := range src {
+		cp[i] = s
+	}
+	return cp
+}
+
 func EditDistance(word string, candidates []string, maxEdit int) {
 	// TODO: return results group by distances [][]string should work when maxEdit is small
 	// TODO: sort the response so it is stable?

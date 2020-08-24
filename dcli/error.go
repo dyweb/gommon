@@ -22,11 +22,13 @@ func commandNotFound(root Command, args []string) {
 }
 
 // handles error from a specific command
+// TODO: specify print output location for testing
 func handleCommandError(cmd Command, err error) {
 	switch x := err.(type) {
 	case *ErrHelpOnlyCommand:
 		fmt.Println("TODO: should print help for command " + cmd.GetName() + x.Command)
+	// TODO: unwrap error? or by default simply print it ...
 	default:
-		fmt.Printf("TODO: unhandled error of type %s", reflect.TypeOf(err).String())
+		fmt.Printf("TODO: unhandled error of type %s %s\n", reflect.TypeOf(err).String(), err)
 	}
 }
