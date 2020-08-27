@@ -14,10 +14,49 @@ import (
 // EnvReader reads environment variable by key and returns empty string if it does not exists
 type EnvReader func(key string) (value string)
 
-// EnvToStruct decodes environment variable to struct
+// EvalBool converts a string value to boolean value.
+type EvalBool func(s string) bool
+
+type EnvToStructConfig struct {
+	Prefix string
+	Env    EnvReader // Env determines how to get environment variable, os.Getenv is used when set to nil
+	Bool   EvalBool  // Bool determines how to evaluate a string to bool, DefaultEvalBool is used when set to nil
+}
+
+// a private default so other packages can't change it
+var defaultEnvToStructConfig = DefaultEnvToStructConfig()
+
+func DefaultEnvToStructConfig() EnvToStructConfig {
+	return EnvToStructConfig{
+		Env:  os.Getenv,
+		Bool: DefaultEvalBool(),
+	}
+}
+
+// a private default so other packages can't change it
+var defaultEvalBool = DefaultEvalBool()
+
+// DefaultEvalBool treats empty string, 0, false, FALSE as false.
+func DefaultEvalBool() EvalBool {
+	return func(s string) bool {
+		if s == "" || s == "0" || s == "false" || s == "FALSE" {
+			return false
+		}
+		return true
+	}
+}
+
 // TODO: it should works both normal struct and traceable struct config
-// TODO: allow prefix, maybe pass config struct or as a method a config struct
-func EnvToStruct(v interface{}) error {
+func (c *EnvToStructConfig) To(v interface{}) error {
+	envReader := c.Env
+	if envReader == nil {
+		envReader = os.Getenv
+	}
+	evalBool := c.Bool
+	if evalBool == nil {
+		evalBool = defaultEvalBool
+	}
+
 	rv := reflect.ValueOf(v)
 	if rv.Kind() != reflect.Ptr || rv.IsNil() {
 		return fmt.Errorf("v must be a non nil pointer")
@@ -32,35 +71,33 @@ func EnvToStruct(v interface{}) error {
 		fv := rv.Field(i)
 		ft := rt.Field(i)
 		name := ft.Name
-		key := fieldNameToEnvKey(name)
-		// TODO: use a env getter to avoid calling os.Getenv directly
-		val := os.Getenv(key)
+		key := c.Prefix + fieldNameToEnvKey(name)
+		val := envReader(key)
 		switch fv.Kind() {
 		case reflect.Int:
-			if val == "" {
-				fv.SetInt(0)
-			} else {
+			if val != "" {
 				i, err := strconv.Atoi(val)
 				if err != nil {
-					return fmt.Errorf("error parse key %s val %s for field %s: %w", key, val, name, err)
+					return fmt.Errorf("invalid int key %s val %s for field %s: %w", key, val, name, err)
 				}
 				fv.SetInt(int64(i))
 			}
 		case reflect.Bool:
-			if val == "" || val == "0" {
-				fv.SetBool(false)
-			} else {
-				fv.SetBool(true)
-			}
+			fv.SetBool(evalBool(val))
 		case reflect.String:
 			if val != "" {
 				fv.SetString(val)
 			}
 		default:
-			return fmt.Errorf("only int and bool field is supported got %s", fv.Kind())
+			return fmt.Errorf("only int, bool and string fields are supported got %s", fv.Kind())
 		}
 	}
 	return nil
+}
+
+// EnvToStruct decodes environment variable to struct using DefaultEnvToStructConfig
+func EnvToStruct(v interface{}) error {
+	return defaultEnvToStructConfig.To(v)
 }
 
 func fieldNameToEnvKey(name string) string {
