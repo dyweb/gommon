@@ -2,7 +2,7 @@ package stringutil
 
 import "unicode"
 
-// convert.go converts string.
+// convert.go converts string and strings.
 
 // UcFirst changes first character to upper case.
 // It is based on https://github.com/99designs/gqlgen/blob/master/codegen/templates/templates.go#L205
@@ -44,4 +44,15 @@ func SnakeToCamel(s string) string {
 		dst = append(dst, r2)
 	}
 	return string(dst)
+}
+
+// RemoveEmpty removes empty string within the slice
+func RemoveEmpty(src []string) []string {
+	var d []string
+	for _, s := range src {
+		if s != "" {
+			d = append(d, s)
+		}
+	}
+	return d
 }
