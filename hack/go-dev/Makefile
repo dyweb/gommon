@@ -1,5 +1,5 @@
 DOCKER_REPO = dyweb/go-dev
-GO_VERSIONS = 1.14
+GO_VERSIONS = 1.15.3
 BUILDS = $(addprefix build-, $(GO_VERSIONS))
 PUSHS = $(addprefix push-, $(GO_VERSIONS))
 
