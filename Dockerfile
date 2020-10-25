@@ -4,7 +4,7 @@
 #
 # The builder-image go-dev can be found in hack/go-dev
 # Versions can be found on https://hub.docker.com/r/dyweb/go-dev/tags
-FROM dyweb/go-dev:1.14 as builder
+FROM dyweb/go-dev:1.15.3 as builder
 
 LABEL maintainer="contact@dongyue.io"
 

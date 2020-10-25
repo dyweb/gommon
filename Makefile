@@ -1,4 +1,5 @@
 # based on https://gist.github.com/azatoth/1030091
+# TODO(at15): it is also possible to generate it automatically using awk etc.
 define GOMMON_MAKEFILE_HELP_MSG
 Make commands for gommon
 
@@ -34,7 +35,7 @@ export GOMMON_MAKEFILE_HELP_MSG
 help:
 	@echo "$$GOMMON_MAKEFILE_HELP_MSG"
 
-GO = GO111MODULE=on go
+GO = GO111MODULE=on CGO_ENABLED=0 go
 # -- build vars ---
 PKGST =./cmd ./dcli ./errors ./generator ./httpclient ./linter ./log ./noodle ./util ./tconfig
 PKGS = $(addsuffix ...,$(PKGST))
@@ -151,11 +152,6 @@ docker-build:
 
 docker-push:
 	docker push $(DOCKER_REPO):$(VERSION)
-
-docker-test:
-	docker-compose -f hack/docker-compose.yml run --rm golang1.12
-# TODO: not sure why the latest one is not using ...
-#	docker-compose -f hack/docker-compose.yml run --rm golanglatest
 
 #.PHONY: docker-remove-all-containers
 #docker-remove-all-containers:

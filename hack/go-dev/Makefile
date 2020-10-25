@@ -16,4 +16,4 @@ build: $(BUILDS)
 push: $(PUSHS)
 
 run:
-	docker run --rm -it --entrypoint /bin/bash $(DOCKER_REPO):1.11.4
+	docker run --rm -it --entrypoint /bin/bash $(DOCKER_REPO):1.15.3
